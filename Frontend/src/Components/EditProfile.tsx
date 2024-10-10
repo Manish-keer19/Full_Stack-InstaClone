@@ -205,8 +205,9 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../App";
 import Footer from "./Footer";
 import { useDispatch } from "react-redux";
-import { setProfileData } from "../features/Profile/ProfileSlice";
 import { UserServiceInstance } from "../services/Userservice";
+import { setProfileData } from "../features/Profile/ProfileSlice";
+
 
 export default function EditProfile() {
   const dispatch = useDispatch();
@@ -231,6 +232,7 @@ export default function EditProfile() {
     if (res) {
       console.log("Res in editprofile", res);
       dispatch(setProfileData(res.data));
+  
     }
     setUsername("");
     setBio("");

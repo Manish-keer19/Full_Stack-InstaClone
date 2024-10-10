@@ -1,4 +1,4 @@
-# this md file contain how to add typscrip in you express
+# this md file contain how to add typscrip in you express and how to setup local storage in react native
 
 # Creating a Node.js Backend with TypeScript
 
@@ -63,3 +63,103 @@ Create a tsconfig.json file to configure TypeScript:
 ```
 npx tsc --init
 ```
+
+# how to setup local storage in react native
+
+React Native, you don't have direct access to the browser's localStorage like you do in web development, but you can use several libraries that provide similar functionality for storing data locally. The most common approach is using AsyncStorage, which is built into React Native.
+
+_Here’s how you can use AsyncStorage to set and retrieve local data in React Native:_
+
+## 1. Install @react-native-async-storage/async-storage
+
+First, you need to install the package if it's not already part of your project.
+
+```
+npm install @react-native-async-storage/async-storage
+```
+
+## 2. Using AsyncStorage
+
+Here’s an example of how to use it:
+
+### a. To store data:
+
+```
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const storeData = async (key: string, value: string) => {
+  try {
+    await AsyncStorage.setItem(key, value);
+    console.log("Data successfully saved");
+  } catch (e) {
+    console.error("Failed to save the data to the storage", e);
+  }
+};
+```
+
+### b. To retrieve data:
+
+```
+const getData = async (key: string) => {
+  try {
+    const value = await AsyncStorage.getItem(key);
+    if (value !== null) {
+      console.log("Data retrieved successfully: ", value);
+      return value;
+    }
+  } catch (e) {
+    console.error("Failed to fetch the data from storage", e);
+  }
+};
+```
+
+### c. To remove data:
+
+```
+const removeData = async (key: string) => {
+  try {
+    await AsyncStorage.removeItem(key);
+    console.log("Data removed successfully");
+  } catch (e) {
+    console.error("Failed to remove the data", e);
+  }
+};
+```
+
+# 3. Example Usage
+
+Here’s how you might use these functions in a React Native component:
+
+```
+import React, { useEffect } from 'react';
+import { View, Text, Button } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const App = () => {
+
+  const saveUserData = () => {
+    storeData('username', 'manishkeer');
+  };
+
+  const getUserData = async () => {
+    const username = await getData('username');
+    console.log("Stored username: ", username);
+  };
+
+  const removeUserData = () => {
+    removeData('username');
+  };
+
+  return (
+    <View>
+      <Button title="Save Data" onPress={saveUserData} />
+      <Button title="Get Data" onPress={getUserData} />
+      <Button title="Remove Data" onPress={removeUserData} />
+    </View>
+  );
+};
+
+export default App;
+```
+
+This example demonstrates how to set, get, and remove data from local storage in React Native using AsyncStorage.
