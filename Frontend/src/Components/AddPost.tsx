@@ -10,44 +10,56 @@ import {
 import * as ImagePicker from "expo-image-picker";
 
 export default function AddPost() {
-  const [image, setImage] = useState<string | null>(null);
+  const [mediaUri, setMediaUri] = useState<string | null>(null);
   const [caption, setCaption] = useState<string>("");
 
-  // Function to pick an image from the user's system
-  const pickImage = async () => {
+  // Function to pick media (images or videos)
+  const pickMedia = async () => {
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert("Permission to access media library is required!");
+      return;
+    }
+
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [4, 3],
       quality: 1,
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      setMediaUri(result.assets[0].uri);
     }
   };
 
   // Function to handle the post submission
   const handlePost = () => {
-    if (!image || !caption) {
-      alert("Please select an image and add a caption");
+    if (!mediaUri || !caption) {
+      alert("Please select media and add a caption");
       return;
     }
-    // Here, you can handle the post submission logic (e.g., send data to backend)
     alert("Post submitted successfully!");
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Create New Post</Text>
+      <View style={styles.header}>
+        <Image
+          source={{ uri: "https://via.placeholder.com/40" }} // Replace with your profile image URL
+          style={styles.profileImage}
+        />
+        <Text style={styles.headerText}>Create New Post</Text>
+      </View>
 
-      {/* Image Preview */}
-      <TouchableOpacity onPress={pickImage} style={styles.imageContainer}>
-        {image ? (
-          <Image source={{ uri: image }} style={styles.imagePreview} />
+      {/* Media Preview */}
+      <TouchableOpacity onPress={pickMedia} style={styles.mediaContainer}>
+        {mediaUri ? (
+          <Image source={{ uri: mediaUri }} style={styles.mediaPreview} />
         ) : (
           <View style={styles.placeholderContainer}>
-            <Text style={styles.placeholderText}>Select an image</Text>
+            <Text style={styles.placeholderText}>Select an image or video</Text>
           </View>
         )}
       </TouchableOpacity>
@@ -59,6 +71,7 @@ export default function AddPost() {
         value={caption}
         onChangeText={setCaption}
         style={styles.captionInput}
+        multiline
       />
 
       {/* Submit Button */}
@@ -71,27 +84,37 @@ export default function AddPost() {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 20,
     flex: 1,
-    backgroundColor: "#000", // Black background for a sleek look
+    backgroundColor: "black",
     padding: 20,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#fff",
-    textAlign: "center",
-    marginVertical: 20,
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
   },
-  imageContainer: {
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  mediaContainer: {
     borderWidth: 1,
-    borderColor: "#333",
+    borderColor: "#ddd",
     borderRadius: 10,
     height: 250,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 20,
+    backgroundColor: "#f9f9f9",
   },
-  imagePreview: {
+  mediaPreview: {
     width: "100%",
     height: "100%",
     borderRadius: 10,
@@ -106,16 +129,16 @@ const styles = StyleSheet.create({
   },
   captionInput: {
     borderWidth: 1,
-    borderColor: "#333",
+    borderColor: "#ddd",
     borderRadius: 10,
     padding: 10,
-    color: "white",
+    color: "#000",
     fontSize: 16,
     marginBottom: 20,
-    backgroundColor: "#1a1a1a",
+    backgroundColor: "#f9f9f9",
   },
   postButton: {
-    backgroundColor: "#1a73e8", // Nice blue color for the button
+    backgroundColor: "#1a73e8", // Instagram-like blue color for the button
     paddingVertical: 15,
     borderRadius: 10,
     alignItems: "center",

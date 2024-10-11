@@ -1,8 +1,10 @@
 import { ScrollView, StyleSheet, Text, View, Image } from "react-native";
 import React from "react";
 import Icon from "react-native-vector-icons/AntDesign";
+import { images } from "../../Utils/imagedata";
 
 export default function Story() {
+  
   return (
     <View style={styles.container}>
       <ScrollView
@@ -11,14 +13,14 @@ export default function Story() {
         contentContainerStyle={styles.scrollViewContent} // Use content container to limit items height
       >
         {/* Repeat stories */}
-        {[...Array(20)].map((_, index) =>
+        {images.map((item, index) =>
           index == 0 ? (
             <View key={index} style={styles.storyContainer}>
               <View style={styles.imageContainer}>
                 <Image
                   style={styles.image}
                   source={{
-                    uri: "https://res.cloudinary.com/manish19/image/upload/v1726506341/ftedkmcuqzwy97jwjdqu.jpg",
+                    uri: item.uri,
                   }}
                 />
               </View>
@@ -42,7 +44,7 @@ export default function Story() {
                 <Image
                   style={styles.image}
                   source={{
-                    uri: "https://res.cloudinary.com/manish19/image/upload/v1726506341/ftedkmcuqzwy97jwjdqu.jpg",
+                    uri: item.uri,
                   }}
                 />
               </View>

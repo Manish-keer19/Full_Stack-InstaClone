@@ -16,7 +16,7 @@ export default function Navbar() {
         <Image
           style={{ resizeMode: "contain", width: "100%", height: "100%" }}
           source={{
-            uri: "https://imgs.search.brave.com/AOZMwK1wRINJH7S9_po0yGAh21Gv7ga7NAcpyc8o0WQ/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly90My5m/dGNkbi5uZXQvanBn/LzA3LzMzLzkxLzM2/LzM2MF9GXzczMzkx/MzY4OF9SeUI5QWRS/Q3J4Tk1WdksxMTU0/UTNPZHc0UFFxZEJ1/Wi5qcGc",
+           uri: "https://imgs.search.brave.com/AOZMwK1wRINJH7S9_po0yGAh21Gv7ga7NAcpyc8o0WQ/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly90My5m/dGNkbi5uZXQvanBn/LzA3LzMzLzkxLzM2/LzM2MF9GXzczMzkx/MzY4OF9SeUI5QWRS/Q3J4Tk1WdksxMTU0/UTNPZHc0UFFxZEJ1/Wi5qcGc",
           }}
         />
       </View>

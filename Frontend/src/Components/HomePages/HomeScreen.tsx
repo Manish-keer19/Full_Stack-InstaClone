@@ -1,12 +1,8 @@
 import React from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import Navbar from "./Navbar";
 import Story from "./Story";
-import Post from "./Post";
+import Feed from "./Feed";
 import Footer from "../Footer";
 
 const HomeScreen = () => {
@@ -18,7 +14,7 @@ const HomeScreen = () => {
       >
         <Navbar />
         <Story />
-        <Post />
+        <Feed />
       </ScrollView>
       <Footer />
     </View>

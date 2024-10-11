@@ -14,6 +14,7 @@ import EntypoIcon from "react-native-vector-icons/Entypo";
 import AntDesignIcon from "react-native-vector-icons/AntDesign";
 import OcticonsIcons from "react-native-vector-icons/Octicons";
 import FeatherIcons from "react-native-vector-icons/Feather";
+import { images } from "../../Utils/imagedata";
 
 interface PostData {
   likes: number;
@@ -23,10 +24,9 @@ interface PostData {
   saved: boolean;
   userComment: string;
 }
-
-export default function Post() {
+export default function Feed() {
   const [posts, setPosts] = useState<PostData[]>(
-    [...Array(20)].map(() => ({
+    [...Array(images.length)].map(() => ({
       likes: 120,
       views: 350,
       comments: 15,
@@ -90,7 +90,8 @@ export default function Post() {
               <Image
                 style={styles.avatar}
                 source={{
-                  uri: "https://res.cloudinary.com/manish19/image/upload/v1726506341/ftedkmcuqzwy97jwjdqu.jpg",
+                  // uri: "https://res.cloudinary.com/manish19/image/upload/v1726506341/ftedkmcuqzwy97jwjdqu.jpg",
+                  uri: "https://instagram.fbho1-2.fna.fbcdn.net/v/t51.2885-19/461331682_472430802608818_3421248288983675499_n.jpg?_nc_ht=instagram.fbho1-2.fna.fbcdn.net&_nc_cat=110&_nc_ohc=vrHwx345BOUQ7kNvgElnLd8&_nc_gid=fc3db61eeb4e41cb8b3f258080dff8e3&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AYCvqu5feO0OpfrFrURbO96rkz7Y_tvtutUcJRuLAly-Yg&oe=670EC499&_nc_sid=7a9f4b",
                 }}
               />
               <Text style={styles.username}>Manish keer</Text>
@@ -100,13 +101,7 @@ export default function Post() {
 
           {/* Post Image */}
           <View style={styles.postImageWrapper}>
-            <Image
-              style={styles.postImage}
-              source={{
-                // uri: "https://res.cloudinary.com/manish19/image/upload/v1726593608/lkiq9xru9jzd1lrd4b7m.jpg",
-                uri: "https://res.cloudinary.com/manish19/image/upload/v1726505860/huur9oubvhlwi9sqw0go.jpg",
-              }}
-            />
+            <Image style={styles.postImage} source={images[i]} />
           </View>
 
           {/* Action Icons */}
