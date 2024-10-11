@@ -4,7 +4,6 @@ import Icon from "react-native-vector-icons/AntDesign";
 import { images } from "../../Utils/imagedata";
 
 export default function Story() {
-  
   return (
     <View style={styles.container}>
       <ScrollView

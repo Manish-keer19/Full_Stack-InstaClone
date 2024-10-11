@@ -15,45 +15,11 @@ import { RootStackParamList } from "../../../App";
 import { NavigationProp } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { useLoadProfileData } from "../../features/Profile/ProfileSlice";
+import { images } from "../../Utils/imagedata";
 
-const posts = [
-  {
-    id: "1",
-    image:
-      "https://res.cloudinary.com/manish19/image/upload/v1726505860/huur9oubvhlwi9sqw0go.jpg",
-  },
-  {
-    id: "2",
-    image:
-      "https://res.cloudinary.com/manish19/image/upload/v1726505860/huur9oubvhlwi9sqw0go.jpg",
-  },
-];
-
-const reels = [
-  {
-    id: "1",
-    image:
-      "https://res.cloudinary.com/manish19/image/upload/v1726506341/ftedkmcuqzwy97jwjdqu.jpg",
-  },
-  {
-    id: "2",
-    image:
-      "https://res.cloudinary.com/manish19/image/upload/v1726506341/ftedkmcuqzwy97jwjdqu.jpg",
-  },
-];
-
-const tagged = [
-  {
-    id: "1",
-    image:
-      "https://res.cloudinary.com/manish19/image/upload/v1726506341/ftedkmcuqzwy97jwjdqu.jpg",
-  },
-  {
-    id: "2",
-    image:
-      "https://res.cloudinary.com/manish19/image/upload/v1726506341/ftedkmcuqzwy97jwjdqu.jpg",
-  },
-];
+const posts = images;
+const reels = images;
+const tagged = images;
 
 export default function Profile() {
   useLoadProfileData();
@@ -61,12 +27,12 @@ export default function Profile() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [activeTab, setActiveTab] = useState("Posts");
 
-  const renderPost = ({ item }: { item: { id: string; image: string } }) => (
+  const renderPost = ({ item }: { item: { id: number; uri: string } }) => (
     <TouchableOpacity
       style={styles.postWrapper}
       onPress={() => navigation.navigate("Post")}
     >
-      <Image source={{ uri: item.image }} style={styles.postImage} />
+      <Image source={{ uri: item.uri }} style={styles.postImage} />
     </TouchableOpacity>
   );
 
@@ -170,11 +136,12 @@ export default function Profile() {
           <Ionicons name="person-outline" size={20} color="white" />
         </TouchableOpacity>
       </View>
+      
       {/* Posts/Reels/Tagged Grid */}
       <FlatList
         data={getData()}
         renderItem={renderPost}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}  // Convert id to string for keyExtractor
         numColumns={3}
         style={styles.postsContainer}
       />
