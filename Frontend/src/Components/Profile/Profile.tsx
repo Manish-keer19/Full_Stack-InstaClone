@@ -61,9 +61,7 @@ export default function Profile() {
       <View style={styles.profileInfo}>
         <Image
           style={styles.profileImage}
-          source={{
-            uri: "https://res.cloudinary.com/manish19/image/upload/v1726506341/ftedkmcuqzwy97jwjdqu.jpg",
-          }}
+          source={images[0]}
         />
         <View style={styles.statsWrapper}>
           <View style={styles.statsContainer}>
@@ -136,12 +134,12 @@ export default function Profile() {
           <Ionicons name="person-outline" size={20} color="white" />
         </TouchableOpacity>
       </View>
-      
+
       {/* Posts/Reels/Tagged Grid */}
       <FlatList
         data={getData()}
         renderItem={renderPost}
-        keyExtractor={(item) => item.id.toString()}  // Convert id to string for keyExtractor
+        keyExtractor={(item) => item.id.toString()} // Convert id to string for keyExtractor
         numColumns={3}
         style={styles.postsContainer}
       />
