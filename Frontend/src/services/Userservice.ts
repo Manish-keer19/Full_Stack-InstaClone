@@ -27,10 +27,10 @@ class UserService {
   }
 
   async updateProfile(data: any) {
-    console.log("data in updateprole userservice",data);
+    console.log("data in updateprole userservice", data);
     try {
       const response = await fetch(
-        "http://192.168.218.139:3000/api/v1/user/editProfile",
+        "http://192.168.146.139:3000/api/v1/user/editProfile",
         {
           method: "POST",
           headers: {

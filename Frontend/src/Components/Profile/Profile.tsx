@@ -16,6 +16,7 @@ import { NavigationProp } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { useLoadProfileData } from "../../features/Profile/ProfileSlice";
 import { images } from "../../Utils/imagedata";
+import Icons from "react-native-vector-icons/FontAwesome5";
 
 const posts = images;
 const reels = images;
@@ -26,6 +27,7 @@ export default function Profile() {
   const profileData = useSelector((state: any) => state.Profile.profileData);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [activeTab, setActiveTab] = useState("Posts");
+  const [issetting, setIssetting] = useState<boolean>(false);
 
   const renderPost = ({ item }: { item: { id: number; uri: string } }) => (
     <TouchableOpacity
@@ -53,23 +55,30 @@ export default function Profile() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.profileUsername}>Manish Keer</Text>
-        <EntypoIcons name="chevron-small-down" color={"white"} size={28} />
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Text style={styles.profileUsername}>Manish Keer</Text>
+          <EntypoIcons name="chevron-small-down" color={"white"} size={28} />
+        </View>
+        <TouchableOpacity onPress={() => setIssetting(!issetting)}>
+          <Icons
+            name="hamburger"
+            size={28}
+            color={"white"}
+            style={{ marginRight: 10 }}
+          />
+        </TouchableOpacity>
       </View>
 
       {/* Profile Section */}
       <View style={styles.profileInfo}>
-        <Image
-          style={styles.profileImage}
-          source={images[0]}
-        />
+        <Image style={styles.profileImage} source={images[0]} />
         <View style={styles.statsWrapper}>
           <View style={styles.statsContainer}>
             <Text style={styles.statsText}>120</Text>
             <Text style={styles.statsLabel}>Posts</Text>
           </View>
           <View style={styles.statsContainer}>
-            <Text style={styles.statsText}>5k</Text>
+            <Text style={styles.statsText}>1000M</Text>
             <Text style={styles.statsLabel}>Followers</Text>
           </View>
           <View style={styles.statsContainer}>
@@ -144,6 +153,22 @@ export default function Profile() {
         style={styles.postsContainer}
       />
       <Footer />
+      {issetting && (
+        <View style={styles.settingsModal}>
+          <TouchableOpacity
+            style={styles.modalButton}
+            onPress={() => navigation.navigate("Signup")}
+          >
+            <Text style={styles.modalButtonText}>Signup</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.modalButton}
+            onPress={() => navigation.navigate("Login")}
+          >
+            <Text style={styles.modalButtonText}>Login</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }
@@ -158,6 +183,7 @@ const styles = StyleSheet.create({
     marginTop: 43,
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
   },
   profileUsername: {
     color: "white",
@@ -257,5 +283,29 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 140,
     borderRadius: 4,
+  },
+  settingsModal: {
+    width: 150,
+    backgroundColor: "#1c1c1e", // Dark background for settings
+    position: "absolute",
+    right: 5,
+    top: 100,
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    elevation: 5, // Adds shadow for depth
+    zIndex: 1000,
+  },
+  modalButton: {
+    backgroundColor: "#3897f0", // Instagram-like blue
+    padding: 5,
+    marginBottom: 8,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  modalButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

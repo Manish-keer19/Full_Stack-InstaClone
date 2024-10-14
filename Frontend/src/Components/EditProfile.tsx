@@ -208,7 +208,6 @@ import { useDispatch } from "react-redux";
 import { UserServiceInstance } from "../services/Userservice";
 import { setProfileData } from "../features/Profile/ProfileSlice";
 
-
 export default function EditProfile() {
   const dispatch = useDispatch();
   const [name, setName] = useState<string>("");
@@ -232,7 +231,6 @@ export default function EditProfile() {
     if (res) {
       console.log("Res in editprofile", res);
       dispatch(setProfileData(res.data));
-  
     }
     setUsername("");
     setBio("");
@@ -253,7 +251,7 @@ export default function EditProfile() {
       <View style={styles.imageContainer}>
         <Image
           source={{
-            uri: "https://instagram.frpr5-1.fna.fbcdn.net/v/t51.2885-19/462349744_1034506588460666_5079402828137450263_n.jpg",
+            uri: "https://instagram.fbho1-1.fna.fbcdn.net/v/t51.29350-15/458979119_1052529089727553_5583931975541233891_n.webp?stp=dst-jpg_e35&efg=eyJ2ZW5jb2RlX3RhZyI6ImltYWdlX3VybGdlbi4xMDgweDEyNDcuc2RyLmYyOTM1MC5kZWZhdWx0X2ltYWdlIn0&_nc_ht=instagram.fbho1-1.fna.fbcdn.net&_nc_cat=101&_nc_ohc=IpXNzLqvb5cQ7kNvgGqZMLV&_nc_gid=fc3db61eeb4e41cb8b3f258080dff8e3&edm=AP4sbd4BAAAA&ccb=7-5&ig_cache_key=MzQ1MjYyMzU5MzQ0MjcxODI3MQ%3D%3D.3-ccb7-5&oh=00_AYD-wZ3gANeB6NvQpyQ6RIwHlMQQsFDbk21Akie8KffyvA&oe=670ED34B&_nc_sid=7a9f4b",
           }}
           style={styles.image}
         />

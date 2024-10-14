@@ -10,6 +10,7 @@ import ImagePicker1 from "./src/Components/ImagePicker";
 import EditProfile from "./src/Components/EditProfile";
 import Post from "./src/Components/Post/Posts";
 import Login from "./src/auth/Login";
+import Signup from "./src/auth/Signup";
 
 const Stack = createNativeStackNavigator();
 export type RootStackParamList = {
@@ -21,6 +22,7 @@ export type RootStackParamList = {
   EditProfile: undefined;
   Post: undefined;
   Login: undefined;
+  Signup: undefined;
 };
 
 export default function App() {
@@ -29,8 +31,9 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator
           screenOptions={{ headerShown: false }}
-          initialRouteName="Login"
-          // initialRouteName="Home"
+          // initialRouteName="Signup"
+          // initialRouteName="Login"
+          initialRouteName="Home"
         >
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Profile" component={Profile} />
@@ -39,6 +42,7 @@ export default function App() {
           <Stack.Screen name="EditProfile" component={EditProfile} />
           <Stack.Screen name="Post" component={Post} />
           <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Signup" component={Signup} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

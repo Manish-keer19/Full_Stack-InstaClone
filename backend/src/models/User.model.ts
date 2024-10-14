@@ -1,5 +1,4 @@
 import mongoose, { Schema } from "mongoose";
-import { Profile } from "./Profile.model";
 
 const userschema = new Schema({
   username: { type: String, required: true },
@@ -7,7 +6,7 @@ const userschema = new Schema({
   password: { type: String, required: true },
   profile: {
     type: Schema.Types.ObjectId,
-    ref:"Profile",
+    ref: "Profile",
   },
 });
 

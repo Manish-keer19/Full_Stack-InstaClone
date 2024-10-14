@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     width: 100,
     alignItems: "center",
     justifyContent: "center",
-    borderColor: "yellow",
+    borderColor: "gold",
     // borderColor: "pink",
   },
   image: {

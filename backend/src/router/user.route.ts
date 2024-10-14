@@ -1,7 +1,6 @@
 import { Router } from "express";
 import {
   createUser,
-  editProfile,
   getuserdata,
 } from "../controllers/User.controller";
 
@@ -14,6 +13,5 @@ userRoute.get("/", (req, res) => {
 
 // POST route to create a user
 userRoute.post("/CreateUser", createUser);
-userRoute.post("/editProfile", editProfile);
 userRoute.post("/getuserdata", getuserdata);
 export default userRoute;

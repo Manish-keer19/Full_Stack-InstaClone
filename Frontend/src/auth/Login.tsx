@@ -130,8 +130,11 @@ import {
 } from "react-native";
 import React from "react";
 import Logo from "../../assets/imges/instagram_logo2.png";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../../App";
 
 export default function Login() {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
@@ -158,7 +161,10 @@ export default function Login() {
       </TouchableOpacity>
 
       <View style={styles.footerContainer}>
-        <TouchableOpacity style={styles.registerButton}>
+        <TouchableOpacity
+          style={styles.registerButton}
+          onPress={() => navigation.navigate("Signup")}
+        >
           <Text style={styles.registerText}>Create New Account</Text>
         </TouchableOpacity>
         <Text style={styles.methodIcon}>Meta Icon</Text>
