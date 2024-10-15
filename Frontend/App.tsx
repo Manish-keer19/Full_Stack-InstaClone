@@ -11,6 +11,8 @@ import EditProfile from "./src/Components/EditProfile";
 import Post from "./src/Components/Post/Posts";
 import Login from "./src/auth/Login";
 import Signup from "./src/auth/Signup";
+import Message from "./src/Components/Message/Message";
+import Like from "./src/Components/Like/Like";
 
 const Stack = createNativeStackNavigator();
 export type RootStackParamList = {
@@ -23,6 +25,8 @@ export type RootStackParamList = {
   Post: undefined;
   Login: undefined;
   Signup: undefined;
+  Messages: undefined;
+  Likes: undefined;
 };
 
 export default function App() {
@@ -32,8 +36,8 @@ export default function App() {
         <Stack.Navigator
           screenOptions={{ headerShown: false }}
           // initialRouteName="Signup"
-          // initialRouteName="Login"
-          initialRouteName="Home"
+          initialRouteName="Messages"
+          // initialRouteName="Home"
         >
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Profile" component={Profile} />
@@ -43,6 +47,10 @@ export default function App() {
           <Stack.Screen name="Post" component={Post} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Signup" component={Signup} />
+          <Stack.Screen name="Messages" component={Message} />
+          <Stack.Screen name="Likes" component={Like} />
+
+   
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
