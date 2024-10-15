@@ -7,18 +7,49 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import Footer from "../Components/Footer";
+import { AuthServiceInstance } from "../services/authServices";
 
 export default function Signup() {
   const [step, setStep] = useState(1);
-  const [username, setUsername] = useState<string>("");
+  const [email, setemail] = useState<string>("");
   const [password, setpassword] = useState<string>("");
   const [otp, setotp] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
 
-  const handlesingup = () => {
-    const data = { username, password };
-    console.log("register button pressed");
+  const handlesingup = async () => {
+    if (!email || !password || !otp || !username) {
+      alert("Please fill all the fields");
+    } else {
+      const data = { email, password, otp, username };
+      console.log("register button pressed");
+      console.log("data is ", data);
+
+      try {
+        const res = await AuthServiceInstance.Signup(data);
+
+        console.log("res is ", res);
+        if (res) {
+          alert("signupd succesfully");
+        }
+      } catch (error) {
+        console.log("error", error);
+        console.log("could not singup some error occured");
+      }
+    }
+  };
+
+  const handleGenerateOtp = async () => {
+    const data = { email };
     console.log("data is ", data);
-    alert("register button pressed");
+    try {
+      const res = await AuthServiceInstance.generateOtp(data);
+
+      console.log("res is ", res);
+
+      setStep(3);
+    } catch (error) {
+      console.log("could not generate the otp", error);
+    }
   };
 
   return (
@@ -27,13 +58,13 @@ export default function Signup() {
       {step === 1 && (
         <View>
           <View style={styles.header}>
-            <Text style={styles.title}>Choose Username</Text>
+            <Text style={styles.title}>Choose email</Text>
             <Text style={styles.subtitle}>You can always change it later</Text>
           </View>
           <View style={styles.formContainer}>
             <TextInput
               style={styles.input}
-              placeholder="Username"
+              placeholder="username"
               placeholderTextColor={"#aaa"}
               value={username}
               onChangeText={(value) => {
@@ -43,7 +74,6 @@ export default function Signup() {
             <TouchableOpacity
               style={styles.nextButton}
               onPress={() => {
-                // alert(`Username: ${username}`)
                 setStep(2);
               }}
             >
@@ -52,8 +82,33 @@ export default function Signup() {
           </View>
         </View>
       )}
-
       {step === 2 && (
+        <View>
+          <View style={styles.header}>
+            <Text style={styles.title}>Choose email</Text>
+            <Text style={styles.subtitle}>You can always change it later</Text>
+          </View>
+          <View style={styles.formContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="email"
+              placeholderTextColor={"#aaa"}
+              value={email}
+              onChangeText={(value) => {
+                setemail(value);
+              }}
+            />
+            <TouchableOpacity
+              style={styles.nextButton}
+              onPress={handleGenerateOtp}
+            >
+              <Text style={styles.nextButtonText}>Next</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
+      {step === 3 && (
         <View>
           <View style={styles.header}>
             <Text style={styles.title}>Create a Password</Text>
@@ -74,14 +129,14 @@ export default function Signup() {
             />
             <TouchableOpacity
               style={styles.nextButton}
-              onPress={() => setStep(3)}
+              onPress={() => setStep(4)}
             >
               <Text style={styles.nextButtonText}>Sign Up</Text>
             </TouchableOpacity>
           </View>
         </View>
       )}
-      {step == 3 && (
+      {step == 4 && (
         <View>
           <View style={styles.header}>
             <Text style={styles.title}>Otp for varification</Text>
@@ -106,7 +161,7 @@ export default function Signup() {
           </View>
         </View>
       )}
-      <Footer/>
+      <Footer />
     </View>
   );
 }

@@ -3,8 +3,11 @@ import { Request, Response } from "express";
 import optgenerator from "otp-generator";
 import { Otp } from "../models/otp";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
-// Generate OTP
+// generate otp
 export const generateOtp = async (
   req: Request,
   res: Response
@@ -16,7 +19,7 @@ export const generateOtp = async (
     if (!email) {
       return res.status(400).json({
         success: false,
-        message: "email is required",
+        message: "Email is required",
       });
     }
 
@@ -30,22 +33,27 @@ export const generateOtp = async (
 
     console.log("otp is ", otp);
 
-    // Save OTP to database
-    const newOtp = await Otp.create({
-      email: email,
-      otp: otp,
-    });
+    // Check if an OTP exists for the email
+    const existingOtp = await Otp.findOne({ email: email });
 
-    console.log("newOtp is ", newOtp);
+    if (existingOtp) {
+      // Update existing OTP
+      existingOtp.otp = otp;
+      await existingOtp.save(); // Save the updated OTP
+      console.log("Updated OTP for existing user");
+    } else {
+      // Save new OTP to database
+      await Otp.create({ email: email, otp: otp });
+      console.log("Created new OTP for user");
+    }
 
     return res.status(200).json({
       success: true,
       message: "OTP generated successfully",
-      otp, // Returning the generated OTP
-      newOtp,
+      otp, // Optionally return the generated OTP
     });
   } catch (error) {
-    console.log("error while generating otp", error); // Added error logging
+    console.log("error while generating OTP", error); // Added error logging
     return res.status(500).json({
       success: false,
       message: "Something went wrong while generating OTP",
@@ -106,6 +114,150 @@ export const Signup = async (req: Request, res: Response): Promise<any> => {
     return res.status(500).json({
       success: false,
       message: "could not signup the user",
+    });
+  }
+};
+
+// export const Login = async (req: Request, res: Response): Promise<any> => {
+//   console.log("req.body is ", req.body);
+//   try {
+
+//     const { email, password } = req.body;
+//   console.log("email is ", email);
+//   console.log("password is ", password);
+
+//   if (!email || !password) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "All fields are required",
+//     });
+//   }
+
+//   const isUserExist = await User.findOne({ email: email });
+//   if (!isUserExist) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "User not found",
+//     });
+//   }
+
+//   const isPasswordMatch = await bcrypt.compare(password, isUserExist.password);
+//   if (!isPasswordMatch) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "Invalid password",
+//     });
+//   }
+
+//   const payload = {
+//     id: isUserExist._id,
+//     email: isUserExist.email,
+//   };
+
+//   const JWT_SECRET = process.env.JWT_SECRET;
+//   if (!JWT_SECRET) {
+//     return res.status(500).json({
+//       success: false,
+//       message: "JWT secret is not defined",
+//     });
+//   }
+
+//   const token = jwt.sign(payload,JWT_SECRET,{
+//     expiresIn:"2h"
+//   })
+//  const user =  isUserExist.toObject();
+//    user.token = token;
+//    user.password = "",
+
+//  return res.status(200).json({
+//     success: true,
+//     message: "User logged in successfully",
+//     data :user
+//   })
+
+//   } catch (error) {
+//      console.log("could not login the user", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "could not login the user",
+//     });
+//   }
+// };
+
+export const Login = async (req: Request, res: Response): Promise<any> => {
+  console.log("req.body is ", req.body);
+
+  try {
+    const { email, password } = req.body;
+
+    console.log("email is ", email);
+    console.log("password is ", password);
+
+    // Validate if email and password are provided
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // Check if the user exists
+    const isUserExist = await User.findOne({ email: email });
+    if (!isUserExist) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Check if the password is correct
+    const isPasswordMatch = await bcrypt.compare(
+      password,
+      isUserExist.password
+    );
+    if (!isPasswordMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid password",
+      });
+    }
+
+    // Prepare the payload for the JWT token
+    const payload = {
+      id: isUserExist._id,
+      email: isUserExist.email,
+    };
+
+    // Ensure JWT secret is defined
+    const JWT_SECRET = process.env.JWT_SECRET;
+    if (!JWT_SECRET) {
+      return res.status(500).json({
+        success: false,
+        message: "JWT secret is not defined",
+      });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "2h" });
+
+    // Create a new response object (to avoid mutating the original user object)
+    const userResponse = {
+      ...isUserExist.toObject(), // Convert Mongoose document to plain JavaScript object
+      token, // Add the generated token
+      password: "", // Remove the password from the response
+    };
+
+    // Return the response with the user data and token
+    return res.status(200).json({
+      success: true,
+      message: "User logged in successfully",
+      data: userResponse,
+    });
+  } catch (error) {
+    console.log("could not login the user", error);
+    return res.status(500).json({
+      success: false,
+      message: "Could not log in the user",
     });
   }
 };

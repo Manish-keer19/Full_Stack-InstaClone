@@ -128,12 +128,14 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import Logo from "../../assets/imges/instagram_logo2.png";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../App";
 
 export default function Login() {
+  const [Email, setEmail] = useState<string>("");
+  const [Password, setPassword] = useState<string>("");
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   return (
     <View style={styles.container}>
