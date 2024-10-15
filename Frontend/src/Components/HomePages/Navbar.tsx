@@ -27,7 +27,7 @@ export default function Navbar() {
 
       <View style={{ flexDirection: "row", gap: 25, marginRight: 20 }}>
         {/* Like Icon */}
-        <TouchableOpacity onPress={() => navigation.navigate("Likes")}>
+        <TouchableOpacity onPress={() => navigation.navigate("Notification")}>
           <Icon name="hearto" size={30} color={"white"} style={styles.icon} />
         </TouchableOpacity>
 

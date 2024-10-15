@@ -12,7 +12,7 @@ import Post from "./src/Components/Post/Posts";
 import Login from "./src/auth/Login";
 import Signup from "./src/auth/Signup";
 import Message from "./src/Components/Message/Message";
-import Like from "./src/Components/Like/Like";
+import Notification from "./src/Components/Notification/Notification";
 
 const Stack = createNativeStackNavigator();
 export type RootStackParamList = {
@@ -26,7 +26,7 @@ export type RootStackParamList = {
   Login: undefined;
   Signup: undefined;
   Messages: undefined;
-  Likes: undefined;
+  Notification: undefined;
 };
 
 export default function App() {
@@ -36,8 +36,8 @@ export default function App() {
         <Stack.Navigator
           screenOptions={{ headerShown: false }}
           // initialRouteName="Signup"
-          initialRouteName="Messages"
-          // initialRouteName="Home"
+          // initialRouteName="Messages"
+          initialRouteName="Home"
         >
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Profile" component={Profile} />
@@ -48,9 +48,7 @@ export default function App() {
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="Signup" component={Signup} />
           <Stack.Screen name="Messages" component={Message} />
-          <Stack.Screen name="Likes" component={Like} />
-
-   
+          <Stack.Screen name="Notification" component={Notification} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
