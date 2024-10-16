@@ -1,93 +1,99 @@
-import React, { useState, useEffect } from 'react';
+
 import {
-  Image,
-  ScrollView,
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
-  FlatList,
+  Image,
   Alert,
-  Modal,
-} from 'react-native';
-import * as MediaLibrary from 'expo-media-library';
-import { Ionicons } from '@expo/vector-icons';
+  FlatList,
+} from "react-native";
+import React, { useState, useEffect } from "react";
+import * as MediaLibrary from "expo-media-library";
+import { Video } from "expo-av";
+import {
+  Ionicons,
+  Entypo,
+  FontAwesome5,
+  MaterialIcons,
+} from "@expo/vector-icons";
 
 export default function AddPost() {
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [mediaItems, setMediaItems] = useState<MediaLibrary.Asset[]>([]);
-  const [folders, setFolders] = useState<MediaLibrary.Album[]>([]);
   const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
-  const [recentItems, setRecentItems] = useState<MediaLibrary.Asset[]>([]);
-  const [isModalVisible, setIsModalVisible] = useState(false); // Modal visibility
+  const [mediaType, setMediaType] = useState<"image" | "video">("image");
+  const [recentMedia, setRecentMedia] = useState<MediaLibrary.Asset[]>([]);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const [folders, setFolders] = useState<
+    { id: string; title: string; firstImage: string | null }[]
+  >([]);
+  const [isAlbumVisible, setIsAlbumVisible] = useState(false);
+  
 
-  // Request permission and fetch media
   useEffect(() => {
     (async () => {
       const { status } = await MediaLibrary.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
-      if (status === 'granted') {
-        await fetchMedia();
-       await fetchFolders();
+      setHasPermission(status === "granted");
+      if (status === "granted") {
+        await fetchRecentMedia();
+        await fetchFolders();
       } else {
-        Alert.alert('Permission needed', 'We need access to your media to proceed.');
+        Alert.alert(
+          "Permission needed",
+          "We need access to your media to proceed."
+        );
       }
     })();
   }, []);
 
-  // Fetch recent media from user's device
-  const fetchMedia = async () => {
+  const fetchRecentMedia = async (firstImages: number = 60) => {
     const media = await MediaLibrary.getAssetsAsync({
-      mediaType: ['photo', 'video'], // Fetch both images and videos
-      first: 20, // Fetch recent 20 media items
-      sortBy: [['creationTime', false]], // Sort by newest items
+      mediaType: ["photo", "video"],
+      first: firstImages,
+      sortBy: [["creationTime", false]],
     });
-     setRecentItems(media.assets);
-    setSelectedMedia(media.assets[0]?.uri); // Set the first image as default selected
+    setRecentMedia(media.assets);
+    setSelectedMedia(media.assets[0]?.uri);
+    setMediaType(media.assets[0]?.mediaType === "video" ? "video" : "image");
   };
 
-  // Fetch folders (albums) where media is stored
   const fetchFolders = async () => {
     const albums = await MediaLibrary.getAlbumsAsync();
-    setFolders(albums);
+    const folderWithImages = await Promise.all(
+      albums.map(async (album) => {
+        const albumMedia = await MediaLibrary.getAssetsAsync({
+          album: album.id,
+          mediaType: ["photo", "video"],
+          first: 1,
+        });
+        return {
+          id: album.id,
+          title: album.title,
+          firstImage: albumMedia.assets[0]?.uri || null,
+        };
+      })
+    );
+    setFolders(folderWithImages);
   };
 
-  // Fetch media from a selected folder
   const fetchMediaFromFolder = async (folderId: string) => {
     const media = await MediaLibrary.getAssetsAsync({
       album: folderId,
-      mediaType: ['photo', 'video'],
-      first: 20, // Fetch 20 items from folder
+      mediaType: ["photo", "video"],
+      first: 50,
     });
-    setMediaItems(media.assets);
-    setSelectedMedia(media.assets[0]?.uri); // Set the first image in the folder as default selected
+    setRecentMedia(media.assets);
+    setSelectedMedia(media.assets[0]?.uri);
+    setMediaType(media.assets[0]?.mediaType === "video" ? "video" : "image");
   };
 
-  // Handle media selection
-  const handleSelectMedia = (uri: string) => {
-    setSelectedMedia(uri);
+  const fetchAllVideos = async () => {
+    const media = await MediaLibrary.getAssetsAsync({
+      mediaType: ["video"],
+    });
+    setRecentMedia(media.assets);
+    setSelectedMedia(media.assets[0]?.uri);
+    setMediaType("video");
   };
-
-  // Handle folder selection from modal
-  const handleSelectFolder = (folderId: string) => {
-    fetchMediaFromFolder(folderId); // Fetch media for selected folder
-    setIsModalVisible(false); // Close modal after selecting folder
-  };
-
-  if (hasPermission === null) {
-    return (
-      <View>
-        <Text>Requesting permission...</Text>
-      </View>
-    );
-  }
-  if (hasPermission === false) {
-    return (
-      <View>
-        <Text>Permission to access media was denied.</Text>
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
@@ -102,73 +108,125 @@ export default function AddPost() {
         </TouchableOpacity>
       </View>
 
-      {/* Image Preview Section */}
-      <View style={styles.imagePreviewContainer}>
+      {/* Media Preview Section */}
+      <View style={styles.mediaPreviewContainer}>
         {selectedMedia ? (
-          <Image source={{ uri: selectedMedia }} style={styles.imagePreview} />
+          mediaType === "video" ? (
+            <Video
+              source={{ uri: selectedMedia }}
+              rate={1.0}
+              volume={1.0}
+              isMuted={false}
+              resizeMode="cover"
+              shouldPlay
+              isLooping
+              style={styles.mediaPreview}
+            />
+          ) : (
+            <Image
+              source={{ uri: selectedMedia }}
+              style={styles.mediaPreview}
+            />
+          )
         ) : (
-          <Text style={styles.imageText}>Select an image or video from your gallery</Text>
+          <Text style={styles.placeholderText}>
+            Select an image or video from your gallery
+          </Text>
         )}
       </View>
 
       {/* Recent Media Section */}
-      <Text style={styles.sectionTitle}>Recent Media</Text>
-      <FlatList
-        data={recentItems}
-        keyExtractor={(item) => item.id}
-        horizontal
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleSelectMedia(item.uri)}>
-            <Image source={{ uri: item.uri }} style={styles.galleryItem} />
-          </TouchableOpacity>
-        )}
-      />
+      <View style={styles.mediaContainer}>
+        <TouchableOpacity
+          style={styles.sectionHeader}
+          onPress={() => setIsAlbumVisible(!isAlbumVisible)}
+        >
+          <Text style={styles.sectionTitle}>Recent Media</Text>
+          <Entypo name="chevron-small-down" size={25} color={"white"} />
+        </TouchableOpacity>
+        <FlatList
+          data={recentMedia}
+          keyExtractor={(item) => item.id}
+          numColumns={4}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onPress={() => {
+                setSelectedMedia(item.uri);
+                setMediaType(item.mediaType === "video" ? "video" : "image");
+              }}
+            >
+              <Image source={{ uri: item.uri }} style={styles.galleryItem} />
+            </TouchableOpacity>
+          )}
+        />
+      </View>
 
-      {/* Folder Modal Section */}
-      <TouchableOpacity style={styles.openModalButton} onPress={() => setIsModalVisible(true)}>
-        <Text style={styles.openModalText}>Select Folder</Text>
-      </TouchableOpacity>
-
-      {/* Modal to display folders */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={isModalVisible}
-        onRequestClose={() => setIsModalVisible(false)}
-      >
+      {/* Album Modal */}
+      {isAlbumVisible && (
         <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select a Folder</Text>
-            <FlatList
-              data={folders}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.folderButton}
-                  onPress={() => handleSelectFolder(item.id)}
-                >
-                  <Text style={styles.folderText}>{item.title}</Text>
-                </TouchableOpacity>
-              )}
-            />
-            <TouchableOpacity onPress={() => setIsModalVisible(false)} style={styles.closeModalButton}>
-              <Text style={styles.closeModalText}>Close</Text>
+          <View style={styles.albumHeader}>
+            <TouchableOpacity onPress={() => setIsAlbumVisible(false)}>
+              <Text style={styles.cancelText}>Cancel</Text>
+            </TouchableOpacity>
+            <Text style={styles.selectAlbumText}>Select Album</Text>
+          </View>
+
+          {/* Options for Recent, Photos, and Videos */}
+          <View style={styles.albumOptions}>
+            <TouchableOpacity
+              style={styles.option}
+              onPress={() => {
+                fetchRecentMedia();
+                setIsAlbumVisible(false);
+              }}
+            >
+              <FontAwesome5 name="photo-video" size={25} color="white" />
+              <Text style={styles.optionText}>Recent</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.option}
+              onPress={() => {
+                fetchRecentMedia(1000);
+                setIsAlbumVisible(false);
+              }}
+            >
+              <MaterialIcons name="photo" size={25} color="white" />
+              <Text style={styles.optionText}>Photos</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.option}
+              onPress={() => {
+                fetchAllVideos();
+                setIsAlbumVisible(false);
+              }}
+            >
+              <FontAwesome5 name="photo-video" size={25} color="white" />
+              <Text style={styles.optionText}>Videos</Text>
             </TouchableOpacity>
           </View>
-        </View>
-      </Modal>
 
-      {/* Gallery Grid to display images/videos from the selected folder */}
-      <FlatList
-        data={mediaItems}
-        keyExtractor={(item) => item.id}
-        numColumns={2} // Adjust the number of columns for grid view
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleSelectMedia(item.uri)}>
-            <Image source={{ uri: item.uri }} style={styles.galleryItem} />
-          </TouchableOpacity>
-        )}
-      />
+          {/* Album List */}
+          <FlatList
+            numColumns={4}
+            data={folders}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={{ width: "25%" }}
+                onPress={() => fetchMediaFromFolder(item.id)}
+              >
+                <Image
+                  source={{ uri: item.firstImage }}
+                  style={styles.galleryItem}
+                />
+                <Text style={styles.albumTitle}>{item.title}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      )}
     </View>
   );
 }
@@ -176,104 +234,100 @@ export default function AddPost() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000', // Background black
+    backgroundColor: "#0d0d0d",
+    paddingTop: 20,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 15,
-    paddingHorizontal: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 15,
+    backgroundColor: "#1a1a1a",
   },
   headerText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff', // White text
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#fff",
   },
   iconButton: {
     padding: 5,
   },
-  imagePreviewContainer: {
-    height: 300,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f7f7f7',
-    marginVertical: 15,
-    borderRadius: 10,
+  mediaPreviewContainer: {
+    height: "40%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#212121",
+    borderRadius: 15,
   },
-  imagePreview: {
-    width: '90%',
-    height: '80%',
-    borderRadius: 10,
+  mediaPreview: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
   },
-  imageText: {
-    marginTop: 10,
-    color: '#666',
+  placeholderText: {
+    color: "#fff",
+    textAlign: "center",
   },
-  galleryItem: {
-    width: 100,
-    height: 100,
-    margin: 2,
-    borderRadius: 5,
+  mediaContainer: {
+    height: "60%",
+    padding: 10,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
   },
   sectionTitle: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginVertical: 10,
-    marginLeft: 10,
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#fff",
   },
-  openModalButton: {
-    backgroundColor: '#333',
-    padding: 10,
+  galleryItem: {
+    width: 90,
+    height: 90,
+    margin: 5,
     borderRadius: 5,
-    marginHorizontal: 10,
-    marginBottom: 10,
-  },
-  openModalText: {
-    color: '#fff',
-    textAlign: 'center',
   },
   modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "#292929",
+    paddingTop: 50,
+    paddingHorizontal: 10,
   },
-  modalContent: {
-    width: '80%',
-    backgroundColor: '#fff',
+  albumHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     padding: 20,
-    borderRadius: 10,
   },
-  modalTitle: {
+  cancelText: {
+    color: "#fff",
     fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
   },
-  folderButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    backgroundColor: '#f7f7f7',
-    marginVertical: 5,
-    borderRadius: 5,
+  selectAlbumText: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "bold",
   },
-  folderText: {
-    fontSize: 16,
-    color: '#000',
+  albumOptions: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginVertical: 20,
   },
-  closeModalButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    backgroundColor: '#3897f0',
-    marginTop: 10,
-    borderRadius: 5,
+  option: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
   },
-  closeModalText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: 'bold',
+  optionText: {
+    color: "#fff",
+    marginLeft: 10,
+  },
+  albumTitle: {
+    color: "#fff",
+    textAlign: "center",
+    marginTop: 5,
   },
 });
