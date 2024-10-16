@@ -1,151 +1,331 @@
-import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
   Image,
-  TextInput,
+  Alert,
+  FlatList,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
+import React, { useState, useEffect } from "react";
+import * as MediaLibrary from "expo-media-library";
+import {
+  Ionicons,
+  Entypo,
+  FontAwesome5,
+  MaterialIcons,
+} from "@expo/vector-icons";
 
 export default function AddPost() {
-  const [mediaUri, setMediaUri] = useState<string | null>(null);
-  const [caption, setCaption] = useState<string>("");
+  const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
+  const [recentMedia, setRecentMedia] = useState<MediaLibrary.Asset[]>([]);
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const [folders, setFolders] = useState<
+    { id: string; title: string; firstImage: string | null }[]
+  >([]);
+  const [isalbumshow, setIsalbumshow] = useState(false);
 
-  // Function to pick media (images or videos)
-  const pickMedia = async () => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
+  useEffect(() => {
+    (async () => {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      setHasPermission(status === "granted");
+      if (status === "granted") {
+        await fetchRecentMedia();
+        await fetchFolders();
+      } else {
+        Alert.alert(
+          "Permission needed",
+          "We need access to your media to proceed."
+        );
+      }
+    })();
+  }, []);
 
-    if (permissionResult.granted === false) {
-      alert("Permission to access media library is required!");
-      return;
-    }
-
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      quality: 1,
+  const fetchRecentMedia = async () => {
+    const media = await MediaLibrary.getAssetsAsync({
+      mediaType: ["photo", "video"],
+      first: 100,
+      sortBy: [["creationTime", false]],
     });
-
-    if (!result.canceled) {
-      setMediaUri(result.assets[0].uri);
-    }
+    setRecentMedia(media.assets);
+    setSelectedMedia(media.assets[0]?.uri);
   };
 
-  // Function to handle the post submission
-  const handlePost = () => {
-    if (!mediaUri || !caption) {
-      alert("Please select media and add a caption");
-      return;
-    }
-    alert("Post submitted successfully!");
+  const fetchFolders = async () => {
+    const albums = await MediaLibrary.getAlbumsAsync();
+
+    const folderWithImages = await Promise.all(
+      albums.map(async (album) => {
+        const albumMedia = await MediaLibrary.getAssetsAsync({
+          album: album.id,
+          mediaType: ["photo", "video"],
+          first: 1,
+        });
+        return {
+          id: album.id,
+          title: album.title,
+          firstImage: albumMedia.assets[0]?.uri || null,
+        };
+      })
+    );
+    setFolders(folderWithImages);
   };
 
+  const fetchMediaFromFolder = async (folderId: string) => {
+    const media = await MediaLibrary.getAssetsAsync({
+      album: folderId,
+      mediaType: ["photo", "video"],
+      first: 50, // Fetch 20 items from folder
+    });
+    setRecentMedia(media.assets);
+    setSelectedMedia(media.assets[0]?.uri); // Set the first image in the folder as default selected
+  };
+
+  const handleablumClick = (item: any) => {
+    fetchMediaFromFolder(item.id);
+    setIsalbumshow(false);
+  };
+  
   return (
     <View style={styles.container}>
+      {/* Header Section */}
       <View style={styles.header}>
-        <Image
-          source={{ uri: "https://via.placeholder.com/40" }} // Replace with your profile image URL
-          style={styles.profileImage}
-        />
-        <Text style={styles.headerText}>Create New Post</Text>
+        <TouchableOpacity style={styles.iconButton}>
+          <Ionicons name="close" size={28} color="white" />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>New Post</Text>
+        <TouchableOpacity style={styles.iconButton}>
+          <Ionicons name="arrow-forward" size={28} color="#3897f0" />
+        </TouchableOpacity>
       </View>
 
-      {/* Media Preview */}
-      <TouchableOpacity onPress={pickMedia} style={styles.mediaContainer}>
-        {mediaUri ? (
-          <Image source={{ uri: mediaUri }} style={styles.mediaPreview} />
+      {/* Image Preview Section */}
+      <View style={styles.imagePreviewContainer}>
+        {selectedMedia ? (
+          <Image source={{ uri: selectedMedia }} style={styles.imagePreview} />
         ) : (
-          <View style={styles.placeholderContainer}>
-            <Text style={styles.placeholderText}>Select an image or video</Text>
-          </View>
+          <Text style={styles.imageText}>
+            Select an image or video from your gallery
+          </Text>
         )}
-      </TouchableOpacity>
+      </View>
 
-      {/* Caption Input */}
-      <TextInput
-        placeholder="Write a caption..."
-        placeholderTextColor="gray"
-        value={caption}
-        onChangeText={setCaption}
-        style={styles.captionInput}
-        multiline
-      />
+      {/* Recent Media Section */}
+      <View style={styles.mediaContainer}>
+        <TouchableOpacity
+          style={styles.sectionHeader}
+          onPress={() => setIsalbumshow(!isalbumshow)}
+        >
+          <Text style={styles.sectionTitle}>Recent Media</Text>
+          <Entypo name="chevron-small-down" size={25} color={"white"} />
+        </TouchableOpacity>
+        <FlatList
+          data={recentMedia}
+          keyExtractor={(item) => item.id}
+          numColumns={4}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => setSelectedMedia(item.uri)}>
+              <Image source={{ uri: item.uri }} style={styles.galleryItem} />
+            </TouchableOpacity>
+          )}
+        />
+      </View>
 
-      {/* Submit Button */}
-      <TouchableOpacity onPress={handlePost} style={styles.postButton}>
-        <Text style={styles.postButtonText}>Post</Text>
-      </TouchableOpacity>
+      {isalbumshow && (
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}></View>
+
+          <View style={styles.albumHeader}>
+            <TouchableOpacity
+              onPress={() => {
+                setIsalbumshow(false);
+              }}
+            >
+              <Text style={styles.cancelText}>Cancel</Text>
+            </TouchableOpacity>
+            <Text style={styles.selectAlbumText}>Select Album</Text>
+          </View>
+
+          <View style={styles.albumOptions}>
+            <View style={styles.option}>
+              <FontAwesome5 name="photo-video" size={25} color="white" />
+              <Text style={styles.optionText}>Recent</Text>
+            </View>
+            <View style={styles.option}>
+              <MaterialIcons name="photo" size={25} color="white" />
+              <Text style={styles.optionText}>Photos</Text>
+            </View>
+            <View style={styles.option}>
+              <FontAwesome5 name="photo-video" size={25} color="white" />
+              <Text style={styles.optionText}>Videos</Text>
+            </View>
+          </View>
+
+          <View style={styles.albumsSection}>
+            <Text style={styles.albumsTitle}>Albums</Text>
+            <TouchableOpacity>
+              <Text style={styles.seeAllText}>See all</Text>
+            </TouchableOpacity>
+          </View>
+
+          <FlatList
+            numColumns={4}
+            data={folders}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={{ width: "25%" }}
+                onPress={() => {
+                  handleablumClick(item);
+                }}
+              >
+                <Image
+                  source={{ uri: item.firstImage }}
+                  style={styles.galleryItem}
+                />
+                <Text style={{ color: "white" }}>{item.title}</Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
     flex: 1,
-    backgroundColor: "black",
-    padding: 20,
+    backgroundColor: "#0d0d0d",
+    paddingTop: 20,
+    position: "relative",
   },
   header: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
-  },
-  profileImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    backgroundColor: "#1a1a1a",
+    borderBottomWidth: 1,
+    borderBottomColor: "#444",
   },
   headerText: {
     fontSize: 20,
     fontWeight: "bold",
+    color: "#fff",
   },
-  mediaContainer: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 10,
-    height: 250,
+  iconButton: {
+    padding: 5,
+  },
+  imagePreviewContainer: {
+    height: "40%",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 20,
-    backgroundColor: "#f9f9f9",
+    marginVertical: 15,
+    borderRadius: 15,
+    overflow: "hidden",
+    backgroundColor: "#212121",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  mediaPreview: {
+  imagePreview: {
     width: "100%",
     height: "100%",
-    borderRadius: 10,
+    resizeMode: "cover",
   },
-  placeholderContainer: {
-    justifyContent: "center",
-    alignItems: "center",
+  imageText: {
+    color: "#fff",
+    textAlign: "center",
   },
-  placeholderText: {
-    color: "gray",
-    fontSize: 16,
-  },
-  captionInput: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 10,
+  mediaContainer: {
+    width: "100%",
+    height: "60%",
+    backgroundColor: "#121212",
     padding: 10,
-    color: "#000",
-    fontSize: 16,
-    marginBottom: 20,
-    backgroundColor: "#f9f9f9",
-  },
-  postButton: {
-    backgroundColor: "#1a73e8", // Instagram-like blue color for the button
-    paddingVertical: 15,
     borderRadius: 10,
-    alignItems: "center",
+    marginBottom: 10,
   },
-  postButtonText: {
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    marginBottom: 10,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  galleryItem: {
+    width: 90,
+    height: 90,
+    margin: 5,
+    borderRadius: 5,
+    backgroundColor: "#333",
+  },
+  modalContainer: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: "#292929",
+    position: "absolute",
+    zIndex: 10,
+    top: 0,
+    left: 0,
+    paddingTop: 50,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+  },
+  modalHeader: {
+    width: 60,
+    height: 4,
+    backgroundColor: "#f7f7f7",
+    alignSelf: "center",
+    marginBottom: 20,
+  },
+  albumHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  cancelText: {
+    color: "#fff",
+    fontSize: 18,
+  },
+  selectAlbumText: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  albumOptions: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginVertical: 20,
+  },
+  option: {
+    alignItems: "center",
+    gap: 8,
+  },
+  optionText: {
+    color: "#fff",
+  },
+  albumsSection: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  albumsTitle: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  seeAllText: {
+    color: "#3897f0",
   },
 });
