@@ -118,82 +118,13 @@ export const Signup = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
-// export const Login = async (req: Request, res: Response): Promise<any> => {
-//   console.log("req.body is ", req.body);
-//   try {
-
-//     const { email, password } = req.body;
-//   console.log("email is ", email);
-//   console.log("password is ", password);
-
-//   if (!email || !password) {
-//     return res.status(400).json({
-//       success: false,
-//       message: "All fields are required",
-//     });
-//   }
-
-//   const isUserExist = await User.findOne({ email: email });
-//   if (!isUserExist) {
-//     return res.status(400).json({
-//       success: false,
-//       message: "User not found",
-//     });
-//   }
-
-//   const isPasswordMatch = await bcrypt.compare(password, isUserExist.password);
-//   if (!isPasswordMatch) {
-//     return res.status(400).json({
-//       success: false,
-//       message: "Invalid password",
-//     });
-//   }
-
-//   const payload = {
-//     id: isUserExist._id,
-//     email: isUserExist.email,
-//   };
-
-//   const JWT_SECRET = process.env.JWT_SECRET;
-//   if (!JWT_SECRET) {
-//     return res.status(500).json({
-//       success: false,
-//       message: "JWT secret is not defined",
-//     });
-//   }
-
-//   const token = jwt.sign(payload,JWT_SECRET,{
-//     expiresIn:"2h"
-//   })
-//  const user =  isUserExist.toObject();
-//    user.token = token;
-//    user.password = "",
-
-//  return res.status(200).json({
-//     success: true,
-//     message: "User logged in successfully",
-//     data :user
-//   })
-
-//   } catch (error) {
-//      console.log("could not login the user", error);
-//     return res.status(500).json({
-//       success: false,
-//       message: "could not login the user",
-//     });
-//   }
-// };
-
 export const Login = async (req: Request, res: Response): Promise<any> => {
   console.log("req.body is ", req.body);
-
   try {
     const { email, password } = req.body;
-
     console.log("email is ", email);
     console.log("password is ", password);
 
-    // Validate if email and password are provided
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -201,7 +132,6 @@ export const Login = async (req: Request, res: Response): Promise<any> => {
       });
     }
 
-    // Check if the user exists
     const isUserExist = await User.findOne({ email: email });
     if (!isUserExist) {
       return res.status(400).json({
@@ -210,7 +140,6 @@ export const Login = async (req: Request, res: Response): Promise<any> => {
       });
     }
 
-    // Check if the password is correct
     const isPasswordMatch = await bcrypt.compare(
       password,
       isUserExist.password
@@ -222,13 +151,11 @@ export const Login = async (req: Request, res: Response): Promise<any> => {
       });
     }
 
-    // Prepare the payload for the JWT token
     const payload = {
       id: isUserExist._id,
       email: isUserExist.email,
     };
 
-    // Ensure JWT secret is defined
     const JWT_SECRET = process.env.JWT_SECRET;
     if (!JWT_SECRET) {
       return res.status(500).json({
@@ -237,27 +164,23 @@ export const Login = async (req: Request, res: Response): Promise<any> => {
       });
     }
 
-    // Generate JWT token
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "2h" });
+    const token = jwt.sign(payload, JWT_SECRET, {
+      expiresIn: "2h",
+    });
+    const user = isUserExist.toObject();
+    user.token = token;
+    user.password = "";
 
-    // Create a new response object (to avoid mutating the original user object)
-    const userResponse = {
-      ...isUserExist.toObject(), // Convert Mongoose document to plain JavaScript object
-      token, // Add the generated token
-      password: "", // Remove the password from the response
-    };
-
-    // Return the response with the user data and token
     return res.status(200).json({
       success: true,
       message: "User logged in successfully",
-      data: userResponse,
+      data: user,
     });
   } catch (error) {
     console.log("could not login the user", error);
     return res.status(500).json({
       success: false,
-      message: "Could not log in the user",
+      message: "could not login the user",
     });
   }
 };

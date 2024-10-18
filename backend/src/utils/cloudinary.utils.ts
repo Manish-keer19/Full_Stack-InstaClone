@@ -1,4 +1,8 @@
-import { v2 as cloudinary, UploadApiOptions, UploadApiResponse } from "cloudinary";
+import {
+  v2 as cloudinary,
+  UploadApiOptions,
+  UploadApiResponse,
+} from "cloudinary";
 
 // Define the type for the function parameters
 interface UploadInCloudinaryParams {
@@ -31,7 +35,7 @@ export const uploadInCloudinary = async ({
       return await cloudinary.uploader.upload(data, options);
     } catch (error) {
       console.log("Some error occurred during the file upload to Cloudinary");
-      console.log("Error in Cloudinary is:", (error as Error).message);
+      console.log("Error in Cloudinary is:", error);
       throw error; // Rethrow the error after logging
     }
   } else {
@@ -41,7 +45,9 @@ export const uploadInCloudinary = async ({
       }
       return await cloudinary.uploader.destroy(publicId);
     } catch (error) {
-      console.log("Some error occurred during the file deletion from Cloudinary");
+      console.log(
+        "Some error occurred during the file deletion from Cloudinary"
+      );
       console.log("Error in Cloudinary is:", (error as Error).message);
       throw error; // Rethrow the error after logging
     }

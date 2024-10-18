@@ -12,40 +12,41 @@ export const authentication = (
   res: Response,
   next: NextFunction
 ): void => {
+  // Correct return type as void
   try {
-    // Fetch the token from the body or Authorization header
     const token =
       req.body.token || req.header("Authorization")?.replace("Bearer ", "");
+    // console.log("Authorization header:", req.header("Authorization"));
+    // console.log("Extracted token:", token);
 
-    // If token is missing, return a response
     if (!token) {
       res.status(400).json({
         success: false,
         message: "Token not found",
       });
-      return; // Exit the middleware
+      return; // Use return here to exit the function without returning the response object
     }
 
-    // Verify the token
     const JWT_SECRET = process.env.JWT_SECRET;
     if (!JWT_SECRET) {
       throw new Error("JWT secret is not defined");
     }
 
-    const payload = jwt.verify(token, JWT_SECRET) as JwtPayload;
+    const payload = jwt.verify(token, JWT_SECRET);
 
-    // Attach the payload to the request object
-    req.user = payload;
+    // Check if payload is of type JwtPayload
+    if (typeof payload === "object") {
+      req.user = payload as JwtPayload;
+    }
 
-    // Proceed to the next middleware only after successful verification
     next();
   } catch (error) {
     console.error("Error during authentication:", error);
     res.status(500).json({
       success: false,
       message: "Something went wrong while verifying the token",
-      error: (error as Error).message,
+      // error: (error as Error).message,
     });
-    return; // Exit the middleware
+    return; // Use return to exit the function here too
   }
 };

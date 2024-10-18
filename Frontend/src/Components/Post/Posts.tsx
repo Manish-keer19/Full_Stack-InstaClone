@@ -26,7 +26,7 @@ export default function Posts() {
               <View style={styles.profileInfo}>
                 <Image
                   source={{
-                    uri: "https://res.cloudinary.com/manish19/image/upload/v1726505860/huur9oubvhlwi9sqw0go.jpg",
+                    uri: images[0].uri,
                   }}
                   style={styles.avatar}
                 />

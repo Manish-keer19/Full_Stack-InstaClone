@@ -623,7 +623,8 @@ const styles = StyleSheet.create({
   mediaPreview: {
     width: "100%",
     height: "100%",
-    resizeMode: "cover",
+    // resizeMode: "cover",
+    resizeMode: "contain",
   },
   placeholderText: {
     color: "#fff",
