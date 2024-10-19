@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
-
+import { User } from "./User.model";
+import { Post } from "./Post.model";
 const LikesSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
@@ -11,4 +12,4 @@ const LikesSchema = new Schema({
   },
 });
 
-export const Like= mongoose.model("Likes", LikesSchema);
+export const Like = mongoose.model("Likes", LikesSchema);

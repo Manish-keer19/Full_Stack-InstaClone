@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const LikesSchema = new Schema({
+const commentShema = new Schema({
   comment: {
     type: String,
   },
@@ -16,4 +16,4 @@ const LikesSchema = new Schema({
   subcomment: [{ type: Schema.Types.ObjectId, ref: "Subcomment" }],
 });
 
-export const Likes = mongoose.model("Likes", LikesSchema);
+export const Comment = mongoose.model("Comment", commentShema);

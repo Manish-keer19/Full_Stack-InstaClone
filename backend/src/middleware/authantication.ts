@@ -34,6 +34,8 @@ export const authentication = (
 
     const payload = jwt.verify(token, JWT_SECRET);
 
+    console.log("payload in authantication", payload);
+
     // Check if payload is of type JwtPayload
     if (typeof payload === "object") {
       req.user = payload as JwtPayload;

@@ -132,7 +132,8 @@ export const Login = async (req: Request, res: Response): Promise<any> => {
       });
     }
 
-    const isUserExist = await User.findOne({ email: email });
+    const isUserExist = await User.findOne({ email: email }, {}, { new: true });
+    console.log("isuserExitst is ", isUserExist);
     if (!isUserExist) {
       return res.status(400).json({
         success: false,
@@ -170,6 +171,8 @@ export const Login = async (req: Request, res: Response): Promise<any> => {
     const user = isUserExist.toObject();
     user.token = token;
     user.password = "";
+
+    console.log("user is ",user);
 
     return res.status(200).json({
       success: true,
