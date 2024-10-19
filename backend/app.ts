@@ -8,6 +8,7 @@ import authRoute from "./src/router/auth.route";
 import fileUpload from "express-fileupload";
 import Postroute from "./src/router/post.route";
 import likeRoute from "./src/router/Like.route";
+import commentRoute from "./src/router/comment.route";
 
 dotenv.config(); // Load environment variables from .env file
 
@@ -35,6 +36,7 @@ app.use("/api/v1/profile", profileRoute); // Profile routes
 app.use("/api/v1/auth", authRoute); // Auth routes
 app.use("/api/v1/post", Postroute); // Post routes
 app.use("/api/v1/like", likeRoute); // Like routes
+app.use("/api/v1/comment", commentRoute); // comment routes
 
 // Basic root route
 app.get("/", (req: Request, res: Response) => {
