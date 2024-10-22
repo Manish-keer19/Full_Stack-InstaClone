@@ -8,8 +8,11 @@ import {
 import React, { useState } from "react";
 import Footer from "../Components/Footer";
 import { AuthServiceInstance } from "../services/authServices";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../../Entryroute";
 
 export default function Signup() {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [step, setStep] = useState(1);
   const [email, setemail] = useState<string>("");
   const [password, setpassword] = useState<string>("");
@@ -29,7 +32,7 @@ export default function Signup() {
 
         console.log("res is ", res);
         if (res) {
-          alert("signupd succesfully");
+          navigation.navigate("Login");
         }
       } catch (error) {
         console.log("error", error);
@@ -37,7 +40,6 @@ export default function Signup() {
       }
     }
   };
-
   const handleGenerateOtp = async () => {
     const data = { email };
     console.log("data is ", data);

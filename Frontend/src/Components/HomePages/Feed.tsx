@@ -9,117 +9,68 @@ import {
   Animated,
   Keyboard,
 } from "react-native";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import EntypoIcon from "react-native-vector-icons/Entypo";
 import AntDesignIcon from "react-native-vector-icons/AntDesign";
 import OcticonsIcons from "react-native-vector-icons/Octicons";
 import FeatherIcons from "react-native-vector-icons/Feather";
-import { images } from "../../Utils/imagedata";
+import { useSelector } from "react-redux";
 
 interface PostData {
   likes: number;
-  views: number;
   comments: number;
   liked: boolean;
   saved: boolean;
   userComment: string;
 }
+
 export default function Feed() {
-  const [posts, setPosts] = useState<PostData[]>(
-    [...Array(images.length)].map(() => ({
-      likes: 120,
-      views: 350,
-      comments: 15,
-      liked: false,
-      saved: false,
-      userComment: "",
-    }))
-  );
+  const user = useSelector((state: any) => state.User.user);
+  const [posts, setPosts] = useState<any[]>([]);
 
-  const animatedValues = useRef(posts.map(() => new Animated.Value(1))).current;
-
-  const toggleLike = (index: number) => {
-    const updatedPosts = [...posts];
-    updatedPosts[index].liked = !updatedPosts[index].liked;
-    updatedPosts[index].likes += updatedPosts[index].liked ? 1 : -1;
-    setPosts(updatedPosts);
-
-    // Animate the like button
-    Animated.timing(animatedValues[index], {
-      toValue: 1.2,
-      duration: 150,
-      useNativeDriver: true,
-    }).start(() => {
-      Animated.timing(animatedValues[index], {
-        toValue: 1,
-        duration: 150,
-        useNativeDriver: true,
-      }).start();
-    });
-  };
-
-  const toggleSave = (index: number) => {
-    const updatedPosts = [...posts];
-    updatedPosts[index].saved = !updatedPosts[index].saved;
-    setPosts(updatedPosts);
-  };
-
-  const handleCommentChange = (text: string, index: number) => {
-    const updatedPosts = [...posts];
-    updatedPosts[index].userComment = text;
-    setPosts(updatedPosts);
-  };
-
-  const submitComment = (index: number) => {
-    const updatedPosts = [...posts];
-    if (updatedPosts[index].userComment.trim()) {
-      updatedPosts[index].comments += 1;
-      updatedPosts[index].userComment = "";
-      setPosts(updatedPosts);
-      Keyboard.dismiss(); // Close the keyboard after submitting
+  useEffect(() => {
+    if (user) {
+      setPosts(user.posts);
     }
-  };
+  }, [user]);
 
   return (
     <ScrollView style={styles.postWrapper}>
       {posts.map((post, i) => (
-        <View style={styles.postContainer} key={i}>
+        <View style={styles.postContainer} key={post._id}>
           {/* Header */}
           <View style={styles.postHeader}>
             <View style={styles.profileInfo}>
               <Image
                 style={styles.avatar}
                 source={{
-                  // uri: "https://res.cloudinary.com/manish19/image/upload/v1726506341/ftedkmcuqzwy97jwjdqu.jpg",
                   uri: "https://instagram.fbho1-2.fna.fbcdn.net/v/t51.2885-19/461331682_472430802608818_3421248288983675499_n.jpg?_nc_ht=instagram.fbho1-2.fna.fbcdn.net&_nc_cat=110&_nc_ohc=vrHwx345BOUQ7kNvgElnLd8&_nc_gid=fc3db61eeb4e41cb8b3f258080dff8e3&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AYCvqu5feO0OpfrFrURbO96rkz7Y_tvtutUcJRuLAly-Yg&oe=670EC499&_nc_sid=7a9f4b",
                 }}
               />
-              <Text style={styles.username}>Manish keer</Text>
+              <Text style={styles.username}>Manish Keer</Text>
             </View>
             <EntypoIcon name="dots-three-vertical" size={18} color={"white"} />
           </View>
 
           {/* Post Image */}
           <View style={styles.postImageWrapper}>
-            <Image style={styles.postImage} source={images[i]} />
+            <Image
+              style={styles.postImage}
+              source={{ uri: post.image }} // Image from post data
+            />
           </View>
 
           {/* Action Icons */}
           <View style={styles.postActionsWrapper}>
             <View style={styles.leftIcons}>
               <Pressable
-                onPress={() => toggleLike(i)}
                 style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]}
               >
-                <Animated.View
-                  style={{ transform: [{ scale: animatedValues[i] }] }}
-                >
-                  <AntDesignIcon
-                    name={post.liked ? "heart" : "hearto"}
-                    color={post.liked ? "red" : "white"}
-                    size={24}
-                  />
-                </Animated.View>
+                <AntDesignIcon
+                  name={post.liked ? "heart" : "hearto"}
+                  color={post.liked ? "red" : "white"}
+                  size={24}
+                />
               </Pressable>
 
               <Pressable
@@ -136,7 +87,6 @@ export default function Feed() {
             </View>
 
             <Pressable
-              onPress={() => toggleSave(i)}
               style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
             >
               <FeatherIcons
@@ -147,14 +97,22 @@ export default function Feed() {
             </Pressable>
           </View>
 
-          {/* Like and View Count */}
+          {/* Like and Comment Count */}
           <View style={styles.postInfoWrapper}>
-            <Text style={styles.postInfoText}>{post.likes} likes</Text>
-            <Text style={styles.postInfoText}>{post.views} views</Text>
+            <Text style={styles.postInfoText}>{post.likes.length} likes</Text>
+            <Text style={styles.postInfoText}>
+              {post.comment.length} comments
+            </Text>
           </View>
 
-          {/* Comment Count */}
-          <Text style={styles.commentCount}>{post.comments} comments</Text>
+          {/* Post Caption */}
+          <Text style={styles.postDescription}>
+            <Text style={styles.username}>Manish Keer </Text>
+            {post.caption}
+          </Text>
+
+          {/* Location */}
+          <Text style={styles.postLocation}>{post.location}</Text>
 
           {/* Comment Input */}
           <View style={styles.commentInputWrapper}>
@@ -162,17 +120,9 @@ export default function Feed() {
               style={styles.commentInput}
               placeholder="Add a comment..."
               placeholderTextColor="gray"
-              value={post.userComment}
-              onChangeText={(text) => handleCommentChange(text, i)}
-              onSubmitEditing={() => submitComment(i)}
+              value={post.userComment || ""}
             />
           </View>
-
-          {/* Post Description */}
-          <Text style={styles.postDescription}>
-            <Text style={styles.username}>Manish keer </Text>
-            Enjoying the view! #travel #landscape
-          </Text>
         </View>
       ))}
     </ScrollView>
@@ -188,12 +138,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 10,
     overflow: "hidden",
-    backgroundColor: "black", // Slightly lighter background for the post
-    shadowColor: "#000", // Shadow for depth effect
+    backgroundColor: "black",
+    shadowColor: "#000",
     shadowOpacity: 0.8,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
-    elevation: 5, // Shadow for Android
+    elevation: 5,
   },
   postHeader: {
     flexDirection: "row",
@@ -242,10 +192,14 @@ const styles = StyleSheet.create({
   postInfoText: {
     color: "white",
   },
-  commentCount: {
+  postDescription: {
     color: "white",
+    padding: 10,
+  },
+  postLocation: {
+    color: "gray",
     paddingHorizontal: 10,
-    marginTop: 5,
+    paddingBottom: 5,
   },
   commentInputWrapper: {
     padding: 10,
@@ -254,10 +208,6 @@ const styles = StyleSheet.create({
     color: "white",
     padding: 10,
     borderRadius: 5,
-    backgroundColor: "#333", // Dark background for input
-  },
-  postDescription: {
-    color: "white",
-    padding: 10,
+    backgroundColor: "#333",
   },
 });

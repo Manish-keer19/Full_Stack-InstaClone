@@ -1,3 +1,4 @@
+import { profile } from "console";
 import mongoose, { Schema } from "mongoose";
 
 const userschema = new Schema({
@@ -11,10 +12,11 @@ const userschema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Profile",
   },
+  profilePic: { type: String },
   posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
-  likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  likes: [{ type: Schema.Types.ObjectId, ref: "Like" }],
   comment: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
-  saved: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  saved: [{ type: Schema.Types.ObjectId, ref: "Post" }],
   location: String,
 });
 

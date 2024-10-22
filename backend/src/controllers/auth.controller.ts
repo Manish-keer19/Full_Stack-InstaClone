@@ -102,6 +102,7 @@ export const Signup = async (req: Request, res: Response): Promise<any> => {
       username: username,
       email: email,
       password: hashedPassword,
+      profilePic: `https://ui-avatars.com/api/?name=${username}+${username}&background=random&color=000`,
     });
 
     return res.status(200).json({
@@ -132,7 +133,12 @@ export const Login = async (req: Request, res: Response): Promise<any> => {
       });
     }
 
-    const isUserExist = await User.findOne({ email: email }, {}, { new: true });
+    const isUserExist = await User.findOne({ email: email }, {}, { new: true })
+      .populate("posts")
+      .populate("likes")
+      .populate("comment")
+      .populate("saved")
+      .exec();
     console.log("isuserExitst is ", isUserExist);
     if (!isUserExist) {
       return res.status(400).json({
@@ -166,13 +172,13 @@ export const Login = async (req: Request, res: Response): Promise<any> => {
     }
 
     const token = jwt.sign(payload, JWT_SECRET, {
-      expiresIn: "2h",
+      expiresIn: "1d",
     });
     const user = isUserExist.toObject();
     user.token = token;
     user.password = "";
 
-    console.log("user is ",user);
+    console.log("user is ", user);
 
     return res.status(200).json({
       success: true,

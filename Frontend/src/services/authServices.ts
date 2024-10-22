@@ -84,6 +84,27 @@ class AuthService {
       console.log("Could not generate OTP, some error occurred");
     }
   }
+  async login(data: object) {
+    console.log("data in login authservice", data);
+    try {
+      const res = await apiClient.post("/auth/login", data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("res.data of login", res.data);
+      if (res.data.success) {
+        console.log("login completed");
+        return res.data;
+      } else {
+        console.log("could not login", res.data.message);
+      }
+    } catch (error) {
+      console.log("could not login", error);
+    
+    }
+  }
 }
 
 // Export the AuthService instance

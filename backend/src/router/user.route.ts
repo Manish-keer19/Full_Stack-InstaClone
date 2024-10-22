@@ -1,8 +1,5 @@
 import { Router } from "express";
-import {
-  createUser,
-  getuserdata,
-} from "../controllers/User.controller";
+import { getuserFulldata } from "../controllers/User.controller";
 
 const userRoute = Router();
 
@@ -11,7 +8,5 @@ userRoute.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-// POST route to create a user
-userRoute.post("/CreateUser", createUser);
-userRoute.post("/getuserdata", getuserdata);
+userRoute.post("/getuserFulldata", getuserFulldata);
 export default userRoute;

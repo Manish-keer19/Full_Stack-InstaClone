@@ -14,8 +14,8 @@ export const createPost = async (req: any, res: any) => {
     const { caption, location } = req.body;
     console.log("caption is ", caption);
     console.log("location is ", location);
-    console.log("req.files is ", req.files.image);
-    const image = req.files.image;
+    console.log("req.files is ", req.files);
+    const image = req.files.image ? req.files.image : null;
     console.log("image is ", image);
     // validate it
     if (!caption || !location || !image) {
@@ -35,8 +35,19 @@ export const createPost = async (req: any, res: any) => {
       caption: caption,
       image: imgres?.secure_url,
       location: location,
-      user: req.user._id,
+      user: req.user.id,
     });
+
+    // add post id to user
+    const newUser = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        $push: { posts: newPost._id },
+      },
+      { new: true }
+    );
+    console.log("new user is ", newUser);
+
     // return res
     return res.status(200).json({
       success: true,

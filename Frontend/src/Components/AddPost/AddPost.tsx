@@ -375,8 +375,13 @@ import {
   FontAwesome5,
   MaterialIcons,
 } from "@expo/vector-icons";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../../../App";
 
 export default function AddPost() {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+  const [file, setFile] = useState<object | null>();
   const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<"image" | "video">("image");
   const [recentMedia, setRecentMedia] = useState<MediaLibrary.Asset[]>([]);
@@ -409,6 +414,7 @@ export default function AddPost() {
       sortBy: [["creationTime", false]],
     });
     setRecentMedia(media.assets);
+    setFile(media.assets[0]);
     setSelectedMedia(media.assets[0]?.uri);
     setMediaType(media.assets[0]?.mediaType === "video" ? "video" : "image");
   };
@@ -438,6 +444,7 @@ export default function AddPost() {
       mediaType: ["photo", "video"],
       first: 50,
     });
+    setFile(media.assets[0]);
     setRecentMedia(media.assets);
     setSelectedMedia(media.assets[0]?.uri);
     setMediaType(media.assets[0]?.mediaType === "video" ? "video" : "image");
@@ -452,15 +459,29 @@ export default function AddPost() {
     setMediaType("video");
   };
 
+  const handlePostCreate = () => {
+    if (!file) {
+      console.log("No file selected");
+      return; // Prevent navigation if file is not selected
+    }
+    console.log("file is ", file);
+    navigation.navigate("CreatePost", { file1: file });
+  };
+
   return (
     <View style={styles.container}>
       {/* Header Section */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.iconButton}>
-          <Ionicons name="close" size={28} color="white" />
+          <Ionicons
+            name="close"
+            size={28}
+            color="white"
+            onPress={() => navigation.navigate("Home")}
+          />
         </TouchableOpacity>
         <Text style={styles.headerText}>New Post</Text>
-        <TouchableOpacity style={styles.iconButton}>
+        <TouchableOpacity style={styles.iconButton} onPress={handlePostCreate}>
           <Ionicons name="arrow-forward" size={28} color="#3897f0" />
         </TouchableOpacity>
       </View>
@@ -510,6 +531,7 @@ export default function AddPost() {
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => {
+                setFile(item);
                 setSelectedMedia(item.uri);
                 setMediaType(item.mediaType === "video" ? "video" : "image");
               }}
@@ -612,6 +634,7 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 5,
+    paddingTop: 20,
   },
   mediaPreviewContainer: {
     height: "40%",

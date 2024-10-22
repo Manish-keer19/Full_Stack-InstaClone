@@ -131,11 +131,38 @@ import {
 import React, { useState } from "react";
 import Logo from "../../assets/imges/instagram_logo2.png";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "../../App";
+import { RootStackParamList } from "../../Entryroute";
+import { AuthServiceInstance } from "../services/authServices";
+import { useDispatch } from "react-redux";
+import { setToken, setUser } from "../features/user/userSlice";
 
 export default function Login() {
-  const [Email, setEmail] = useState<string>("");
-  const [Password, setPassword] = useState<string>("");
+  const dispatch = useDispatch();
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [isSubmiting, setIsSubmiting] = useState<boolean>(false);
+
+  const handleSubmit = async () => {
+    const data = {
+      email,
+      password,
+    };
+    console.log("data in login form is ", data);
+    try {
+      const res = await AuthServiceInstance.login(data);
+
+      console.log("Res is ", res.data);
+      if (res) {
+        // alert("logged in succefully");
+        dispatch(setToken(res.data.token));
+        dispatch(setUser(res.data));
+        setIsSubmiting(false);
+        navigation.navigate("Home");
+      }
+    } catch (error) {
+      console.log("could not login here in login.tsx", error);
+    }
+  };
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   return (
     <View style={styles.container}>
@@ -147,16 +174,33 @@ export default function Login() {
           style={styles.input}
           placeholder="Email"
           placeholderTextColor="#B0B0B0"
+          value={email}
+          onChangeText={(value) => {
+            setEmail(value);
+          }}
         />
         <TextInput
           style={styles.input}
           placeholder="Password"
           secureTextEntry={true}
           placeholderTextColor="#B0B0B0"
+          value={password}
+          onChangeText={(value) => {
+            setPassword(value);
+          }}
         />
       </View>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Log in</Text>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          setIsSubmiting(true);
+          handleSubmit();
+        }}
+        disabled={isSubmiting}
+      >
+        <Text style={styles.buttonText}>
+          {isSubmiting ? "Login please wait..." : "Login"}
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.forgotPassword}>
         <Text style={styles.forgotPasswordText}>Forgot Password?</Text>

@@ -1,11 +1,13 @@
 import { Request, Response } from "express";
 import { Profile } from "../models/Profile.model";
 import { User } from "../models/User.model";
+import { uploadInCloudinary } from "../utils/cloudinary.utils";
 
 export const editProfile = async (
   req: Request,
   res: Response
 ): Promise<any> => {
+  console.log("edit profile function called");
   try {
     // Extract data from request body
     const { name, username, bio, pronoun, email } = req.body;
@@ -15,6 +17,15 @@ export const editProfile = async (
     console.log("email is ", email);
     console.log("bio is ", bio);
     console.log("pronoun is ", pronoun);
+
+    const profileImage = req.files?.profileImage;
+
+    // Handle different types of `profileImage`
+    const profileImagePath = Array.isArray(profileImage)
+      ? profileImage[0]?.tempFilePath // Take the first file if it's an array
+      : profileImage?.tempFilePath; // If it's a single file
+
+    console.log("profile image path is ", profileImagePath);
 
     // Validate the incoming data
     if (!email || !name || !username || !bio || !pronoun) {
@@ -34,7 +45,26 @@ export const editProfile = async (
       });
     }
 
+    if (profileImage && profileImagePath) {
+      console.log("bhai profile image ko update karna he profile ko");
+      const imgres = await uploadInCloudinary({
+        data: profileImagePath,
+        folder: "posts",
+      });
+
+      const newUser = await User.findOneAndUpdate(
+        { email: email },
+        {
+          $set: {
+            profilePic: imgres?.secure_url,
+          },
+        },
+        { new: true }
+      );
+      console.log("newuser is ", newUser);
+    }
     if (user.profile) {
+      console.log("bhai update karna he profile ko");
       // Profile exists, update the profile
       const updatedProfile = await Profile.findOneAndUpdate(
         { _id: user.profile }, // Match the profile by its ID
@@ -48,6 +78,7 @@ export const editProfile = async (
         data: updatedProfile,
       });
     } else {
+      console.log("bhai create karna he profile ko");
       // No profile exists, create a new one
       const newProfile = await Profile.create({
         name,

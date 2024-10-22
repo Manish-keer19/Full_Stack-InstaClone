@@ -1,9 +1,20 @@
 import { ScrollView, StyleSheet, Text, View, Image } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/AntDesign";
-import { images } from "../../Utils/imagedata";
+// import { images } from "../../Utils/imagedata";
+import { useSelector } from "react-redux";
 
 export default function Story() {
+  const user = useSelector((state: any) => state.User.user);
+  // console.log("user in story", user);
+
+  const [images, setimages] = useState<any>([]);
+
+  if (user) {
+    useEffect(() => {
+      setimages(user?.posts);
+    }, []);
+  }
   return (
     <View style={styles.container}>
       <ScrollView
@@ -12,14 +23,14 @@ export default function Story() {
         contentContainerStyle={styles.scrollViewContent} // Use content container to limit items height
       >
         {/* Repeat stories */}
-        {images.map((item, index) =>
+        {images.map((item: any, index: any) =>
           index == 0 ? (
             <View key={index} style={styles.storyContainer}>
               <View style={styles.imageContainer}>
                 <Image
                   style={styles.image}
                   source={{
-                    uri: item.uri,
+                    uri: item.image,
                   }}
                 />
               </View>
@@ -43,7 +54,7 @@ export default function Story() {
                 <Image
                   style={styles.image}
                   source={{
-                    uri: item.uri,
+                    uri: item.image,
                   }}
                 />
               </View>
