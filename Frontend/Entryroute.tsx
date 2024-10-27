@@ -17,6 +17,8 @@ import { useSelector } from "react-redux";
 import { useLoadUserData } from "./src/features/user/userSlice";
 import Search from "./src/Components/search/Search";
 import UserProfile from "./src/Components/search/UserProfile";
+import CommentModal from "./src/Components/Post/CommentSection";
+import CommentSection from "./src/Components/Post/CommentSection";
 
 const Stack = createNativeStackNavigator();
 
@@ -36,6 +38,7 @@ export type RootStackParamList = {
   CreatePost: { file1: object | null | undefined };
   Search: undefined;
   UserProfile: undefined | { user: any };
+  CommentSection: undefined | { commentModal:any,setCommentModal:any,comment:any };
 };
 
 export default function Entryroute() {
@@ -43,7 +46,8 @@ export default function Entryroute() {
   const token = useSelector((state: any) => state.User.token);
   const user = useSelector((state: any) => state.User.user);
   // const [initialPage, setInitialPage] = useState<string>("Login");
-  const [initialPage, setInitialPage] = useState<string>("");
+  const [initialPage, setInitialPage] = useState<string>("Post");
+  // const [initialPage, setInitialPage] = useState<string>("");
 
   // console.log("token in entryroute ", token);
   // console.log("user in entryroute ", user);
@@ -76,6 +80,7 @@ export default function Entryroute() {
         <Stack.Screen name="CreatePost" component={CreatePost} />
         <Stack.Screen name="Search" component={Search} />
         <Stack.Screen name="UserProfile" component={UserProfile} />
+        <Stack.Screen name="CommentSection" component={CommentSection} />
       </Stack.Navigator>
     </NavigationContainer>
   );

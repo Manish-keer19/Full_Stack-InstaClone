@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { User } from "../models/User.model";
 import mongoose from "mongoose";
+import { fetchAllDetailsUser } from "../utils/fetchAllDetailsUser";
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -195,17 +196,7 @@ export const FollowUser = async (req: Request, res: Response): Promise<any> => {
         },
       },
       { new: true }
-    )
-      .populate("posts")
-      .populate("likes")
-      .populate("comment")
-      .populate("saved")
-      .populate("profile")
-      .populate("followers")
-      .populate("following")
-      .populate("userStories")
-      .populate("folowersStories")
-      .exec();
+    );
 
     console.log("current user is ", currentUser);
 
@@ -238,10 +229,12 @@ export const FollowUser = async (req: Request, res: Response): Promise<any> => {
 
     // success response
 
+    const userdata = await fetchAllDetailsUser(authenticatedReq.user.email);
+
     return res.status(200).json({
       success: true,
       message: "successfully followed the user",
-      userdata: currentUser,
+      userdata,
     });
   } catch (error) {
     console.log("could not follow the user", error);
@@ -324,8 +317,6 @@ export const UnFollowUser = async (
       { new: true }
     )
       .populate("posts")
-      .populate("likes")
-      .populate("comment")
       .populate("saved")
       .populate("profile")
       .populate("followers")
@@ -397,8 +388,6 @@ export const getuserFulldata = async (
     // Fetching all user data from the database
     const newuserdata = await User.findOne({ email: email }, {}, { new: true })
       .populate("posts")
-      .populate("likes")
-      .populate("comment")
       .populate("saved")
       .populate("profile")
       .populate("followers")
@@ -446,6 +435,7 @@ export const searchUsers = async (
 ): Promise<any> => {
   try {
     const { searchTerm } = req.body;
+
     console.log("searchTerm is ", req.body);
     if (!searchTerm) {
       return res.status(400).json({
@@ -461,8 +451,6 @@ export const searchUsers = async (
       { new: true }
     )
       .populate("posts")
-      .populate("likes")
-      .populate("comment")
       .populate("saved")
       .populate("followers")
       .populate("following")

@@ -43,7 +43,7 @@ class UserService {
   async followeUser(data: any) {
     console.log("data in followuser userservice", data);
     try {
-      const res = await apiClient.post("/user/followuser",data);
+      const res = await apiClient.post("/user/followuser", data);
 
       console.log("res.data is ", res.data);
       if (res.data.success) {
@@ -57,12 +57,11 @@ class UserService {
       console.log("could not follower the user", error);
       // console.log("res is "error.response.data );
     }
-
   }
   async unfolloweUser(data: any) {
     console.log("data in followuser userservice", data);
     try {
-      const res = await apiClient.post("/user/UnFollowUser",data);
+      const res = await apiClient.post("/user/UnFollowUser", data);
 
       console.log("res.data is ", res.data);
       if (res.data.success) {
@@ -78,7 +77,41 @@ class UserService {
     }
   }
 
+  async createLike(data: any) {
+    console.log("data in createLike userservice", data);
+    try {
+      const res = await apiClient.post("/like/createlike", data);
+      console.log("res.data is ", res.data);
+      if (res.data.success) {
+        console.log("user liked successfully in userservice");
+        return res.data;
+      } else {
+        console.log("could not like the user");
+        console.log("res.data is ", res.data);
+      }
+    } catch (error) {
+      console.log("could not like the user", error);
+      // console.log("res is "error.response.data );
+    }
+  }
 
+  async deleteLike(data: any) {
+    console.log("data in createLike userservice", data);
+    try {
+      const res = await apiClient.post("/like/deleteLike", data);
+      console.log("res.data is ", res.data);
+      if (res.data.success) {
+        console.log("like delete  successfully in userservice");
+        return res.data;
+      } else {
+        console.log("could not like the user");
+        console.log("res.data is ", res.data);
+      }
+    } catch (error) {
+      console.log("could not like the user", error);
+      // console.log("res is "error.response.data );
+    }
+  }
 }
 
 export const UserServiceInstance = new UserService();

@@ -5,6 +5,7 @@ import { Otp } from "../models/otp";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { fetchAllDetailsUser } from "../utils/fetchAllDetailsUser";
 dotenv.config();
 
 // generate otp
@@ -185,18 +186,8 @@ export const Login = async (req: Request, res: Response): Promise<any> => {
       });
     }
 
-    const isUserExist = await User.findOne({ email: email }, {}, { new: true })
-      .populate("posts")
-      .populate("likes")
-      .populate("comment")
-      .populate("saved")
-      .populate("profile")
-      .populate("followers")
-      .populate("following")
-      .populate("following")
-      .populate("userStories")
-      .populate("folowersStories")
-      .exec();
+    const isUserExist = await User.findOne({ email: email }, {}, { new: true });
+
     console.log("isuserExitst is ", isUserExist);
     if (!isUserExist) {
       return res.status(400).json({
@@ -238,10 +229,12 @@ export const Login = async (req: Request, res: Response): Promise<any> => {
 
     console.log("user is ", user);
 
+    const userdata = await fetchAllDetailsUser(email);
     return res.status(200).json({
       success: true,
       message: "User logged in successfully",
-      data: user,
+      userdata,
+      token
     });
   } catch (error) {
     console.log("could not login the user", error);

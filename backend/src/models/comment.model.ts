@@ -8,10 +8,6 @@ const commentShema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
-  post: {
-    type: Schema.Types.ObjectId,
-    ref: "Post",
-  },
   likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
   subcomment: [{ type: Schema.Types.ObjectId, ref: "Subcomment" }],
 });

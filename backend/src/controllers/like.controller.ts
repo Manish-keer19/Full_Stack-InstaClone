@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { Like } from "../models/Likes.model";
 import { Post } from "../models/Post.model";
 import { User } from "../models/User.model";
-import { Error } from "mongoose";
+import mongoose, { Mongoose, Types } from "mongoose";
+import { fetchAllDetailsUser } from "../utils/fetchAllDetailsUser";
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -45,38 +45,30 @@ export const createLike = async (
     }
     console.log("user is", user);
 
-    // Create entry in db
-    const newLike = await Like.create({
-      user: user.id,
-      post: postId,
-    });
-
-    // Update the User model
-    const newUser = await User.findOneAndUpdate(
-      { email: user.email },
-      { $push: { likes: newLike._id } },
-      { new: true }
-    );
-    console.log("newUser is", newUser);
-    if (!newUser) {
+    // Check if the user has already liked the post
+    const userId = new mongoose.Types.ObjectId(user.id);
+    if (ispostExist.likes.includes(userId)) {
       return res.status(400).json({
         success: false,
-        message: "User not found",
+        message: "You have already liked this post",
       });
     }
 
-    // Update the Post model
+    // push the user into post's likes array
     const newPost = await Post.findOneAndUpdate(
       { _id: postId },
-      { $push: { likes: newLike._id } },
+      { $push: { likes: user.id } },
       { new: true }
     );
-    console.log("newPost is", newPost);
+
+    const userdata = await fetchAllDetailsUser(user.email);
+    console.log("userdata is ", userdata);
 
     // Return response
     return res.status(200).json({
       success: true,
       message: "Like created successfully",
+      userdata,
     });
   } catch (error) {
     console.log("Could not create the like", error);
@@ -92,11 +84,11 @@ export const deleteLike = async (
   res: Response
 ): Promise<any> => {
   try {
-    const { postId, likeId } = req.body;
-    if (!postId || !likeId) {
+    const { postId } = req.body;
+    if (!postId) {
       return res.status(400).json({
         success: false,
-        message: "postId and likeId are required",
+        message: "postId is required",
       });
     }
     const user = req.user;
@@ -104,13 +96,6 @@ export const deleteLike = async (
       return res.status(401).json({
         success: false,
         message: "User not authenticated",
-      });
-    }
-
-    if (!postId) {
-      return res.status(400).json({
-        success: false,
-        message: "postId is required",
       });
     }
 
@@ -122,19 +107,19 @@ export const deleteLike = async (
       });
     }
 
-    const isLikeExist = await Like.findOne({ _id: likeId });
-    console.log("isLikeExist", isLikeExist);
-    if (!isLikeExist) {
+    const userId = new mongoose.Types.ObjectId(user.id);
+    if (!ispostExist.likes.includes(userId)) {
       return res.status(400).json({
         success: false,
-        message: "Like not found",
+        message: "You have not liked this post",
       });
     }
+
     //  update the post model delete like
     const newPost = await Post.findOneAndUpdate(
       { _id: postId },
       {
-        $pull: { likes: likeId },
+        $pull: { likes: userId },
       },
       { new: true }
     );
@@ -146,35 +131,13 @@ export const deleteLike = async (
       });
     }
 
-    //  update the user model delete like
-    const newUser = await User.findOneAndUpdate(
-      { email: user.email },
-      {
-        $pull: { likes: likeId },
-      },
-      { new: true }
-    );
-
-    const deletedLike = await Like.findOneAndDelete({ _id: likeId });
-    console.log("deletedLike", deletedLike);
-    if (!deletedLike) {
-      return res.status(400).json({
-        success: false,
-        message: "like delete nahi ho saki",
-      });
-    }
-
-    console.log("new user after delete like is ", newUser);
-    if (!newUser) {
-      return res.status(400).json({
-        success: false,
-        message: "User not found",
-      });
-    }
+    const userdata = await fetchAllDetailsUser(user.email);
+    console.log("userdata is ", userdata);
 
     return res.status(200).json({
       success: true,
       message: "Like deleted successfully",
+      userdata,
     });
   } catch (error: any) {
     console.log("could not delete the like ", error);

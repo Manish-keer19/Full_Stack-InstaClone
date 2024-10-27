@@ -17,14 +17,19 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../../Entryroute";
 
 export default function SearchComponent() {
-
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>()
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const token = useSelector((state: any) => state.User.token);
   const [searchText, setSearchText] = useState("");
   const [filteredResults, setFilteredResults] = useState([]);
+  const [crossShow, setCrossShow] = useState<boolean>(false);
 
   const handleSearch = async (text: string) => {
     setSearchText(text);
+    setCrossShow(true);
+
+    if (text === "") {
+      setCrossShow(false);
+    }
     const data = { searchTerm: text, token };
 
     try {
@@ -45,12 +50,12 @@ export default function SearchComponent() {
   };
 
   const renderItem = ({ item }: any) => (
-    <TouchableOpacity style={styles.userContainer}
-    onPress={()=>{
-       console.log("item in renderItem is ", item);
-       navigation.navigate("UserProfile",{user:item})
-       
-    }}
+    <TouchableOpacity
+      style={styles.userContainer}
+      onPress={() => {
+        console.log("item in renderItem is ", item);
+        navigation.navigate("UserProfile", { user: item });
+      }}
     >
       <Image source={{ uri: item.profilePic }} style={styles.userImage} />
       <View>
@@ -76,20 +81,22 @@ export default function SearchComponent() {
             value={searchText}
             onChangeText={handleSearch}
           />
-          <EntypoIcons
-            name="cross"
-            color="white"
-            size={30}
-            onPress={() => {
-              setSearchText("");
-              setFilteredResults([]);
-            }}
-          />
+          {crossShow && (
+            <EntypoIcons
+              name="cross"
+              color="white"
+              size={25}
+              onPress={() => {
+                setSearchText("");
+                setFilteredResults([]);
+              }}
+            />
+          )}
         </View>
       </View>
       <FlatList
         data={filteredResults}
-        keyExtractor={(item) => item._id}
+        keyExtractor={(item: any) => item._id}
         renderItem={renderItem}
         ListEmptyComponent={
           <Text style={styles.noResultsText}>No results found</Text>

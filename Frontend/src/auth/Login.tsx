@@ -151,11 +151,11 @@ export default function Login() {
     try {
       const res = await AuthServiceInstance.login(data);
 
-      console.log("Res is ", res.data);
-      if (res) {
+      console.log("Res is ", res);
+      if (res.success) {
         // alert("logged in succefully");
-        dispatch(setToken(res.data.token));
-        dispatch(setUser(res.data));
+        dispatch(setToken(res.token));
+        dispatch(setUser(res.userdata));
         setIsSubmiting(false);
         navigation.navigate("Home");
       }

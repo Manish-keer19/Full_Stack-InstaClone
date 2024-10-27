@@ -2,6 +2,7 @@ import { Request, Response } from "express"; // Ensure to import Request, Respon
 import { Comment } from "../models/comment.model"; // Assuming your Comment model is defined in this path
 import { Post } from "../models/Post.model";
 import { User } from "../models/User.model";
+import { fetchAllDetailsUser } from "../utils/fetchAllDetailsUser";
 
 interface AuthenticatedRequest extends Request {
   user?: {
@@ -56,22 +57,6 @@ export const createComment = async (
       post: postId,
     });
 
-    // Update the user model by pushing the comment ID
-    const updatedUser = await User.findByIdAndUpdate(
-      user.id,
-      {
-        $push: { comment: newComment._id }, // Assuming you have a 'comments' array in the user model
-      },
-      { new: true }
-    );
-    if (!updatedUser) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-    console.log("updatedUser is ", updatedUser);
-
     // Update the post model by pushing the comment ID
     const updatedPost = await Post.findByIdAndUpdate(
       postId,
@@ -86,12 +71,13 @@ export const createComment = async (
         message: "Post not found",
       });
     }
+    const userdata = await fetchAllDetailsUser(user.email);
 
     // Return the created comment
     return res.status(200).json({
       success: true,
       message: "Comment created successfully",
-      comment: newComment,
+      userdata,
     });
   } catch (error: any) {
     console.error("Could not create the comment", error);
@@ -156,15 +142,6 @@ export const deleteComment = async (
         message: "User not found",
       });
     }
-
-    //   update Post model remove comment from comment array
-    const updatedPost = await Post.findByIdAndUpdate(
-      isCommentExist.post,
-      {
-        $pull: { comment: commentId }, // Assuming 'comment' is an array in the Post schema
-      },
-      { new: true }
-    );
 
     // delete the comment
     const deletedComment = await Comment.findByIdAndDelete(commentId);
