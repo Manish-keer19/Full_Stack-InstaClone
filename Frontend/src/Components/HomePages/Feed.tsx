@@ -28,6 +28,8 @@ export default function Feed() {
   const user = useSelector((state: any) => state.User.user);
   const [posts, setPosts] = useState<any[]>([]);
 
+  // console.log("posts in feed ", posts);
+
   useEffect(() => {
     if (user) {
       setPosts(user.posts);
@@ -41,12 +43,7 @@ export default function Feed() {
           {/* Header */}
           <View style={styles.postHeader}>
             <View style={styles.profileInfo}>
-              <Image
-                style={styles.avatar}
-                source={{
-                  uri: "https://instagram.fbho1-2.fna.fbcdn.net/v/t51.2885-19/461331682_472430802608818_3421248288983675499_n.jpg?_nc_ht=instagram.fbho1-2.fna.fbcdn.net&_nc_cat=110&_nc_ohc=vrHwx345BOUQ7kNvgElnLd8&_nc_gid=fc3db61eeb4e41cb8b3f258080dff8e3&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AYCvqu5feO0OpfrFrURbO96rkz7Y_tvtutUcJRuLAly-Yg&oe=670EC499&_nc_sid=7a9f4b",
-                }}
-              />
+              <Image style={styles.avatar} source={{ uri: post.image }} />
               <Text style={styles.username}>Manish Keer</Text>
             </View>
             <EntypoIcon name="dots-three-vertical" size={18} color={"white"} />

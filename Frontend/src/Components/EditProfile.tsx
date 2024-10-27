@@ -262,7 +262,7 @@ export default function EditProfile() {
     data.append("username", username);
     data.append("bio", bio);
     data.append("pronoun", pronoun);
-    data.append("email", "manishkeer530@gmail.com");
+    data.append("email", user?.email);
     data.append("token", token);
 
     if (profileImage) {

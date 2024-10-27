@@ -1,18 +1,31 @@
 import React from "react";
 import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "../../App";
+import { RootStackParamList } from "../../Entryroute";
 import { images } from "../Utils/imagedata";
+
+import { useSelector } from "react-redux";
 
 const Footer: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>(); // Type-safe navigation
+
+  const user = useSelector((state: any) => state.User.user);
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <View style={styles.footer}>
       {/* Home Icon - Navigates to Home Screen */}
       <TouchableOpacity onPress={() => navigation.navigate("Home")}>
         <Ionicons name="home-outline" size={30} color="white" />
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.navigate("Search")}>
+        <Feather name="search" size={30} color="white" />
       </TouchableOpacity>
 
       {/* Add Icon - Navigates to Add Post Screen */}
@@ -28,7 +41,7 @@ const Footer: React.FC = () => {
       {/* Profile Icon - Navigates to Profile Screen */}
       <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
         <View style={styles.imgContainer}>
-          <Image style={styles.imgstyle} source={{ uri: images[0].uri }} />
+          <Image style={styles.imgstyle} source={{ uri: user.profilePic }} />
         </View>
       </TouchableOpacity>
     </View>

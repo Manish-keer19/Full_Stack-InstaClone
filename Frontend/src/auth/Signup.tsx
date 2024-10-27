@@ -18,6 +18,8 @@ export default function Signup() {
   const [password, setpassword] = useState<string>("");
   const [otp, setotp] = useState<string>("");
   const [username, setUsername] = useState<string>("");
+  const [isUsernameAlreadyTaken, setIsUsernameAlreadyTaken] =
+    useState<boolean>(true);
 
   const handlesingup = async () => {
     if (!email || !password || !otp || !username) {
@@ -60,7 +62,7 @@ export default function Signup() {
       {step === 1 && (
         <View>
           <View style={styles.header}>
-            <Text style={styles.title}>Choose email</Text>
+            <Text style={styles.title}>Choose username</Text>
             <Text style={styles.subtitle}>You can always change it later</Text>
           </View>
           <View style={styles.formContainer}>
@@ -88,7 +90,7 @@ export default function Signup() {
         <View>
           <View style={styles.header}>
             <Text style={styles.title}>Choose email</Text>
-            <Text style={styles.subtitle}>You can always change it later</Text>
+            <Text style={styles.subtitle}>You cannot change it later</Text>
           </View>
           <View style={styles.formContainer}>
             <TextInput

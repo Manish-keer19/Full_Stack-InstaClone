@@ -209,13 +209,11 @@
 
 // export default userSlice.reducer;
 
-
-
-
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
+import { clearProfileData } from "../Profile/ProfileSlice";
 
 // Define the user state interface with proper types
 interface UserState {
@@ -263,7 +261,7 @@ const userSlice = createSlice({
           console.error("Could not save the token into AsyncStorage", error);
         });
     },
-    
+
     loadTokenData: (state, action: PayloadAction<string | null>) => {
       state.token = action.payload;
       console.log("token is in loadtokendata ", state.token);
@@ -283,20 +281,19 @@ const userSlice = createSlice({
 
       // Clear user data and token from AsyncStorage
       AsyncStorage.removeItem("userData")
-      .then(()=>{
-        console.log("token removed succefully from AsyncStorage");
-          
-      })
-      .catch((error) => {
-        console.error("Could not remove userData from AsyncStorage", error);
-      });
+        .then(() => {
+          console.log("token removed succefully from AsyncStorage");
+        })
+        .catch((error) => {
+          console.error("Could not remove userData from AsyncStorage", error);
+        });
       AsyncStorage.removeItem("token")
-      .then(()=>{
-        console.log("userdata removed succefully from AsyncStorage");
-      })
-      .catch((error) => {
-        console.error("Could not remove token from AsyncStorage", error);
-      });
+        .then(() => {
+          console.log("userdata removed succefully from AsyncStorage");
+        })
+        .catch((error) => {
+          console.error("Could not remove token from AsyncStorage", error);
+        });
     },
   },
 });

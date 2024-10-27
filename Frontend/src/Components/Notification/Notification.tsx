@@ -8,21 +8,21 @@
 //     type: 'follow',
 //     username: 'JohnDoe',
 //     time: 'Yesterday',
-//     imageUri: 'https://instagram.fbho1-2.fna.fbcdn.net/v/t51.2885-19/461331682_472430802608818_3421248288983675499_n.jpg?_nc_ht=instagram.fbho1-2.fna.fbcdn.net&_nc_cat=110&_nc_ohc=vrHwx345BOUQ7kNvgElnLd8&_nc_gid=fc3db61eeb4e41cb8b3f258080dff8e3&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AYCvqu5feO0OpfrFrURbO96rkz7Y_tvtutUcJRuLAly-Yg&oe=670EC499&_nc_sid=7a9f4b',
+//     imageUri: 'https://res.cloudinary.com/manish19/image/upload/v1725781643/jjlvg8e1yww6cacpl25s.jpg',
 //   },
 //   {
 //     id: 2,
 //     type: 'like',
 //     username: 'JaneSmith',
 //     time: '2 days ago',
-//     imageUri: 'https://instagram.fbho1-2.fna.fbcdn.net/v/t51.2885-19/461331682_472430802608818_3421248288983675499_n.jpg?_nc_ht=instagram.fbho1-2.fna.fbcdn.net&_nc_cat=110&_nc_ohc=vrHwx345BOUQ7kNvgElnLd8&_nc_gid=fc3db61eeb4e41cb8b3f258080dff8e3&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AYCvqu5feO0OpfrFrURbO96rkz7Y_tvtutUcJRuLAly-Yg&oe=670EC499&_nc_sid=7a9f4b',
+//     imageUri: 'https://res.cloudinary.com/manish19/image/upload/v1725781643/jjlvg8e1yww6cacpl25s.jpg',
 //   },
 //   {
 //     id: 3,
 //     type: 'follow',
 //     username: 'AlexJohnson',
 //     time: '3 days ago',
-//     imageUri: 'https://instagram.fbho1-2.fna.fbcdn.net/v/t51.2885-19/461331682_472430802608818_3421248288983675499_n.jpg?_nc_ht=instagram.fbho1-2.fna.fbcdn.net&_nc_cat=110&_nc_ohc=vrHwx345BOUQ7kNvgElnLd8&_nc_gid=fc3db61eeb4e41cb8b3f258080dff8e3&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AYCvqu5feO0OpfrFrURbO96rkz7Y_tvtutUcJRuLAly-Yg&oe=670EC499&_nc_sid=7a9f4b',
+//     imageUri: 'https://res.cloudinary.com/manish19/image/upload/v1725781643/jjlvg8e1yww6cacpl25s.jpg',
 //   },
 //   // You can add more notifications here as needed
 // ];
@@ -134,7 +134,7 @@ import {
 } from "react-native";
 import AntDesignIcons from "react-native-vector-icons/AntDesign";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "../../../App";
+import { RootStackParamList } from "../../../Entryroute";
 
 // Sample notifications with a single post image and user image
 const notifications = [
@@ -144,9 +144,9 @@ const notifications = [
     username: "vishal Rajput",
     time: "Yesterday",
     imageUri:
-      "https://instagram.fbho1-2.fna.fbcdn.net/v/t51.2885-19/461331682_472430802608818_3421248288983675499_n.jpg?_nc_ht=instagram.fbho1-2.fna.fbcdn.net&_nc_cat=110&_nc_ohc=vrHwx345BOUQ7kNvgElnLd8&_nc_gid=fc3db61eeb4e41cb8b3f258080dff8e3&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AYCvqu5feO0OpfrFrURbO96rkz7Y_tvtutUcJRuLAly-Yg&oe=670EC499&_nc_sid=7a9f4b",
+      "https://res.cloudinary.com/manish19/image/upload/v1725781643/jjlvg8e1yww6cacpl25s.jpg",
     postImageUri:
-      "https://instagram.fbho1-2.fna.fbcdn.net/v/t51.2885-19/461331682_472430802608818_3421248288983675499_n.jpg?_nc_ht=instagram.fbho1-2.fna.fbcdn.net&_nc_cat=110&_nc_ohc=vrHwx345BOUQ7kNvgElnLd8&_nc_gid=fc3db61eeb4e41cb8b3f258080dff8e3&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AYCvqu5feO0OpfrFrURbO96rkz7Y_tvtutUcJRuLAly-Yg&oe=670EC499&_nc_sid=7a9f4b",
+      "https://res.cloudinary.com/manish19/image/upload/v1725781643/jjlvg8e1yww6cacpl25s.jpg",
   },
   {
     id: 2,
@@ -154,9 +154,9 @@ const notifications = [
     username: "Nilesh keer",
     time: "2 days ago",
     imageUri:
-      "https://instagram.fbho1-2.fna.fbcdn.net/v/t51.2885-19/461331682_472430802608818_3421248288983675499_n.jpg?_nc_ht=instagram.fbho1-2.fna.fbcdn.net&_nc_cat=110&_nc_ohc=vrHwx345BOUQ7kNvgElnLd8&_nc_gid=fc3db61eeb4e41cb8b3f258080dff8e3&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AYCvqu5feO0OpfrFrURbO96rkz7Y_tvtutUcJRuLAly-Yg&oe=670EC499&_nc_sid=7a9f4b",
+      "https://res.cloudinary.com/manish19/image/upload/v1725781643/jjlvg8e1yww6cacpl25s.jpg",
     postImageUri:
-      "https://instagram.fbho1-2.fna.fbcdn.net/v/t51.2885-19/461331682_472430802608818_3421248288983675499_n.jpg?_nc_ht=instagram.fbho1-2.fna.fbcdn.net&_nc_cat=110&_nc_ohc=vrHwx345BOUQ7kNvgElnLd8&_nc_gid=fc3db61eeb4e41cb8b3f258080dff8e3&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AYCvqu5feO0OpfrFrURbO96rkz7Y_tvtutUcJRuLAly-Yg&oe=670EC499&_nc_sid=7a9f4b",
+      "https://res.cloudinary.com/manish19/image/upload/v1725781643/jjlvg8e1yww6cacpl25s.jpg",
   },
   {
     id: 3,
@@ -164,9 +164,9 @@ const notifications = [
     username: "prakhar rajput",
     time: "3 days ago",
     imageUri:
-      "https://instagram.fbho1-2.fna.fbcdn.net/v/t51.2885-19/461331682_472430802608818_3421248288983675499_n.jpg?_nc_ht=instagram.fbho1-2.fna.fbcdn.net&_nc_cat=110&_nc_ohc=vrHwx345BOUQ7kNvgElnLd8&_nc_gid=fc3db61eeb4e41cb8b3f258080dff8e3&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AYCvqu5feO0OpfrFrURbO96rkz7Y_tvtutUcJRuLAly-Yg&oe=670EC499&_nc_sid=7a9f4b",
+      "https://res.cloudinary.com/manish19/image/upload/v1725781643/jjlvg8e1yww6cacpl25s.jpg",
     postImageUri:
-      "https://instagram.fbho1-2.fna.fbcdn.net/v/t51.2885-19/461331682_472430802608818_3421248288983675499_n.jpg?_nc_ht=instagram.fbho1-2.fna.fbcdn.net&_nc_cat=110&_nc_ohc=vrHwx345BOUQ7kNvgElnLd8&_nc_gid=fc3db61eeb4e41cb8b3f258080dff8e3&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AYCvqu5feO0OpfrFrURbO96rkz7Y_tvtutUcJRuLAly-Yg&oe=670EC499&_nc_sid=7a9f4b",
+      "https://res.cloudinary.com/manish19/image/upload/v1725781643/jjlvg8e1yww6cacpl25s.jpg",
   },
   {
     id: 4,
@@ -174,9 +174,9 @@ const notifications = [
     username: "Manish keer",
     time: "4 days ago",
     imageUri:
-      "https://instagram.fbho1-2.fna.fbcdn.net/v/t51.2885-19/461331682_472430802608818_3421248288983675499_n.jpg?_nc_ht=instagram.fbho1-2.fna.fbcdn.net&_nc_cat=110&_nc_ohc=vrHwx345BOUQ7kNvgElnLd8&_nc_gid=fc3db61eeb4e41cb8b3f258080dff8e3&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AYCvqu5feO0OpfrFrURbO96rkz7Y_tvtutUcJRuLAly-Yg&oe=670EC499&_nc_sid=7a9f4b",
+      "https://res.cloudinary.com/manish19/image/upload/v1725781643/jjlvg8e1yww6cacpl25s.jpg",
     postImageUri:
-      "https://instagram.fbho1-2.fna.fbcdn.net/v/t51.2885-19/461331682_472430802608818_3421248288983675499_n.jpg?_nc_ht=instagram.fbho1-2.fna.fbcdn.net&_nc_cat=110&_nc_ohc=vrHwx345BOUQ7kNvgElnLd8&_nc_gid=fc3db61eeb4e41cb8b3f258080dff8e3&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AYCvqu5feO0OpfrFrURbO96rkz7Y_tvtutUcJRuLAly-Yg&oe=670EC499&_nc_sid=7a9f4b",
+      "https://res.cloudinary.com/manish19/image/upload/v1725781643/jjlvg8e1yww6cacpl25s.jpg",
   },
   // Add more notifications as needed
 ];

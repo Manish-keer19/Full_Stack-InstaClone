@@ -139,10 +139,11 @@ export default function CreatePost({ route }: any) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false); // New state to track button status
 
   const token = useSelector((state: any) => state.User.token);
+  const user = useSelector((state: any) => state.User.user);
   console.log("token i createPost", token);
   const fetchuserData = async () => {
     const data = {
-      email: "manishkeer530@gmail.com",
+      email: user.email,
     };
     try {
       const res = await UserServiceInstance.getUserData(data);

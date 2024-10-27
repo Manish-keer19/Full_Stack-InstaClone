@@ -529,7 +529,10 @@ import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../../Entryroute";
 import { NavigationProp } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { useLoadProfileData } from "../../features/Profile/ProfileSlice";
+import {
+  clearProfileData,
+  useLoadProfileData,
+} from "../../features/Profile/ProfileSlice";
 import { images } from "../../Utils/imagedata";
 import Icons from "react-native-vector-icons/FontAwesome5";
 import { UserServiceInstance } from "../../services/Userservice";
@@ -539,22 +542,26 @@ import {
   useLoadUserData,
 } from "../../features/user/userSlice";
 import Loader from "../Loader";
+import Login from "../../auth/Login";
 
 export default function Profile() {
   useLoadProfileData();
   useLoadUserData();
+
   const dispatch = useDispatch();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  const user = useSelector((state: any) => state.User.user);
+  let { user, token } = useSelector((state: any) => state.User);
+
   console.log("User in profile", user);
+
   const profileData = useSelector((state: any) => state.Profile.profileData);
 
   const [activeTab, setActiveTab] = useState("Posts");
   const [issetting, setIssetting] = useState(false);
 
   const fetchUserData = async () => {
-    const data = { email: "manishkeer530@gmail.com" };
+    const data = { email: user.email, token };
     try {
       const res = await UserServiceInstance.getUserData(data);
       if (res?.userdata) {
@@ -572,7 +579,7 @@ export default function Profile() {
   const renderPost = ({ item }: any) => (
     <TouchableOpacity
       style={styles.postWrapper}
-      onPress={() => navigation.navigate("Post")}
+      onPress={() => navigation.navigate("Post", { user: user })}
     >
       <Image source={{ uri: item.image }} style={styles.postImage} />
     </TouchableOpacity>
@@ -584,16 +591,16 @@ export default function Profile() {
 
   const handleLogout = () => {
     dispatch(logout());
+    clearProfileData();
     setIssetting(false);
     navigation.navigate("Login");
   };
-
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Text style={styles.profileUsername}>Manish Keer</Text>
+          <Text style={styles.profileUsername}>{user?.username}</Text>
           <EntypoIcons name="chevron-small-down" color={"white"} size={28} />
         </View>
         <TouchableOpacity onPress={() => setIssetting(!issetting)}>
@@ -608,18 +615,18 @@ export default function Profile() {
 
       {/* Profile Section */}
       <View style={styles.profileInfo}>
-        <Image style={styles.profileImage} source={{ uri: user.profilePic }} />
+        <Image style={styles.profileImage} source={{ uri: user?.profilePic }} />
         <View style={styles.statsWrapper}>
           <View style={styles.statsContainer}>
-            <Text style={styles.statsText}>120</Text>
+            <Text style={styles.statsText}>{user.posts?.length}</Text>
             <Text style={styles.statsLabel}>Posts</Text>
           </View>
           <View style={styles.statsContainer}>
-            <Text style={styles.statsText}>1000M</Text>
+            <Text style={styles.statsText}>{user.followers?.length}</Text>
             <Text style={styles.statsLabel}>Followers</Text>
           </View>
           <View style={styles.statsContainer}>
-            <Text style={styles.statsText}>500</Text>
+            <Text style={styles.statsText}>{user.following?.length}</Text>
             <Text style={styles.statsLabel}>Following</Text>
           </View>
         </View>
@@ -627,19 +634,19 @@ export default function Profile() {
 
       {/* Bio Section */}
       <View style={styles.bioContainer}>
-        {profileData && (
+        {user.profile && (
           <>
-            {profileData.username && (
-              <Text style={styles.bio}>{profileData.username}</Text>
+            {user.profile.username && (
+              <Text style={styles.bio}>{user?.profile?.username}</Text>
             )}
-            {profileData.name && (
-              <Text style={styles.bio}>{profileData.name}</Text>
+            {user.profile.name && (
+              <Text style={styles.bio}>{user?.profile?.name}</Text>
             )}
-            {profileData.Pronoun && (
-              <Text style={styles.bio}>{profileData.Pronoun}</Text>
-            )}
-            {profileData.bio && (
-              <Text style={styles.bio}>{profileData.bio}</Text>
+            {/* {user.profile.username && (
+              <Text style={styles.bio}>{user?.profile?.username}</Text>
+            )} */}
+            {user.profile.bio && (
+              <Text style={styles.bio}>{user?.profile?.bio}</Text>
             )}
           </>
         )}

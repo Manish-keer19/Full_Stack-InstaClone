@@ -39,7 +39,7 @@ export default function Message() {
           <View style={styles.messageItem} key={i}>
             <Image
               source={{
-                uri: "https://instagram.fbho1-2.fna.fbcdn.net/v/t51.2885-19/461331682_472430802608818_3421248288983675499_n.jpg?_nc_ht=instagram.fbho1-2.fna.fbcdn.net&_nc_cat=110&_nc_ohc=vrHwx345BOUQ7kNvgElnLd8&_nc_gid=fc3db61eeb4e41cb8b3f258080dff8e3&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_AYCvqu5feO0OpfrFrURbO96rkz7Y_tvtutUcJRuLAly-Yg&oe=670EC499&_nc_sid=7a9f4b",
+                uri: "https://res.cloudinary.com/manish19/image/upload/v1725781643/jjlvg8e1yww6cacpl25s.jpg",
               }}
               style={styles.userImage}
             />
@@ -63,7 +63,7 @@ export default function Message() {
           <View style={styles.messageItem} key={`request-${i}`}>
             <Image
               source={{
-                uri: "https://example.com/request_image.jpg", // Placeholder image URL for requests
+                uri: "https://res.cloudinary.com/manish19/image/upload/v1724059147/jyyudwmciv6tmudw2rf0.jpg", // Placeholder image URL for requests
               }}
               style={styles.userImage}
             />

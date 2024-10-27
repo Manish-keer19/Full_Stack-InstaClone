@@ -15,6 +15,8 @@ import CreatePost from "./src/Components/AddPost/CreatePost";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLoadUserData } from "./src/features/user/userSlice";
+import Search from "./src/Components/search/Search";
+import UserProfile from "./src/Components/search/UserProfile";
 
 const Stack = createNativeStackNavigator();
 
@@ -22,27 +24,30 @@ export type RootStackParamList = {
   Home: undefined;
   AddPost: undefined;
   Reels: undefined;
-  Profile: undefined;
+  Profile: undefined | { user: any };
   ImagePicker: undefined;
   EditProfile: undefined;
-  Post: undefined;
+  Post: undefined | { user: any };
   Login: undefined;
   Signup: undefined;
   Messages: undefined;
   Notification: undefined;
   Loader: undefined;
   CreatePost: { file1: object | null | undefined };
+  Search: undefined;
+  UserProfile: undefined | { user: any };
 };
 
 export default function Entryroute() {
   useLoadUserData();
   const token = useSelector((state: any) => state.User.token);
-  const [initialPage, setInitialPage] = useState<string>("");
+  const user = useSelector((state: any) => state.User.user);
+  const [initialPage, setInitialPage] = useState<string>();
 
   useEffect(() => {
     // Set the initial page based on user presence
-    setInitialPage(token ? "Home" : "Login");
-  }, [token]); // Add 'user' as a dependency
+    setInitialPage(token && user ? "Home" : "Login");
+  }, [token, user]); // Add 'user' as a dependency
 
   console.log("initialPage is ", initialPage);
 
@@ -51,6 +56,7 @@ export default function Entryroute() {
       <Stack.Navigator
         screenOptions={{ headerShown: false }}
         initialRouteName={initialPage} // Fallback to "Login" if initialPage is empty
+        // initialRouteName={"Search"}
       >
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Profile" component={Profile} />
@@ -64,6 +70,8 @@ export default function Entryroute() {
         <Stack.Screen name="Notification" component={Notification} />
         <Stack.Screen name="Loader" component={Loader} />
         <Stack.Screen name="CreatePost" component={CreatePost} />
+        <Stack.Screen name="Search" component={Search} />
+        <Stack.Screen name="UserProfile" component={UserProfile} />
       </Stack.Navigator>
     </NavigationContainer>
   );

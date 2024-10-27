@@ -14,6 +14,9 @@ const ProfileShema = new mongoose.Schema({
   username: {
     type: String,
   },
+  fullname: {
+    type: String,
+  },
   Pronoun: {
     type: String,
   },

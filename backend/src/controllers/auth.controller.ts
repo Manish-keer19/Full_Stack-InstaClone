@@ -61,6 +61,58 @@ export const generateOtp = async (
   }
 };
 
+export const IsUsernameAlreadyTaken = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { username } = req.body;
+    console.log("username is ", username);
+
+    // Check if username is provided
+    if (!username) {
+      return res.status(400).json({
+        success: false,
+        message: "Username is required",
+      });
+    }
+
+    // Trim whitespace from username
+    const trimmedUsername = username.trim();
+    console.log("trimmed username is ", trimmedUsername);
+
+    // Check if trimmed username contains spaces
+    if (trimmedUsername !== username) {
+      return res.status(400).json({
+        success: false,
+        message: "Username must not contain spaces",
+      });
+    }
+
+    // Check if username already exists in the database
+    const isUsernameTaken = await User.findOne({ username: trimmedUsername });
+
+    if (isUsernameTaken) {
+      return res.status(400).json({
+        success: false,
+        message: "Username is already taken. Please choose another one",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Username is available",
+    });
+  } catch (error) {
+    console.log("Some error occurred during checking username:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong while checking username",
+      error,
+    });
+  }
+};
+
 export const Signup = async (req: Request, res: Response): Promise<any> => {
   try {
     console.log("req.body is ", req.body);
@@ -138,6 +190,12 @@ export const Login = async (req: Request, res: Response): Promise<any> => {
       .populate("likes")
       .populate("comment")
       .populate("saved")
+      .populate("profile")
+      .populate("followers")
+      .populate("following")
+      .populate("following")
+      .populate("userStories")
+      .populate("folowersStories")
       .exec();
     console.log("isuserExitst is ", isUserExist);
     if (!isUserExist) {

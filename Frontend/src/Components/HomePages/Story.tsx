@@ -6,15 +6,17 @@ import { useSelector } from "react-redux";
 
 export default function Story() {
   const user = useSelector((state: any) => state.User.user);
+  console.log("user in story is", user);
   // console.log("user in story", user);
 
   const [images, setimages] = useState<any>([]);
+  console.log("images in story", images);
 
-  if (user) {
-    useEffect(() => {
+  useEffect(() => {
+    if (user) {
       setimages(user?.posts);
-    }, []);
-  }
+    }
+  }, [user]);
   return (
     <View style={styles.container}>
       <ScrollView
@@ -22,46 +24,43 @@ export default function Story() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollViewContent} // Use content container to limit items height
       >
+        <View style={styles.storyContainer}>
+          <View style={styles.imageContainer}>
+            <Image
+              style={styles.image}
+              source={{
+                uri: user?.profilePic,
+              }}
+            />
+          </View>
+          <Icon
+            name="pluscircleo"
+            size={30}
+            color={"white"}
+            style={{
+              position: "absolute",
+              right: 14,
+              top: 82,
+              backgroundColor: "blue",
+              borderRadius: 50,
+            }}
+          />
+          <Text style={styles.text}>{user?.username}</Text>
+        </View>
         {/* Repeat stories */}
-        {images.map((item: any, index: any) =>
-          index == 0 ? (
-            <View key={index} style={styles.storyContainer}>
-              <View style={styles.imageContainer}>
-                <Image
-                  style={styles.image}
-                  source={{
-                    uri: item.image,
-                  }}
-                />
-              </View>
-              <Icon
-                name="pluscircleo"
-                size={30}
-                color={"white"}
-                style={{
-                  position: "absolute",
-                  right: 14,
-                  top: 82,
-                  backgroundColor: "blue",
-                  borderRadius: 50,
+        {images.map((item: any, index: any) => (
+          <View key={index} style={styles.storyContainer}>
+            <View style={styles.imageContainer}>
+              <Image
+                style={styles.image}
+                source={{
+                  uri: item.image,
                 }}
               />
-              <Text style={styles.text}>Manish Kumar </Text>
             </View>
-          ) : (
-            <View key={index} style={styles.storyContainer}>
-              <View style={styles.imageContainer}>
-                <Image
-                  style={styles.image}
-                  source={{
-                    uri: item.image,
-                  }}
-                />
-              </View>
-              <Text style={styles.text}>Manish keer</Text>
-            </View>
-          )
-        )}
+            <Text style={styles.text}>Manish keer</Text>
+          </View>
+        ))}
       </ScrollView>
     </View>
   );

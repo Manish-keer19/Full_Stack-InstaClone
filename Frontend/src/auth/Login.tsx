@@ -161,6 +161,8 @@ export default function Login() {
       }
     } catch (error) {
       console.log("could not login here in login.tsx", error);
+      setIsSubmiting(false);
+      alert("Could not login");
     }
   };
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();

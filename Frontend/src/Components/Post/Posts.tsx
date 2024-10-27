@@ -177,8 +177,13 @@ import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import { useSelector } from "react-redux";
 
-export default function Posts() {
-  const user = useSelector((state: any) => state.User.user);
+export default function Posts({ route }: any) {
+  const anotheruser = route.params && route.params.user;
+  let user = useSelector((state: any) => state.User.user);
+
+  if (anotheruser) {
+    user = anotheruser;
+  }
   const [images, setImages] = useState<[]>([]);
 
   useEffect(() => {

@@ -1,5 +1,11 @@
 import { Router } from "express";
-import { getuserFulldata } from "../controllers/User.controller";
+import {
+  FollowUser,
+  getuserFulldata,
+  searchUsers,
+  UnFollowUser,
+} from "../controllers/User.controller";
+import { authentication } from "../middleware/authantication";
 
 const userRoute = Router();
 
@@ -9,4 +15,7 @@ userRoute.get("/", (req, res) => {
 });
 
 userRoute.post("/getuserFulldata", getuserFulldata);
+userRoute.post("/followuser", authentication, FollowUser);
+userRoute.post("/unFollowUser", authentication, UnFollowUser);
+userRoute.post("/searchUsers", authentication, searchUsers);
 export default userRoute;
