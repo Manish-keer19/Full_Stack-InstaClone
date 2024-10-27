@@ -572,9 +572,9 @@ export default function Profile() {
     }
   };
 
-  // useEffect(() => {
-  //   if (!user) fetchUserData();
-  // }, [user]);
+  useEffect(() => {
+    if (!user) fetchUserData();
+  }, [user]);
 
   const renderPost = ({ item }: any) => (
     <TouchableOpacity
@@ -692,7 +692,7 @@ export default function Profile() {
       <FlatList
         data={user.posts}
         renderItem={renderPost}
-        keyExtractor={(item) => item._id.toString()}
+        keyExtractor={(item) => item?._id}
         numColumns={3}
         style={styles.postsContainer}
         contentContainerStyle={{ paddingBottom: 60 }} // Ensure there’s space for the footer

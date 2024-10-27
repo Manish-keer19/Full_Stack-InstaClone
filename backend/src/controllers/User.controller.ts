@@ -140,7 +140,7 @@ export const FollowUser = async (req: Request, res: Response): Promise<any> => {
     console.log("userid is ", userId);
     console.log("token is ", token);
     // validate
-    if (!userId || !token) {
+    if (!userId) {
       return res.status(400).json({
         success: false,
         message: "all fields are required",
@@ -158,7 +158,11 @@ export const FollowUser = async (req: Request, res: Response): Promise<any> => {
       });
     }
 
-    const isCurrentUserExist = await User.findOne({ _id: currentUserId });
+    const isCurrentUserExist = await User.findOne(
+      { _id: currentUserId },
+      {},
+      { new: true }
+    );
 
     if (!isCurrentUserExist) {
       return res.status(400).json({
@@ -167,7 +171,7 @@ export const FollowUser = async (req: Request, res: Response): Promise<any> => {
       });
     }
 
-    if (isCurrentUserExist.following == userId) {
+    if (isCurrentUserExist.following.some((el) => el._id == userId)) {
       return res.json({
         success: false,
         message: "you have already followed the user",
@@ -191,7 +195,17 @@ export const FollowUser = async (req: Request, res: Response): Promise<any> => {
         },
       },
       { new: true }
-    );
+    )
+      .populate("posts")
+      .populate("likes")
+      .populate("comment")
+      .populate("saved")
+      .populate("profile")
+      .populate("followers")
+      .populate("following")
+      .populate("userStories")
+      .populate("folowersStories")
+      .exec();
 
     console.log("current user is ", currentUser);
 
@@ -227,6 +241,7 @@ export const FollowUser = async (req: Request, res: Response): Promise<any> => {
     return res.status(200).json({
       success: true,
       message: "successfully followed the user",
+      userdata: currentUser,
     });
   } catch (error) {
     console.log("could not follow the user", error);
@@ -282,7 +297,7 @@ export const UnFollowUser = async (
       });
     }
 
-    const currentUser = await User.findById(currentUserId);
+    const currentUser = await User.findById(currentUserId, {}, { new: true });
 
     if (!currentUser) {
       return res.json({
@@ -299,7 +314,6 @@ export const UnFollowUser = async (
     }
 
     // remove the target user from following array of currentuser
-
     const newcurrentUser = await User.findByIdAndUpdate(
       currentUserId,
       {
@@ -308,7 +322,17 @@ export const UnFollowUser = async (
         },
       },
       { new: true }
-    );
+    )
+      .populate("posts")
+      .populate("likes")
+      .populate("comment")
+      .populate("saved")
+      .populate("profile")
+      .populate("followers")
+      .populate("following")
+      .populate("userStories")
+      .populate("folowersStories")
+      .exec();
 
     console.log("newcurrent user is ", newcurrentUser);
 
@@ -343,6 +367,7 @@ export const UnFollowUser = async (
     return res.status(200).json({
       success: true,
       message: "Unfollower the user successfully",
+      userdata: newcurrentUser,
     });
   } catch (error) {
     console.log("could not unfollowe the user");

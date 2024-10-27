@@ -42,12 +42,16 @@ export default function Entryroute() {
   useLoadUserData();
   const token = useSelector((state: any) => state.User.token);
   const user = useSelector((state: any) => state.User.user);
-  const [initialPage, setInitialPage] = useState<string>();
+  // const [initialPage, setInitialPage] = useState<string>("Login");
+  const [initialPage, setInitialPage] = useState<string>("");
+
+  // console.log("token in entryroute ", token);
+  // console.log("user in entryroute ", user);
 
   useEffect(() => {
     // Set the initial page based on user presence
     setInitialPage(token && user ? "Home" : "Login");
-  }, [token, user]); // Add 'user' as a dependency
+  }, []); // Add 'user' as a dependency
 
   console.log("initialPage is ", initialPage);
 

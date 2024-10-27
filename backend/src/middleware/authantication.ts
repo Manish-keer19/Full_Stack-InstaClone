@@ -18,11 +18,11 @@ export const authentication = (
       req.body.token || req.header("Authorization")?.replace("Bearer ", "");
     // console.log("Authorization header:", req.header("Authorization"));
     // console.log("Extracted token:", token);
-
+    // console.log("token in authantication", token);
     if (!token) {
       res.status(400).json({
         success: false,
-        message: "Token not found",
+        message: "Token not found token de bhai",
       });
       return; // Use return here to exit the function without returning the response object
     }

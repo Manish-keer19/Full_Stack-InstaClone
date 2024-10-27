@@ -8,36 +8,34 @@ import {
   FlatList,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import EntypoIcons from "@expo/vector-icons/Entypo";
 import AntDesignIcons from "@expo/vector-icons/AntDesign";
 import Footer from "../Footer";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../../Entryroute";
 import { NavigationProp } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  clearProfileData,
-  useLoadProfileData,
-} from "../../features/Profile/ProfileSlice";
-import { images } from "../../Utils/imagedata";
-import Icons from "react-native-vector-icons/FontAwesome5";
-import { UserServiceInstance } from "../../services/Userservice";
-import FontAwesomeIcons from "react-native-vector-icons/FontAwesome5";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FeatherIcons from "react-native-vector-icons/Feather";
-import {
-  logout,
-  setUser,
-  useLoadUserData,
-} from "../../features/user/userSlice";
+import { setUser, useLoadUserData } from "../../features/user/userSlice";
 import Loader from "../Loader";
-import Login from "../../auth/Login";
+import { UserServiceInstance } from "../../services/Userservice";
 
 export default function UserProfile({ route }: any) {
-  useLoadProfileData();
   useLoadUserData();
 
+  const currentUser = useSelector((state: any) => state.User.user);
+  console.log("current use is ", currentUser);
+  const token = useSelector((state: any) => state.User.token);
+  console.log("token in user profile", token);
   const user = route.params && route.params.user;
+
+  // Set initial following state
+  const [isFollowing, setIsFollowing] = useState(
+    currentUser?.following?.some((item: any) => item._id === user._id)
+  );
+
+  console.log("isfollowing in useProfile ", isFollowing);
+
   const dispatch = useDispatch();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
@@ -56,6 +54,45 @@ export default function UserProfile({ route }: any) {
   if (!user) {
     return <Loader />;
   }
+
+  const handleUnfolloweUser = async () => {
+    console.log("unfollow user button pressed");
+    setIsFollowing(false);
+    const data = {
+      userId: user._id,
+      token,
+    };
+    try {
+      const res = await UserServiceInstance.unfolloweUser(data);
+      console.log("res in user profile", res);
+      if (res) {
+        dispatch(setUser(res.userdata));
+      }
+    } catch (error) {
+      setIsFollowing(true);
+      console.log("could not follow the user", error);
+    }
+  };
+
+  const handleFollowUser = async () => {
+    setIsFollowing(true);
+    console.log("follow user button pressed");
+
+    const data = {
+      userId: user._id,
+      token,
+    };
+    try {
+      const res = await UserServiceInstance.followeUser(data);
+      console.log("res in user profile", res);
+      if (res) {
+        dispatch(setUser(res.userdata));
+      }
+    } catch (error) {
+      setIsFollowing(false);
+      console.log("could not follow the user", error);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -128,10 +165,20 @@ export default function UserProfile({ route }: any) {
 
       {/* Buttons */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.ediFollowbtn}>
-          <Text style={styles.buttonText}>Follow</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.editMessagebtn}>
+        {isFollowing ? (
+          <TouchableOpacity
+            style={styles.unfollowbtn}
+            onPress={handleUnfolloweUser}
+          >
+            <Text style={styles.buttonText}>Unfollow</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={styles.Followbtn} onPress={handleFollowUser}>
+            <Text style={styles.buttonText}>Follow</Text>
+          </TouchableOpacity>
+        )}
+
+        <TouchableOpacity style={styles.Messagebtn}>
           <Text style={styles.buttonText}>Message</Text>
         </TouchableOpacity>
       </View>
@@ -162,7 +209,7 @@ export default function UserProfile({ route }: any) {
       <FlatList
         data={user.posts}
         renderItem={renderPost}
-        keyExtractor={(item) => item._id.toString()}
+        keyExtractor={(item) => item._id}
         numColumns={3}
         style={styles.postsContainer}
         contentContainerStyle={{ paddingBottom: 60 }} // Ensure there’s space for the footer
@@ -235,14 +282,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     gap: 15,
   },
-  ediFollowbtn: {
+  Followbtn: {
     flex: 1,
     alignItems: "center",
     backgroundColor: "blue",
     padding: 8,
     borderRadius: 15,
   },
-  editMessagebtn: {
+  unfollowbtn: {
+    flex: 1,
+    alignItems: "center",
+    backgroundColor: "#333",
+    padding: 8,
+    borderRadius: 15,
+  },
+  Messagebtn: {
     backgroundColor: "#333",
     flex: 1,
     alignItems: "center",

@@ -39,7 +39,7 @@ export default function Feed() {
   return (
     <ScrollView style={styles.postWrapper}>
       {posts.map((post, i) => (
-        <View style={styles.postContainer} key={post._id}>
+        <View style={styles.postContainer} key={i}>
           {/* Header */}
           <View style={styles.postHeader}>
             <View style={styles.profileInfo}>
@@ -96,9 +96,9 @@ export default function Feed() {
 
           {/* Like and Comment Count */}
           <View style={styles.postInfoWrapper}>
-            <Text style={styles.postInfoText}>{post.likes.length} likes</Text>
+            <Text style={styles.postInfoText}>{post?.likes?.length} likes</Text>
             <Text style={styles.postInfoText}>
-              {post.comment.length} comments
+              {post?.comment?.length} comments
             </Text>
           </View>
 
