@@ -3,7 +3,7 @@
 //   Text,
 //   View,
 //   Image,
-//   Pressable,
+//   TouchableOpacity,
 //   ScrollView,
 // } from "react-native";
 // import React, { useEffect, useState } from "react";
@@ -61,19 +61,19 @@
 //             {/* Like, Comment, Share, Save Section */}
 //             <View style={styles.actionIcons}>
 //               <View style={styles.leftIcons}>
-//                 <Pressable>
+//                 <TouchableOpacity>
 //                   <AntDesignIcon name="hearto" color={"white"} size={28} />
-//                 </Pressable>
-//                 <Pressable>
+//                 </TouchableOpacity>
+//                 <TouchableOpacity>
 //                   <FontAwesomeIcon name="comment-o" color={"white"} size={28} />
-//                 </Pressable>
-//                 <Pressable>
+//                 </TouchableOpacity>
+//                 <TouchableOpacity>
 //                   <FeatherIcon name="send" color={"white"} size={28} />
-//                 </Pressable>
+//                 </TouchableOpacity>
 //               </View>
-//               <Pressable>
+//               <TouchableOpacity>
 //                 <FeatherIcon name="bookmark" color={"white"} size={28} />
-//               </Pressable>
+//               </TouchableOpacity>
 //             </View>
 
 //             {/* Post Info */}
@@ -166,11 +166,11 @@ import {
   Text,
   View,
   Image,
-  Pressable,
   ScrollView,
   Touchable,
   TouchableHighlight,
   TextInput,
+  TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Footer from "../Footer";
@@ -188,7 +188,7 @@ export default function Posts({ route }: any) {
 
   const dispatch = useDispatch();
   const [commentModal, setCommentModal] = useState(false);
-  const [comment, setComment] = useState<[]>([]);
+  const [post, setpost] = useState<[]>([]);
   const anotheruser = route.params && route.params.user;
   let { user, token } = useSelector((state: any) => state.User);
   // console.log("user in posts", user);
@@ -196,14 +196,14 @@ export default function Posts({ route }: any) {
   if (anotheruser) {
     user = anotheruser;
   }
-  const [post, setpost] = useState<[]>([]);
+  const [posts, setposts] = useState<[]>([]);
   const [userLikes, setUserLikes] = useState([]);
 
   console.log("post in posts", post);
 
   useEffect(() => {
     if (user && user.posts) {
-      setpost(user.posts);
+      setposts(user.posts);
 
       let likes = user?.posts.map((item: any) => {
         if (item.likes == user._id) {
@@ -252,15 +252,18 @@ export default function Posts({ route }: any) {
 
   const handleshowCommentModal = (item: any) => {
     console.log("item is ", item);
-    setComment(item);
+    setpost(item);
     setCommentModal(true);
   };
 
   return (
     <View>
-      <ScrollView style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        showsHorizontalScrollIndicator={false}
+      >
         {/* Post Container */}
-        {post.map((item: any, i: number) => (
+        {posts.map((item: any, i: number) => (
           <View style={styles.postContainer} key={i}>
             {/* Post Header */}
             <View style={styles.postHeader}>
@@ -283,7 +286,7 @@ export default function Posts({ route }: any) {
             <View style={styles.actionIcons}>
               <View style={styles.leftIcons}>
                 {userLikes[i] ? (
-                  <Pressable
+                  <TouchableOpacity
                     style={{
                       flexDirection: "row",
                       alignItems: "center",
@@ -297,9 +300,9 @@ export default function Posts({ route }: any) {
                     <Text style={{ color: "white" }}>
                       {item?.likes?.length}
                     </Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 ) : (
-                  <Pressable
+                  <TouchableOpacity
                     onPress={() => {
                       handleCreateLike(item._id);
                     }}
@@ -313,12 +316,12 @@ export default function Posts({ route }: any) {
                     <Text style={{ color: "white" }}>
                       {item?.likes?.length}
                     </Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 )}
 
-                <Pressable
+                <TouchableOpacity
                   onPress={() => {
-                    handleshowCommentModal(item.comment);
+                    handleshowCommentModal(item);
                   }}
                   style={{ flexDirection: "row", alignItems: "center", gap: 7 }}
                 >
@@ -326,14 +329,14 @@ export default function Posts({ route }: any) {
                   <Text style={{ color: "white" }}>
                     {item?.comment?.length}
                   </Text>
-                </Pressable>
-                <Pressable>
+                </TouchableOpacity>
+                <TouchableOpacity>
                   <FeatherIcon name="send" color={"white"} size={28} />
-                </Pressable>
+                </TouchableOpacity>
               </View>
-              <Pressable>
+              <TouchableOpacity>
                 <FeatherIcon name="bookmark" color={"white"} size={28} />
-              </Pressable>
+              </TouchableOpacity>
             </View>
 
             {/* Post Info */}
@@ -351,7 +354,7 @@ export default function Posts({ route }: any) {
 
       <CommentSection
         commentModal={commentModal}
-        comment={comment}
+        Posts={post}
         setCommentModal={setCommentModal}
       />
     </View>

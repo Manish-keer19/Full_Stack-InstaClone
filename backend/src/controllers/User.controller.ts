@@ -450,12 +450,22 @@ export const searchUsers = async (
       {},
       { new: true }
     )
-      .populate("posts")
+      .populate({
+        path: "posts",
+        populate: {
+          path: "comment",
+
+          populate: {
+            path: "user",
+          },
+        },
+      })
       .populate("saved")
+      .populate("profile")
       .populate("followers")
       .populate("following")
+      .populate("userStories")
       .populate("folowersStories")
-      .populate("profile")
       .exec();
     res.status(200).json({
       success: true,

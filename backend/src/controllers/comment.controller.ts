@@ -127,21 +127,6 @@ export const deleteComment = async (
         message: "Comment does not exist",
       });
     }
-    // update the post
-    const updatedUser = await User.findByIdAndUpdate(
-      user.id,
-      {
-        $pull: { comment: commentId }, // Assuming you have a 'comments' array in the user model
-      },
-      { new: true }
-    );
-
-    if (!updatedUser) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
 
     // delete the comment
     const deletedComment = await Comment.findByIdAndDelete(commentId);
@@ -151,10 +136,32 @@ export const deleteComment = async (
         message: "Comment not found",
       });
     }
+
+    // update the post and user model
+    const updatedPost = await Post.findOneAndUpdate(
+      { comment: commentId },
+      { $pull: { comment: commentId } },
+      { new: true }
+    );
+    if (!updatedPost) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
+    }
+
+    // const userdata = await fetchAllDetailsUser(req.user?.email);
+    // if (!userdata) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     message: "User not found",
+    //   });
+    // }
     // return success response
     return res.status(200).json({
       success: true,
       message: "Comment deleted successfully",
+      // userdata,
     });
   } catch (error: any) {
     console.log("could not delete the comment", error);

@@ -38,15 +38,17 @@ export type RootStackParamList = {
   CreatePost: { file1: object | null | undefined };
   Search: undefined;
   UserProfile: undefined | { user: any };
-  CommentSection: undefined | { commentModal:any,setCommentModal:any,comment:any };
+  CommentSection:
+    | undefined
+    | { commentModal: any; setCommentModal: any; Posts: any };
 };
 
 export default function Entryroute() {
   useLoadUserData();
   const token = useSelector((state: any) => state.User.token);
   const user = useSelector((state: any) => state.User.user);
-  // const [initialPage, setInitialPage] = useState<string>("Login");
-  const [initialPage, setInitialPage] = useState<string>("Post");
+  const [initialPage, setInitialPage] = useState<string>("Login");
+  // const [initialPage, setInitialPage] = useState<string>("Post");
   // const [initialPage, setInitialPage] = useState<string>("");
 
   // console.log("token in entryroute ", token);
@@ -55,7 +57,7 @@ export default function Entryroute() {
   useEffect(() => {
     // Set the initial page based on user presence
     setInitialPage(token && user ? "Home" : "Login");
-  }, []); // Add 'user' as a dependency
+  }, [token, user]); // Add 'user' as a dependency
 
   console.log("initialPage is ", initialPage);
 
@@ -80,7 +82,7 @@ export default function Entryroute() {
         <Stack.Screen name="CreatePost" component={CreatePost} />
         <Stack.Screen name="Search" component={Search} />
         <Stack.Screen name="UserProfile" component={UserProfile} />
-        <Stack.Screen name="CommentSection" component={CommentSection} />
+        {/* <Stack.Screen name="CommentSection" component={CommentSection} /> */}
       </Stack.Navigator>
     </NavigationContainer>
   );

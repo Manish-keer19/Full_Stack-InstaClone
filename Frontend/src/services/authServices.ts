@@ -84,6 +84,7 @@ class AuthService {
       console.log("Could not generate OTP, some error occurred");
     }
   }
+
   async login(data: object) {
     console.log("data in login authservice", data);
     try {
@@ -102,7 +103,6 @@ class AuthService {
       }
     } catch (error) {
       console.log("could not login", error);
-    
     }
   }
 }

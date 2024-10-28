@@ -9,9 +9,14 @@ import {
   StyleSheet,
   Modal,
   BackHandler,
+  Pressable,
+  Button,
+  TouchableHighlight,
 } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { CommentServiceInstance } from "../../services/CommentServices";
+import { setUser } from "../../features/user/userSlice";
 
 // Define types for User, Comment, and Props
 type User = {
@@ -35,25 +40,31 @@ type Comment = {
 interface CommentSectionProps {
   commentModal: boolean;
   setCommentModal: (value: boolean) => void;
-  comment: any;
+  Posts: any;
 }
 
 const CommentSection: React.FC<CommentSectionProps> = ({
-  comment,
+  Posts,
   commentModal,
   setCommentModal,
 }) => {
+  const token = useSelector((state: any) => state.User.token);
+  const dispatch = useDispatch();
   // console.log("comment is in comment section ", comment);
   const [commentText, setCommentText] = useState<string>("");
   const [subCommentText, setSubCommentText] = useState<string>("");
   const [comments, setComments] = useState<any[]>();
+  const [CommentEditModal, setCommentEditModal] = useState(false);
   console.log("comments in comment section ", comments);
   const [showSharebtn, setShowSharebtn] = useState<boolean>(false);
+  const [commentId, setCommentId] = useState<string>("");
   const user = useSelector((state: any) => state.User.user);
 
+  console.log("post in comment section ", Posts);
+
   useEffect(() => {
-    setComments(comment);
-  }, [comment]);
+    setComments(Posts?.comment);
+  }, [Posts]);
 
   useEffect(() => {
     const backAction = () => {
@@ -71,9 +82,43 @@ const CommentSection: React.FC<CommentSectionProps> = ({
     return () => backHandler.remove(); // Cleanup event listener
   }, [setCommentModal]);
 
-  const addComment = () => {};
+  const handleCloseModal = () => {
+    setCommentEditModal(false);
+  };
 
-  const addSubComment = (parentId: number) => {};
+  const handleCreateComment = async (postId: any) => {
+    // console.log("postId is handleCreateComment", postId);
+    // console.log("comment is ", commentText);
+    const data = { postId, comment: commentText, token };
+    console.log("data in handleCreateComment", data);
+
+    try {
+      setCommentText("");
+      const res = await CommentServiceInstance.creatComment(data);
+      console.log("res is ", res);
+      if (res) {
+        console.log("Comment created succesfuul in comment section");
+        dispatch(setUser(res.userdata));
+      }
+    } catch (error) {
+      console.log("could not create the comment");
+    }
+  };
+
+  const handelDeleteComment = async () => {
+    // console.log("comment id is ",commentId);
+    const data = { commentId, token };
+    try {
+      const res = await CommentServiceInstance.deleteComment(data);
+      console.log("res is ", res);
+      if (res) {
+        console.log("Comment deleted succesfuul in comment section");
+        // dispatch(setUser(res.userdata));
+      }
+    } catch (error) {
+      console.log("could not delete the comment");
+    }
+  };
 
   return (
     commentModal && (
@@ -83,47 +128,77 @@ const CommentSection: React.FC<CommentSectionProps> = ({
         <Text style={styles.title}>Comments</Text>
 
         <FlatList
+          // style={{borderWidth:2,borderColor:"blue"}}
+          showsVerticalScrollIndicator={false}
           data={comments}
-          keyExtractor={(item) => item?.id?.toString()}
+          keyExtractor={(item) => item?.id}
           renderItem={({ item }: any) => (
-            <View style={styles.commentContainer}>
-              <Image
-                style={styles.profilePic}
-                source={{ uri: item?.user?.profilePic }}
-              />
-              <View style={styles.commentTextContainer}>
-                <Text style={styles.username}>{item?.user?.username}</Text>
-                <Text style={styles.commentText}>{item?.comment}</Text>
-                <View>
-                  <TouchableOpacity style={{}}>
-                    <Text style={{ color: "#3897f0" }}>Reply</Text>
+            <Pressable
+              onLongPress={() => {
+                console.log("item.id is ", item?._id);
+                setCommentId(item?._id);
+                setCommentEditModal(true);
+              }}
+              delayLongPress={300}
+              onPress={() => {
+                setCommentEditModal(false);
+              }}
+              // style={{ borderWidth: 2, borderColor: "gold" }}
+            >
+              <View style={styles.commentContainer}>
+                <Image
+                  style={styles.profilePic}
+                  source={{ uri: item?.user?.profilePic }}
+                />
+
+                <View style={styles.commentTextContainer}>
+                  <Text style={styles.username}>{item?.user?.username}</Text>
+                  <Text style={styles.commentText}>{item?.comment}</Text>
+                  <View>
+                    <TouchableOpacity style={{}}>
+                      <Text style={{ color: "#3897f0" }}>Reply</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                <Ionicons name="heart-outline" size={20} color="white" />
+              </View>
+              {CommentEditModal && item._id === commentId && (
+                <View
+                  style={{
+                    width: 160,
+                    height: 100,
+                    backgroundColor: "#303030",
+                    borderRadius: 10,
+                    gap: 5,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginTop: 10,
+                  }}
+                >
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: "brown",
+                      width: "90%",
+                      borderRadius: 10,
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text style={{ color: "white", padding: 10 }}>edit</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: "darkred",
+                      width: "90%",
+                      borderRadius: 10,
+                      alignItems: "center",
+                    }}
+                    onPress={handelDeleteComment}
+                  >
+                    <Text style={{ color: "white", padding: 10 }}>Delete</Text>
                   </TouchableOpacity>
                 </View>
-                {/* {item.subComments.length > 0 && (
-                  <FlatList
-                    data={item.subComments}
-                    keyExtractor={(subItem) => subItem.id.toString()}
-                    renderItem={({ item: subItem }) => (
-                      <View style={styles.subCommentContainer}>
-                        <Image
-                          style={styles.subProfilePic}
-                          source={{ uri: subItem.user.profilePic }}
-                        />
-                        <View style={styles.subCommentTextContainer}>
-                          <Text style={styles.username}>
-                            {subItem.user.name}
-                          </Text>
-                          <Text style={styles.subCommentText}>
-                            {subItem.text}
-                          </Text>
-                        </View>
-                      </View>
-                    )}
-                  />
-                )} */}
-              </View>
-              <Ionicons name="heart-outline" size={20} color="white" />
-            </View>
+              )}
+            </Pressable>
           )}
         />
 
@@ -143,12 +218,15 @@ const CommentSection: React.FC<CommentSectionProps> = ({
             }}
           />
           {showSharebtn ? (
-            <TouchableOpacity onPress={addComment}>
+            <TouchableOpacity>
               <MaterialIcons
                 name="send"
                 size={30}
                 color="#007AFF"
                 style={styles.sendIcon}
+                onPress={() => {
+                  handleCreateComment(Posts?._id);
+                }}
               />
             </TouchableOpacity>
           ) : (
@@ -194,7 +272,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     gap: 15,
     // borderWidth:2,
-    // borderColor:"yellow"
+    // borderColor:"blue"
   },
   profilePic: {
     width: 40,
@@ -205,6 +283,8 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 10,
     gap: 8,
+    // borderWidth:2,
+    // borderColor:"blue"
   },
   username: {
     color: "#f9f9f9",
