@@ -3,7 +3,7 @@ import apiClient from "./apiClient";
 // Remove image from PostData since we'll handle it in FormData
 
 class PostService {
-  async createPost(data: FormData) {
+  async createPost(data: any) {
     try {
       console.log("data in postService ", data);
 
@@ -24,6 +24,24 @@ class PostService {
       }
     } catch (error) {
       console.log("could not create the post", error);
+    }
+  }
+
+  async deletePost(data: any) {
+    try {
+      console.log("data in postService ", data);
+      const res = await apiClient.post("/post/deletePost", data);
+
+      console.log("res.data is ", res.data);
+      if (res.data.success) {
+        console.log("post deleted succesfully");
+        return res.data;
+      } else {
+        console.log("could not delete the post");
+        return null;
+      }
+    } catch (error) {
+      console.log("could not delete the post", error);
     }
   }
 }

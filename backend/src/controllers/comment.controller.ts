@@ -150,18 +150,20 @@ export const deleteComment = async (
       });
     }
 
-    // const userdata = await fetchAllDetailsUser(req.user?.email);
-    // if (!userdata) {
-    //   return res.status(404).json({
-    //     success: false,
-    //     message: "User not found",
-    //   });
-    // }
+    const userdata = await fetchAllDetailsUser(req.user?.email);
+    if (!userdata) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    console.log("userdata in delete comment is ", userdata);
     // return success response
     return res.status(200).json({
       success: true,
       message: "Comment deleted successfully",
-      // userdata,
+      userdata,
     });
   } catch (error: any) {
     console.log("could not delete the comment", error);

@@ -11,6 +11,7 @@ const PostShcema = new Schema({
   comment: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
   saved: [{ type: Schema.Types.ObjectId, ref: "User" }],
   location: String,
+  imagePublicId: String,
 });
 
 export const Post = mongoose.model("Post", PostShcema);

@@ -141,23 +141,23 @@ export default function CreatePost({ route }: any) {
   const token = useSelector((state: any) => state.User.token);
   const user = useSelector((state: any) => state.User.user);
   console.log("token i createPost", token);
-  const fetchuserData = async () => {
-    const data = {
-      email: user.email,
-    };
-    try {
-      const res = await UserServiceInstance.getUserData(data);
-      console.log("res in profile section", res);
-      if (res.userdata) {
-        console.log("res in profile section", res.userdata);
-        dispatch(setUser(res.userdata));
-        return true;
-      }
-    } catch (error) {
-      console.log("could not get the userdata", error);
-      return false;
-    }
-  };
+  // const fetchuserData = async () => {
+  //   const data = {
+  //     email: user.email,
+  //   };
+  //   try {
+  //     const res = await UserServiceInstance.getUserData(data);
+  //     console.log("res in profile section", res);
+  //     if (res.userdata) {
+  //       console.log("res in profile section", res.userdata);
+  //       dispatch(setUser(res.userdata));
+  //       return true;
+  //     }
+  //   } catch (error) {
+  //     console.log("could not get the userdata", error);
+  //     return false;
+  //   }
+  // };
 
   const handleSubmit = async () => {
     if (isSubmitting) return; // Prevent multiple submissions
@@ -185,15 +185,12 @@ export default function CreatePost({ route }: any) {
 
     try {
       const res = await PostServiceInstance.createPost(formData);
-      // Handle the response
-      const userres = await fetchuserData();
-      if (userres) {
-        navigation.navigate("Profile");
-      } else {
-        navigation.navigate("Home");
-      }
-
       console.log("res is ", res);
+      if (res) {
+        console.log("post created");
+        dispatch(setUser(res.userdata));
+        navigation.navigate("Profile");
+      }
     } catch (error) {
       console.log("error creating post", error);
     } finally {

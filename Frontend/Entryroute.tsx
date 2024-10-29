@@ -174,8 +174,8 @@ export default function Entryroute() {
   if (loading) {
     // Display loading indicator while fetching user and token from AsyncStorage
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="black" />
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center",backgroundColor:'#212121' }}>
+        <ActivityIndicator size="large" color="white" />
       </View>
     );
   }
@@ -185,6 +185,7 @@ export default function Entryroute() {
       <Stack.Navigator
         screenOptions={{ headerShown: false }}
         initialRouteName={initialPage}
+        // initialRouteName={"Post"}  
       >
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Profile" component={Profile} />

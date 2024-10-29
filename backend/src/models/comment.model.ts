@@ -10,6 +10,10 @@ const commentShema = new Schema({
   },
   likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
   subcomment: [{ type: Schema.Types.ObjectId, ref: "Subcomment" }],
+  post: {
+    type: Schema.Types.ObjectId,
+    ref: "Post",
+  },
 });
 
 export const Comment = mongoose.model("Comment", commentShema);

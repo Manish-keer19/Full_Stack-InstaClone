@@ -380,6 +380,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Modal,
+  Pressable,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Footer from "../Footer";
@@ -392,9 +393,14 @@ import { UserServiceInstance } from "../../services/Userservice";
 import { setUser, useLoadUserData } from "../../features/user/userSlice";
 import CommentSection from "../Post/CommentSection";
 import Octicons from "react-native-vector-icons/Octicons";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../../../Entryroute";
+import { Postmodal } from "../Modal/Post.modal";
 
 export default function Posts() {
   useLoadUserData();
+
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const dispatch = useDispatch();
   const [commentModal, setCommentModal] = useState(false);
@@ -406,6 +412,9 @@ export default function Posts() {
   console.log("user in posts", user);
   const [posts, setposts] = useState<[]>([]);
   const [postlike, setpostlike] = useState<any | []>([]);
+  const [postData, setPostData] = useState<object>({});
+  const [postModal, setPostModal] = useState(false);
+
   // console.log("postlike in posts", postlike);
 
   // console.log("post in posts", post);
@@ -507,8 +516,12 @@ export default function Posts() {
         {posts.map((item: any, i: number) => (
           <View style={styles.postContainer} key={i}>
             {/* Post Header */}
+
             <View style={styles.postHeader}>
-              <View style={styles.profileInfo}>
+              <Pressable
+                style={styles.profileInfo}
+                onPress={() => navigation.navigate("Post", { user: user })}
+              >
                 <Image
                   source={{ uri: user?.profilePic }}
                   style={styles.avatar}
@@ -517,8 +530,21 @@ export default function Posts() {
                   <Text style={styles.username}>{user?.username}</Text>
                   <Text style={styles.location}>{item?.location}</Text>
                 </View>
-              </View>
-              <Icons name="dots-three-vertical" color={"white"} size={20} />
+              </Pressable>
+
+              <TouchableOpacity
+                style={{
+                  // backgroundColor: "red",
+                  padding: 10,
+                  borderRadius: 10,
+                }}
+                onPress={() => {
+                  setPostData({ userId: user._id, postId: item._id });
+                  setPostModal(true);
+                }}
+              >
+                <Icons name="dots-three-vertical" color={"white"} size={20} />
+              </TouchableOpacity>
             </View>
 
             {/* Post Image */}
@@ -599,16 +625,28 @@ export default function Posts() {
         Posts={post}
         setCommentModal={setCommentModal}
       /> */}
-<Modal visible={commentModal} transparent={true} animationType="slide"
-onRequestClose={() => setCommentModal(false)}
->
-  <CommentSection
-    commentModal={commentModal}
-    Posts={post} // This should be the specific post to comment on
-    setCommentModal={setCommentModal}
-  />
-</Modal>
+      <Modal
+        visible={commentModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setCommentModal(false)}
+      >
+        <CommentSection
+          commentModal={commentModal}
+          Posts={post} // This should be the specific post to comment on
+          setCommentModal={setCommentModal}
+        />
+      </Modal>
 
+      <Modal
+        visible={postModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setPostModal(false)}
+      >
+
+      <Postmodal PostData={postData} />
+      </Modal>
 
       <Footer />
     </View>
@@ -639,6 +677,8 @@ const styles = StyleSheet.create({
   profileInfo: {
     flexDirection: "row",
     alignItems: "center",
+    // borderWidth:2,
+    // borderColor:"blue",
   },
   avatar: {
     width: 40,

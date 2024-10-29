@@ -376,7 +376,7 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "../../../App";
+import { RootStackParamList } from "../../../Entryroute";
 
 export default function AddPost() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();

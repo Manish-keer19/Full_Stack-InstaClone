@@ -554,9 +554,9 @@ export default function Profile() {
 
   let { user, token } = useSelector((state: any) => state.User);
 
-  console.log("User in profile", user);
+  // console.log("User in profile", user);
 
-  const profileData = useSelector((state: any) => state.Profile.profileData);
+  // const profileData = useSelector((state: any) => state.Profile.profileData);
 
   const [activeTab, setActiveTab] = useState("Posts");
   const [issetting, setIssetting] = useState(false);

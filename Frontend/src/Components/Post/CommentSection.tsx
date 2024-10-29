@@ -164,201 +164,192 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   };
 
   return (
-    commentModal && (
-    
-        <View style={styles.modalContainer}>
-          <View style={styles.indicator}></View>
+    <View style={styles.modalContainer}>
+      <View style={styles.indicator}></View>
 
-          <Text style={styles.title}>Comments</Text>
+      <Text style={styles.title}>Comments</Text>
 
-          {/* <FlatList
-          // style={{borderWidth:2,borderColor:"blue"}}
-          // showsVerticalScrollIndicator={false}
-          data={comments}
-          keyExtractor={(item) => item?._id.toString()}
-          renderItem={({ item }: any) => (
-            <Pressable
-              onLongPress={() => {
-                console.log("item.id is ", item?._id);
-                setCommentId(item?._id);
-                setCommentEditModal(true);
-              }}
-              delayLongPress={300}
-              onPress={() => {
-                setCommentEditModal(false);
-              }}
-              // style={{ borderWidth: 2, borderColor: "gold" }}
-            >
-              <View style={styles.commentContainer}>
-                <Image
-                  style={styles.profilePic}
-                  source={{ uri: item?.user?.profilePic }}
-                />
+      <FlatList
+        // style={{borderWidth:2,borderColor:"blue"}}
+        // showsVerticalScrollIndicator={false}
+        data={comments}
+        keyExtractor={(item) => item?._id?.toString()}
+        renderItem={({ item }: any) => (
+          <Pressable
+            onLongPress={() => {
+              console.log("item.id is ", item?._id);
+              setCommentId(item?._id);
+              setCommentEditModal(true);
+            }}
+            delayLongPress={300}
+            onPress={() => {
+              setCommentEditModal(false);
+            }}
+            // style={{ borderWidth: 2, borderColor: "gold" }}
+          >
+            <View style={styles.commentContainer}>
+              <Image
+                style={styles.profilePic}
+                source={{ uri: item?.user?.profilePic }}
+              />
 
-                <View style={styles.commentTextContainer}>
-                  <Text style={styles.username}>{item?.user?.username}</Text>
-                  <Text style={styles.commentText}>{item?.comment}</Text>
-                  <View>
-                    <TouchableOpacity style={{}}>
-                      <Text style={{ color: "#3897f0" }}>Reply</Text>
-                    </TouchableOpacity>
-                  </View>
+              <View style={styles.commentTextContainer}>
+                <Text style={styles.username}>{item?.user?.username}</Text>
+                <Text style={styles.commentText}>{item?.comment}</Text>
+                <View>
+                  <TouchableOpacity style={{}}>
+                    <Text style={{ color: "#3897f0" }}>Reply</Text>
+                  </TouchableOpacity>
                 </View>
-                <Ionicons name="heart-outline" size={20} color="white" />
               </View>
-              {CommentEditModal && item._id === commentId && (
-                <View
+              <Ionicons name="heart-outline" size={20} color="white" />
+            </View>
+            {CommentEditModal && item._id === commentId && (
+              <View
+                style={{
+                  width: 160,
+                  height: 100,
+                  backgroundColor: "#303030",
+                  borderRadius: 10,
+                  gap: 5,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginTop: 10,
+                }}
+              >
+                <TouchableOpacity
                   style={{
-                    width: 160,
-                    height: 100,
-                    backgroundColor: "#303030",
+                    backgroundColor: "brown",
+                    width: "90%",
                     borderRadius: 10,
-                    gap: 5,
                     alignItems: "center",
-                    justifyContent: "center",
-                    marginTop: 10,
                   }}
                 >
-                  <TouchableOpacity
-                    style={{
-                      backgroundColor: "brown",
-                      width: "90%",
-                      borderRadius: 10,
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text style={{ color: "white", padding: 10 }}>edit</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={{
-                      backgroundColor: "darkred",
-                      width: "90%",
-                      borderRadius: 10,
-                      alignItems: "center",
-                    }}
-                    onPress={handelDeleteComment}
-                  >
-                    <Text style={{ color: "white", padding: 10 }}>Delete</Text>
+                  <Text style={{ color: "white", padding: 10 }}>edit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: "darkred",
+                    width: "90%",
+                    borderRadius: 10,
+                    alignItems: "center",
+                  }}
+                  onPress={handelDeleteComment}
+                >
+                  <Text style={{ color: "white", padding: 10 }}>Delete</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </Pressable>
+        )}
+      />
+
+      {/* <ScrollView>
+        {comments?.map((item: any, i: any) => (
+          <Pressable
+            key={item._id}
+            onLongPress={() => {
+              console.log("item.id is ", item?._id);
+              setCommentId(item?._id);
+              setCommentEditModal(true);
+            }}
+            delayLongPress={300}
+            onPress={() => {
+              setCommentEditModal(false);
+            }}
+            // style={{ borderWidth: 2, borderColor: "gold" }}
+          >
+            <View style={styles.commentContainer}>
+              <Image
+                style={styles.profilePic}
+                source={{ uri: item?.user?.profilePic }}
+              />
+
+              <View style={styles.commentTextContainer}>
+                <Text style={styles.username}>{item?.user?.username}</Text>
+                <Text style={styles.commentText}>{item?.comment}</Text>
+                <View>
+                  <TouchableOpacity style={{}}>
+                    <Text style={{ color: "#3897f0" }}>Reply</Text>
                   </TouchableOpacity>
                 </View>
-              )}
-            </Pressable>
-          )}
-        /> */}
-
-          <ScrollView>
-            {comments?.map((item: any, i: any) => (
-              <Pressable
-                key={item._id}
-                onLongPress={() => {
-                  console.log("item.id is ", item?._id);
-                  setCommentId(item?._id);
-                  setCommentEditModal(true);
+              </View>
+              <Ionicons name="heart-outline" size={20} color="white" />
+            </View>
+            {CommentEditModal && item._id === commentId && (
+              <View
+                style={{
+                  width: 160,
+                  height: 100,
+                  backgroundColor: "#303030",
+                  borderRadius: 10,
+                  gap: 5,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginTop: 10,
                 }}
-                delayLongPress={300}
-                onPress={() => {
-                  setCommentEditModal(false);
-                }}
-                // style={{ borderWidth: 2, borderColor: "gold" }}
               >
-                <View style={styles.commentContainer}>
-                  <Image
-                    style={styles.profilePic}
-                    source={{ uri: item?.user?.profilePic }}
-                  />
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: "brown",
+                    width: "90%",
+                    borderRadius: 10,
+                    alignItems: "center",
+                  }}
+                >
+                  <Text style={{ color: "white", padding: 10 }}>edit</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: "darkred",
+                    width: "90%",
+                    borderRadius: 10,
+                    alignItems: "center",
+                  }}
+                  onPress={handelDeleteComment}
+                >
+                  <Text style={{ color: "white", padding: 10 }}>Delete</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </Pressable>
+        ))}
+      </ScrollView> */}
 
-                  <View style={styles.commentTextContainer}>
-                    <Text style={styles.username}>{item?.user?.username}</Text>
-                    <Text style={styles.commentText}>{item?.comment}</Text>
-                    <View>
-                      <TouchableOpacity style={{}}>
-                        <Text style={{ color: "#3897f0" }}>Reply</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <Ionicons name="heart-outline" size={20} color="white" />
-                </View>
-                {CommentEditModal && item._id === commentId && (
-                  <View
-                    style={{
-                      width: 160,
-                      height: 100,
-                      backgroundColor: "#303030",
-                      borderRadius: 10,
-                      gap: 5,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      marginTop: 10,
-                    }}
-                  >
-                    <TouchableOpacity
-                      style={{
-                        backgroundColor: "brown",
-                        width: "90%",
-                        borderRadius: 10,
-                        alignItems: "center",
-                      }}
-                    >
-                      <Text style={{ color: "white", padding: 10 }}>edit</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={{
-                        backgroundColor: "darkred",
-                        width: "90%",
-                        borderRadius: 10,
-                        alignItems: "center",
-                      }}
-                      onPress={handelDeleteComment}
-                    >
-                      <Text style={{ color: "white", padding: 10 }}>
-                        Delete
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </Pressable>
-            ))}
-          </ScrollView>
-
-          <View style={styles.inputContainer}>
-            <Image
-              style={styles.profilePic}
-              source={{ uri: user?.profilePic }}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Add a comment..."
-              placeholderTextColor="#888"
-              value={commentText}
-              onChangeText={(value) => {
-                if (value == "") {
-                  setShowSharebtn(false);
-                }
-                setShowSharebtn(true);
-                setCommentText(value);
+      <View style={styles.inputContainer}>
+        <Image style={styles.profilePic} source={{ uri: user?.profilePic }} />
+        <TextInput
+          style={styles.input}
+          placeholder="Add a comment..."
+          placeholderTextColor="#888"
+          value={commentText}
+          onChangeText={(value) => {
+            if (value == "") {
+              setShowSharebtn(false);
+            }
+            setShowSharebtn(true);
+            setCommentText(value);
+          }}
+        />
+        {showSharebtn ? (
+          <TouchableOpacity>
+            <MaterialIcons
+              name="send"
+              size={30}
+              color="#007AFF"
+              style={styles.sendIcon}
+              onPress={() => {
+                handleCreateComment(Posts?._id);
               }}
             />
-            {showSharebtn ? (
-              <TouchableOpacity>
-                <MaterialIcons
-                  name="send"
-                  size={30}
-                  color="#007AFF"
-                  style={styles.sendIcon}
-                  onPress={() => {
-                    handleCreateComment(Posts?._id);
-                  }}
-                />
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity style={styles.stickerIcon}>
-                <Ionicons name="happy-outline" size={28} color="white" />
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-     
-    )
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={styles.stickerIcon}>
+            <Ionicons name="happy-outline" size={28} color="white" />
+          </TouchableOpacity>
+        )}
+      </View>
+    </View>
   );
 };
 

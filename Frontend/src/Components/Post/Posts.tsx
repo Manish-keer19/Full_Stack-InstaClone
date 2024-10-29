@@ -169,6 +169,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Modal,
+  Pressable,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Footer from "../Footer";
@@ -181,13 +182,21 @@ import { UserServiceInstance } from "../../services/Userservice";
 import { setUser, useLoadUserData } from "../../features/user/userSlice";
 import CommentSection from "./CommentSection";
 import Octicons from "react-native-vector-icons/Octicons";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../../../Entryroute";
+import { Postmodal } from "../Modal/Post.modal";
 
 export default function Posts({ route }: any) {
   useLoadUserData();
 
   const dispatch = useDispatch();
-  const [commentModal, setCommentModal] = useState(false);
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const [commentModal, setCommentModal] = useState<boolean>(false);
   const [post, setpost] = useState<[]>([]);
+  const [posts, setposts] = useState<[]>([]);
+  const [postlike, setpostlike] = useState<any | []>([]);
+  const [PostModal, setPostModal] = useState<boolean>(false);
+  const [PostData, setPostData] = useState<object>({});
   const anotheruser = route.params && route.params.user;
   let { user, token } = useSelector((state: any) => state.User);
 
@@ -198,10 +207,8 @@ export default function Posts({ route }: any) {
   }
 
   console.log("user in posts", user);
-  const [posts, setposts] = useState<[]>([]);
-  const [postlike, setpostlike] = useState<any | []>([]);
-  // console.log("postlike in posts", postlike);
 
+  // console.log("postlike in posts", postlike);
   // console.log("post in posts", post);
 
   useEffect(() => {
@@ -291,6 +298,10 @@ export default function Posts({ route }: any) {
     setCommentModal(true);
   };
 
+  const handlePostModal = () => {
+    setPostModal(true);
+  };
+
   return (
     <View>
       <ScrollView
@@ -302,7 +313,10 @@ export default function Posts({ route }: any) {
           <View style={styles.postContainer} key={i}>
             {/* Post Header */}
             <View style={styles.postHeader}>
-              <View style={styles.profileInfo}>
+              <Pressable
+                style={styles.profileInfo}
+                onPress={() => navigation.navigate("Post", { user: user })}
+              >
                 <Image
                   source={{ uri: user?.profilePic }}
                   style={styles.avatar}
@@ -311,8 +325,21 @@ export default function Posts({ route }: any) {
                   <Text style={styles.username}>{user?.username}</Text>
                   <Text style={styles.location}>{item?.location}</Text>
                 </View>
-              </View>
-              <Icons name="dots-three-vertical" color={"white"} size={20} />
+              </Pressable>
+
+              <TouchableOpacity
+                style={{
+                  // backgroundColor: "red",
+                  padding: 10,
+                  borderRadius: 10,
+                }}
+                onPress={() => {
+                  setPostData({ userId: user._id, postId: item._id });
+                  setPostModal(true);
+                }}
+              >
+                <Icons name="dots-three-vertical" color={"white"} size={20} />
+              </TouchableOpacity>
             </View>
 
             {/* Post Image */}
@@ -402,6 +429,15 @@ export default function Posts({ route }: any) {
           setCommentModal={setCommentModal}
         />
       </Modal>
+
+      <Modal
+        visible={PostModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setPostModal(false)}
+      >
+        <Postmodal PostData={PostData} />
+      </Modal>
     </View>
   );
 }
@@ -415,8 +451,8 @@ const styles = StyleSheet.create({
   postContainer: {
     minHeight: 200,
     marginBottom: 20,
-    borderColor: "#333",
-    borderWidth: 1,
+    // borderColor: "#333",
+    // borderWidth: 1,
     margin: 5,
     // padding: 5,
   },

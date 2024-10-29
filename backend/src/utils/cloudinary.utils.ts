@@ -16,7 +16,7 @@ export const uploadInCloudinary = async ({
   data,
   folder,
   isUpload = true,
-  publicId = null,
+  publicId =null,
 }: UploadInCloudinaryParams): Promise<UploadApiResponse | void> => {
   // Configuration
   cloudinary.config({
