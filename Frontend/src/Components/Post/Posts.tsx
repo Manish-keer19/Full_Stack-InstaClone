@@ -167,10 +167,8 @@ import {
   View,
   Image,
   ScrollView,
-  Touchable,
-  TouchableHighlight,
-  TextInput,
   TouchableOpacity,
+  Modal,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Footer from "../Footer";
@@ -182,6 +180,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { UserServiceInstance } from "../../services/Userservice";
 import { setUser, useLoadUserData } from "../../features/user/userSlice";
 import CommentSection from "./CommentSection";
+import Octicons from "react-native-vector-icons/Octicons";
 
 export default function Posts({ route }: any) {
   useLoadUserData();
@@ -191,33 +190,73 @@ export default function Posts({ route }: any) {
   const [post, setpost] = useState<[]>([]);
   const anotheruser = route.params && route.params.user;
   let { user, token } = useSelector((state: any) => state.User);
-  // console.log("user in posts", user);
+
+  const userId = user?._id;
 
   if (anotheruser) {
     user = anotheruser;
   }
-  const [posts, setposts] = useState<[]>([]);
-  const [userLikes, setUserLikes] = useState([]);
 
-  console.log("post in posts", post);
+  console.log("user in posts", user);
+  const [posts, setposts] = useState<[]>([]);
+  const [postlike, setpostlike] = useState<any | []>([]);
+  // console.log("postlike in posts", postlike);
+
+  // console.log("post in posts", post);
 
   useEffect(() => {
     if (user && user.posts) {
       setposts(user.posts);
 
-      let likes = user?.posts.map((item: any) => {
-        if (item.likes == user._id) {
-          return item;
-        } else {
-          return null;
-        }
+      let likes = user?.posts?.map((item: any) => {
+        return item.likes.includes(userId);
       });
-      setUserLikes(likes);
+      setpostlike(likes);
       console.log("likes in posts", likes);
     }
   }, [user]); // Only run when 'user' changes
 
-  const handleDeleteLike = async (postId: any) => {
+  const handleCreateLike = async (postId: any, i: any) => {
+    setpostlike((prev: any) => {
+      const newlike = [...prev];
+      newlike[i] = true;
+      return newlike;
+    });
+
+    // console.log("postlike is inside handleCreateLike ", postlike);
+
+    console.log("create like pressed");
+    console.log("post id is ", postId);
+    const data = { postId, token };
+    try {
+      const res = await UserServiceInstance.createLike(data);
+      console.log("res is ", res);
+      if (res) {
+        console.log("user liked successfully");
+        dispatch(setUser(res.userdata));
+      } else {
+        setpostlike((prev: any) => {
+          const newlike = [...prev];
+          newlike[i] = false;
+          return newlike;
+        });
+      }
+    } catch (error) {
+      setpostlike((prev: any) => {
+        const newlike = [...prev];
+        newlike[i] = false;
+        return newlike;
+      });
+      console.log("could not create the like", error);
+    }
+  };
+
+  const handleDeleteLike = async (postId: any, i: any) => {
+    setpostlike((prev: any) => {
+      const newlike = [...prev];
+      newlike[i] = false;
+      return newlike;
+    });
     console.log("delete like pressed");
     console.log("post id is ", postId);
     const data = {
@@ -229,24 +268,20 @@ export default function Posts({ route }: any) {
       console.log("res is ", res);
       if (res) {
         dispatch(setUser(res.userdata));
+      } else {
+        setpostlike((prev: any) => {
+          const newlike = [...prev];
+          newlike[i] = true;
+          return newlike;
+        });
       }
     } catch (error) {
+      setpostlike((prev: any) => {
+        const newlike = [...prev];
+        newlike[i] = true;
+        return newlike;
+      });
       console.log("could not delete the like", error);
-    }
-  };
-  const handleCreateLike = async (postId: any) => {
-    console.log("create like pressed");
-    console.log("post id is ", postId);
-    const data = { postId, token };
-    try {
-      const res = await UserServiceInstance.createLike(data);
-      console.log("res is ", res);
-      if (res) {
-        console.log("user liked successfully");
-        dispatch(setUser(res.userdata));
-      }
-    } catch (error) {
-      console.log("could not create the like", error);
     }
   };
 
@@ -268,7 +303,10 @@ export default function Posts({ route }: any) {
             {/* Post Header */}
             <View style={styles.postHeader}>
               <View style={styles.profileInfo}>
-                <Image source={{ uri: item.image }} style={styles.avatar} />
+                <Image
+                  source={{ uri: user?.profilePic }}
+                  style={styles.avatar}
+                />
                 <View style={styles.userDetails}>
                   <Text style={styles.username}>{user?.username}</Text>
                   <Text style={styles.location}>{item?.location}</Text>
@@ -285,7 +323,7 @@ export default function Posts({ route }: any) {
             {/* Like, Comment, Share, Save Section */}
             <View style={styles.actionIcons}>
               <View style={styles.leftIcons}>
-                {userLikes[i] ? (
+                {postlike[i] ? (
                   <TouchableOpacity
                     style={{
                       flexDirection: "row",
@@ -293,10 +331,10 @@ export default function Posts({ route }: any) {
                       gap: 7,
                     }}
                     onPress={() => {
-                      handleDeleteLike(item._id);
+                      handleDeleteLike(item._id, i);
                     }}
                   >
-                    <AntDesignIcon name="heart" color={"red"} size={28} />
+                    <FontAwesomeIcon name="heart" color={"red"} size={28} />
                     <Text style={{ color: "white" }}>
                       {item?.likes?.length}
                     </Text>
@@ -304,7 +342,7 @@ export default function Posts({ route }: any) {
                 ) : (
                   <TouchableOpacity
                     onPress={() => {
-                      handleCreateLike(item._id);
+                      handleCreateLike(item._id, i);
                     }}
                     style={{
                       flexDirection: "row",
@@ -312,7 +350,7 @@ export default function Posts({ route }: any) {
                       gap: 7,
                     }}
                   >
-                    <AntDesignIcon name="hearto" color={"white"} size={28} />
+                    <FontAwesomeIcon name="heart-o" color={"white"} size={28} />
                     <Text style={{ color: "white" }}>
                       {item?.likes?.length}
                     </Text>
@@ -325,7 +363,7 @@ export default function Posts({ route }: any) {
                   }}
                   style={{ flexDirection: "row", alignItems: "center", gap: 7 }}
                 >
-                  <FontAwesomeIcon name="comment-o" color={"white"} size={28} />
+                  <Octicons name="comment" color={"white"} size={28} />
                   <Text style={{ color: "white" }}>
                     {item?.comment?.length}
                   </Text>
@@ -352,11 +390,18 @@ export default function Posts({ route }: any) {
       </ScrollView>
       <Footer />
 
-      <CommentSection
-        commentModal={commentModal}
-        Posts={post}
-        setCommentModal={setCommentModal}
-      />
+      <Modal
+        visible={commentModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setCommentModal(false)}
+      >
+        <CommentSection
+          commentModal={commentModal}
+          Posts={post} // This should be the specific post to comment on
+          setCommentModal={setCommentModal}
+        />
+      </Modal>
     </View>
   );
 }

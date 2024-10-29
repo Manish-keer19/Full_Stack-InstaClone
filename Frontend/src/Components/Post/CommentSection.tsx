@@ -12,6 +12,7 @@ import {
   Pressable,
   Button,
   TouchableHighlight,
+  ScrollView,
 } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
@@ -60,27 +61,28 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   const [commentId, setCommentId] = useState<string>("");
   const user = useSelector((state: any) => state.User.user);
 
-  console.log("post in comment section ", Posts);
+  // console.log("post in comment section ", Posts);
+  console.log("comment is in comment section ", comments);
 
   useEffect(() => {
     setComments(Posts?.comment);
   }, [Posts]);
 
-  useEffect(() => {
-    const backAction = () => {
-      setCommentModal(false); // Close the modal
-      setCommentText("");
-      setShowSharebtn(false);
-      return true; // Prevent default back button behavior
-    };
+  // useEffect(() => {
+  //   const backAction = () => {
+  //     setCommentModal(false); // Close the modal
+  //     setCommentText("");
+  //     setShowSharebtn(false);
+  //     return true; // Prevent default back button behavior
+  //   };
 
-    const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
-      backAction
-    );
+  //   const backHandler = BackHandler.addEventListener(
+  //     "hardwareBackPress",
+  //     backAction
+  //   );
 
-    return () => backHandler.remove(); // Cleanup event listener
-  }, [setCommentModal]);
+  //   return () => backHandler.remove(); // Cleanup event listener
+  // }, [setCommentModal]);
 
   const handleCloseModal = () => {
     setCommentEditModal(false);
@@ -89,6 +91,21 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   const handleCreateComment = async (postId: any) => {
     // console.log("postId is handleCreateComment", postId);
     // console.log("comment is ", commentText);
+
+    if (commentText == "") {
+      return alert("Comment cannot be empty");
+    }
+
+    const newcomment = {
+      user: {
+        username: user.username,
+        profilePic: user.profilePic,
+      },
+      comment: commentText,
+      _id: Date.now(),
+    };
+    // update the ui with the new comment
+    setComments((prevcomment: any) => [...prevcomment, newcomment]);
     const data = { postId, comment: commentText, token };
     console.log("data in handleCreateComment", data);
 
@@ -99,14 +116,37 @@ const CommentSection: React.FC<CommentSectionProps> = ({
       if (res) {
         console.log("Comment created succesfuul in comment section");
         dispatch(setUser(res.userdata));
+      } else {
+        console.log("now we are deleting  the dumy comment");
+        setComments((prevComments: any) =>
+          prevComments.filter(
+            (comment: any) => comment.comment !== newcomment.comment
+          )
+        );
       }
     } catch (error) {
       console.log("could not create the comment");
+      setComments((prevComments: any) =>
+        prevComments.filter(
+          (comment: any) => comment.comment !== newcomment.comment
+        )
+      );
     }
   };
 
   const handelDeleteComment = async () => {
     // console.log("comment id is ",commentId);
+    const commentToDelete = comments?.find(
+      (comment: any) => comment._id === commentId
+    );
+    console.log("commentToDelete is ", commentToDelete);
+    if (!commentToDelete) {
+      return alert("Comment not found");
+    }
+
+    setComments((prevComments: any) =>
+      prevComments.filter((comment: any) => comment._id !== commentId)
+    );
     const data = { commentId, token };
     try {
       const res = await CommentServiceInstance.deleteComment(data);
@@ -114,24 +154,28 @@ const CommentSection: React.FC<CommentSectionProps> = ({
       if (res) {
         console.log("Comment deleted succesfuul in comment section");
         // dispatch(setUser(res.userdata));
+      } else {
+        setComments((prevComments: any) => [...prevComments, commentToDelete]);
       }
     } catch (error) {
       console.log("could not delete the comment");
+      setComments((prevComments: any) => [...prevComments, commentToDelete]);
     }
   };
 
   return (
     commentModal && (
-      <View style={styles.modalContainer}>
-        <View style={styles.indicator}></View>
+    
+        <View style={styles.modalContainer}>
+          <View style={styles.indicator}></View>
 
-        <Text style={styles.title}>Comments</Text>
+          <Text style={styles.title}>Comments</Text>
 
-        <FlatList
+          {/* <FlatList
           // style={{borderWidth:2,borderColor:"blue"}}
-          showsVerticalScrollIndicator={false}
+          // showsVerticalScrollIndicator={false}
           data={comments}
-          keyExtractor={(item) => item?.id}
+          keyExtractor={(item) => item?._id.toString()}
           renderItem={({ item }: any) => (
             <Pressable
               onLongPress={() => {
@@ -200,42 +244,120 @@ const CommentSection: React.FC<CommentSectionProps> = ({
               )}
             </Pressable>
           )}
-        />
+        /> */}
 
-        <View style={styles.inputContainer}>
-          <Image style={styles.profilePic} source={{ uri: user?.profilePic }} />
-          <TextInput
-            style={styles.input}
-            placeholder="Add a comment..."
-            placeholderTextColor="#888"
-            value={commentText}
-            onChangeText={(value) => {
-              if (value == "") {
-                setShowSharebtn(false);
-              }
-              setShowSharebtn(true);
-              setCommentText(value);
-            }}
-          />
-          {showSharebtn ? (
-            <TouchableOpacity>
-              <MaterialIcons
-                name="send"
-                size={30}
-                color="#007AFF"
-                style={styles.sendIcon}
-                onPress={() => {
-                  handleCreateComment(Posts?._id);
+          <ScrollView>
+            {comments?.map((item: any, i: any) => (
+              <Pressable
+                key={item._id}
+                onLongPress={() => {
+                  console.log("item.id is ", item?._id);
+                  setCommentId(item?._id);
+                  setCommentEditModal(true);
                 }}
-              />
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity style={styles.stickerIcon}>
-              <Ionicons name="happy-outline" size={28} color="white" />
-            </TouchableOpacity>
-          )}
+                delayLongPress={300}
+                onPress={() => {
+                  setCommentEditModal(false);
+                }}
+                // style={{ borderWidth: 2, borderColor: "gold" }}
+              >
+                <View style={styles.commentContainer}>
+                  <Image
+                    style={styles.profilePic}
+                    source={{ uri: item?.user?.profilePic }}
+                  />
+
+                  <View style={styles.commentTextContainer}>
+                    <Text style={styles.username}>{item?.user?.username}</Text>
+                    <Text style={styles.commentText}>{item?.comment}</Text>
+                    <View>
+                      <TouchableOpacity style={{}}>
+                        <Text style={{ color: "#3897f0" }}>Reply</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  <Ionicons name="heart-outline" size={20} color="white" />
+                </View>
+                {CommentEditModal && item._id === commentId && (
+                  <View
+                    style={{
+                      width: 160,
+                      height: 100,
+                      backgroundColor: "#303030",
+                      borderRadius: 10,
+                      gap: 5,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginTop: 10,
+                    }}
+                  >
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: "brown",
+                        width: "90%",
+                        borderRadius: 10,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text style={{ color: "white", padding: 10 }}>edit</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: "darkred",
+                        width: "90%",
+                        borderRadius: 10,
+                        alignItems: "center",
+                      }}
+                      onPress={handelDeleteComment}
+                    >
+                      <Text style={{ color: "white", padding: 10 }}>
+                        Delete
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </Pressable>
+            ))}
+          </ScrollView>
+
+          <View style={styles.inputContainer}>
+            <Image
+              style={styles.profilePic}
+              source={{ uri: user?.profilePic }}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Add a comment..."
+              placeholderTextColor="#888"
+              value={commentText}
+              onChangeText={(value) => {
+                if (value == "") {
+                  setShowSharebtn(false);
+                }
+                setShowSharebtn(true);
+                setCommentText(value);
+              }}
+            />
+            {showSharebtn ? (
+              <TouchableOpacity>
+                <MaterialIcons
+                  name="send"
+                  size={30}
+                  color="#007AFF"
+                  style={styles.sendIcon}
+                  onPress={() => {
+                    handleCreateComment(Posts?._id);
+                  }}
+                />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity style={styles.stickerIcon}>
+                <Ionicons name="happy-outline" size={28} color="white" />
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
-      </View>
+     
     )
   );
 };
@@ -244,9 +366,10 @@ const styles = StyleSheet.create({
   modalContainer: {
     width: "100%",
     backgroundColor: "#212121",
-    height: "95%",
+    minHeight: "95%",
     position: "absolute",
     bottom: 0,
+    // top: 10,
     alignSelf: "center",
     borderRadius: 10,
     padding: 15,

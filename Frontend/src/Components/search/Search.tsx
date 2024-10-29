@@ -71,9 +71,12 @@ export default function SearchComponent() {
   return (
     <View style={styles.screen}>
       <View style={styles.searchContainer}>
-        <AntDesignIcons name="arrowleft" color="white" size={30} />
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <AntDesignIcons name="arrowleft" color="white" size={30} />
+        </TouchableOpacity>
         <View style={styles.inputWrapper}>
           <Feather name="search" size={20} color="#B5651D" />
+
           <TextInput
             style={styles.searchInput}
             placeholder="Search by username..."
@@ -139,7 +142,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: "#444",
+    // borderBottomColor: "#444",
   },
   userImage: {
     width: 50,

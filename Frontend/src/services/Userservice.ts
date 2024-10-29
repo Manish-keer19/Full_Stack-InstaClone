@@ -96,7 +96,7 @@ class UserService {
   }
 
   async deleteLike(data: any) {
-    console.log("data in createLike userservice", data);
+    console.log("data in deleteLike userservice", data);
     try {
       const res = await apiClient.post("/like/deleteLike", data);
       console.log("res.data is ", res.data);

@@ -216,6 +216,7 @@ import { useEffect } from "react";
 import { clearProfileData } from "../Profile/ProfileSlice";
 
 // Define the user state interface with proper types
+
 interface UserState {
   user: object | null;
   token: string | null;

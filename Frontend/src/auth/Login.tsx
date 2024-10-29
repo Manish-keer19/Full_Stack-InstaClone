@@ -157,6 +157,8 @@ export default function Login() {
         dispatch(setToken(res.token));
         dispatch(setUser(res.userdata));
         setIsSubmiting(false);
+        setEmail("");
+        setPassword("");
         navigation.navigate("Home");
       }
     } catch (error) {

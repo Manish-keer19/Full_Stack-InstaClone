@@ -56,6 +56,27 @@ export default function Signup() {
     }
   };
 
+  const handlecheckIfUsernameAlreadyTaken = async () => {
+    const data = { username };
+
+    if (username === "") {
+      return alert("Please enter username");
+    }
+
+    try {
+      const res = await AuthServiceInstance.checkIfUsernameAlreadyTaken(data);
+      if (res) {
+        console.log("res is in singup ", res);
+        setStep(2);
+      } else {
+        console.error("user name is already taken");
+        setUsername("");
+      }
+    } catch (error) {
+      console.error("could not check if username already taken", error);
+      setUsername("");
+    }
+  };
   return (
     <View style={styles.container}>
       {/* Conditionally render the form based on the step */}
@@ -77,9 +98,7 @@ export default function Signup() {
             />
             <TouchableOpacity
               style={styles.nextButton}
-              onPress={() => {
-                setStep(2);
-              }}
+              onPress={handlecheckIfUsernameAlreadyTaken}
             >
               <Text style={styles.nextButtonText}>Next</Text>
             </TouchableOpacity>

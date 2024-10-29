@@ -105,6 +105,28 @@ class AuthService {
       console.log("could not login", error);
     }
   }
+
+  async checkIfUsernameAlreadyTaken(data: object) {
+    console.log("data in isUsernameAlreadyTaken authservice", data);
+    try {
+      const res = await apiClient.post("/auth/isUsernameAlreadyTaken", data, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("res.data of useralready taken", res.data);
+      if (res.data.success) {
+        console.log("username is not taken");
+        console.log("res message is ", res.data.message);
+        return res.data;
+      } else {
+        console.log("could not login", res.data.message);
+      }
+    } catch (error) {
+      console.log("could not login", error);
+    }
+  }
 }
 
 // Export the AuthService instance

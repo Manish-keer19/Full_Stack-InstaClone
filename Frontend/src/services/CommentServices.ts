@@ -6,7 +6,6 @@ class CommentService {
   async creatComment(data: any) {
     try {
       console.log("data in CommentService ", data);
-
       const res = await apiClient.post("/comment/createcomment", data);
 
       console.log("res.data is ", res.data);

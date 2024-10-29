@@ -521,6 +521,7 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import EntypoIcons from "@expo/vector-icons/Entypo";
@@ -572,9 +573,9 @@ export default function Profile() {
     }
   };
 
-  useEffect(() => {
-    if (!user) fetchUserData();
-  }, [user]);
+  // useEffect(() => {
+  //   if (!user) fetchUserData();
+  // }, [user]);
 
   const renderPost = ({ item }: any) => (
     <TouchableOpacity
@@ -586,7 +587,13 @@ export default function Profile() {
   );
 
   if (!user) {
-    return <Loader />;
+    return (
+      <ActivityIndicator
+        size="large"
+        color="white"
+        style={{ backgroundColor: "#212121" }}
+      />
+    );
   }
 
   const handleLogout = () => {
