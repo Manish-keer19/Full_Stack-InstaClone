@@ -12,7 +12,8 @@ interface PostmodalProps {
   PostData: any;
 }
 export const Postmodal: React.FC<PostmodalProps> = ({ PostData }) => {
-  const token = useSelector((state: any) => state.User.token);
+  console.log("PostData is in Postmodal ", PostData);
+  const { token, user } = useSelector((state: any) => state.User);
 
   const dispatch = useDispatch();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -52,46 +53,72 @@ export const Postmodal: React.FC<PostmodalProps> = ({ PostData }) => {
       }}
     >
       <View style={{ alignItems: "center", justifyContent: "center", gap: 10 }}>
-        <TouchableOpacity
-          style={{
-            width: "95%",
-            height: 90,
-            // borderWidth: 2,
-            // borderColor: "blue",
-            flexDirection: "row",
-            paddingLeft: 30,
-            alignItems: "center",
-            gap: 20,
-            backgroundColor: "#595959",
-            borderRadius: 10,
-          }}
-        >
-          <FeatherIcons name="edit-2" size={30} color="white" />
-          <Text style={{ fontSize: 18, fontWeight: "bold", color: "white" }}>
-            Edit Post
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            width: "95%",
-            height: 90,
-            // borderWidth: 2,
-            // borderColor: "blue",
-            flexDirection: "row",
-            paddingLeft: 30,
-            alignItems: "center",
-            gap: 20,
-            backgroundColor: "#595959",
-            borderRadius: 10,
-          }}
-          disabled={isdeleting}
-          onPress={handledeletePost}
-        >
-          <AntDesignIcons name="delete" size={35} color="red" />
-          <Text style={{ fontSize: 18, fontWeight: "bold", color: "red" }}>
-            {isdeleting ? "Deleting..." : "Delete Post"}
-          </Text>
-        </TouchableOpacity>
+        {PostData.post.user == PostData.userID ? (
+          <>
+            <TouchableOpacity
+              style={{
+                width: "95%",
+                height: 90,
+                // borderWidth: 2,
+                // borderColor: "blue",
+                flexDirection: "row",
+                paddingLeft: 30,
+                alignItems: "center",
+                gap: 20,
+                backgroundColor: "#595959",
+                borderRadius: 10,
+              }}
+            >
+              <FeatherIcons name="edit-2" size={30} color="white" />
+              <Text
+                style={{ fontSize: 18, fontWeight: "bold", color: "white" }}
+              >
+                Edit Post
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                width: "95%",
+                height: 90,
+                // borderWidth: 2,
+                // borderColor: "blue",
+                flexDirection: "row",
+                paddingLeft: 30,
+                alignItems: "center",
+                gap: 20,
+                backgroundColor: "darkred",
+                borderRadius: 10,
+              }}
+              disabled={isdeleting}
+              onPress={handledeletePost}
+            >
+              <AntDesignIcons name="delete" size={35} color="red" />
+              <Text style={{ fontSize: 18, fontWeight: "bold", color: "red" }}>
+                {isdeleting ? "Deleting..." : "Delete Post"}
+              </Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <TouchableOpacity
+            style={{
+              width: "95%",
+              height: 90,
+              // borderWidth: 2,
+              // borderColor: "blue",
+              flexDirection: "row",
+              paddingLeft: 30,
+              alignItems: "center",
+              gap: 20,
+              backgroundColor: "pink",
+              borderRadius: 10,
+            }}
+          >
+            <AntDesignIcons name="hearto" size={35} color="black" />
+            <Text style={{ fontSize: 18, fontWeight: "bold", color: "black" }}>
+              Like
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );

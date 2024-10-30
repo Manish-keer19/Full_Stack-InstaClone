@@ -6,11 +6,11 @@ import { useSelector } from "react-redux";
 
 export default function Story() {
   const user = useSelector((state: any) => state.User.user);
-  console.log("user in story is", user);
+  // console.log("user in story is", user);
   // console.log("user in story", user);
 
   const [images, setimages] = useState<any>([]);
-  console.log("images in story", images);
+  // console.log("images in story", images);
 
   useEffect(() => {
     if (user) {

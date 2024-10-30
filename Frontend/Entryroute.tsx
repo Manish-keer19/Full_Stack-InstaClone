@@ -131,6 +131,7 @@ import { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
 import ForgotPassword from "./src/Components/changePassword/ForgotPassword";
 import ChangePassword from "./src/Components/changePassword/ChangePassword";
+import { useLoadUserData } from "./src/features/user/userSlice";
 
 const Stack = createNativeStackNavigator();
 
@@ -154,6 +155,7 @@ export type RootStackParamList = {
 };
 
 export default function Entryroute() {
+  useLoadUserData();
   const [initialPage, setInitialPage] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(true);
 

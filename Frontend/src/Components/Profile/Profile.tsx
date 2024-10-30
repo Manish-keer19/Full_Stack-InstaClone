@@ -597,6 +597,7 @@ export default function Profile() {
   }
 
   const handleLogout = () => {
+    setIssetting(false);
     dispatch(logout());
     clearProfileData();
     setIssetting(false);
@@ -710,13 +711,19 @@ export default function Profile() {
         <View style={styles.settingsModal}>
           <TouchableOpacity
             style={styles.modalButton}
-            onPress={() => navigation.navigate("Signup")}
+            onPress={() => {
+              setIssetting(false);
+              navigation.navigate("Signup");
+            }}
           >
             <Text style={styles.modalButtonText}>Signup</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.modalButton}
-            onPress={() => navigation.navigate("Login")}
+            onPress={() => {
+              setIssetting(false);
+              navigation.navigate("Login");
+            }}
           >
             <Text style={styles.modalButtonText}>Login</Text>
           </TouchableOpacity>
@@ -726,7 +733,10 @@ export default function Profile() {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.modalButton}
-            onPress={() => navigation.navigate("ChangePassword")}
+            onPress={() => {
+              setIssetting(false);
+              navigation.navigate("ChangePassword");
+            }}
           >
             <Text style={styles.modalButtonText}>Change Password</Text>
           </TouchableOpacity>

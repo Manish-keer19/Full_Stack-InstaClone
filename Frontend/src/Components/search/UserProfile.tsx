@@ -23,6 +23,7 @@ import { UserServiceInstance } from "../../services/Userservice";
 export default function UserProfile({ route }: any) {
   useLoadUserData();
 
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const currentUser = useSelector((state: any) => state.User.user);
   console.log("current use is ", currentUser);
   const token = useSelector((state: any) => state.User.token);
@@ -37,7 +38,6 @@ export default function UserProfile({ route }: any) {
   console.log("isfollowing in useProfile ", isFollowing);
 
   const dispatch = useDispatch();
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   console.log("User in profile", user);
   const [activeTab, setActiveTab] = useState("Posts");
@@ -164,24 +164,29 @@ export default function UserProfile({ route }: any) {
       </View>
 
       {/* Buttons */}
-      <View style={styles.buttonContainer}>
-        {isFollowing ? (
-          <TouchableOpacity
-            style={styles.unfollowbtn}
-            onPress={handleUnfolloweUser}
-          >
-            <Text style={styles.buttonText}>Unfollow</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity style={styles.Followbtn} onPress={handleFollowUser}>
-            <Text style={styles.buttonText}>Follow</Text>
-          </TouchableOpacity>
-        )}
+      {currentUser?._id !== user._id && (
+        <View style={styles.buttonContainer}>
+          {isFollowing ? (
+            <TouchableOpacity
+              style={styles.unfollowbtn}
+              onPress={handleUnfolloweUser}
+            >
+              <Text style={styles.buttonText}>Unfollow</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.Followbtn}
+              onPress={handleFollowUser}
+            >
+              <Text style={styles.buttonText}>Follow</Text>
+            </TouchableOpacity>
+          )}
 
-        <TouchableOpacity style={styles.Messagebtn}>
-          <Text style={styles.buttonText}>Message</Text>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity style={styles.Messagebtn}>
+            <Text style={styles.buttonText}>Message</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* Tabs */}
       <View style={styles.tabContainer}>

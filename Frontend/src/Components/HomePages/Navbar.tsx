@@ -3,7 +3,7 @@ import React from "react";
 import Icon from "react-native-vector-icons/AntDesign";
 import { useNavigation } from "@react-navigation/native"; // Import useNavigation
 import { NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "../../../App";
+import { RootStackParamList } from "../../../Entryroute";
 export default function Navbar() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>(); // Get the navigation object
 

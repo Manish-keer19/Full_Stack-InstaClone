@@ -334,7 +334,7 @@ export default function Posts({ route }: any) {
                   borderRadius: 10,
                 }}
                 onPress={() => {
-                  setPostData({ userId: user._id, postId: item._id });
+                  setPostData({ post: item, userID: userId });
                   setPostModal(true);
                 }}
               >

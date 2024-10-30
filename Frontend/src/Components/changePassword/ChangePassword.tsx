@@ -47,7 +47,9 @@ export default function ChangePassword() {
         <View>
           <View style={styles.header}>
             <Text style={styles.title}>Enter your email</Text>
-            <Text style={styles.subtitle}>we will send you a otp</Text>
+            <Text style={styles.subtitle}>
+              please enter for change tha password{" "}
+            </Text>
           </View>
           <View style={styles.formContainer}>
             <TextInput

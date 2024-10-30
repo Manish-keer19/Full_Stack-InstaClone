@@ -18,6 +18,7 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { CommentServiceInstance } from "../../services/CommentServices";
 import { setUser } from "../../features/user/userSlice";
+import { AntDesign } from "@expo/vector-icons";
 
 // Define types for User, Comment, and Props
 type User = {
@@ -60,6 +61,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   const [showSharebtn, setShowSharebtn] = useState<boolean>(false);
   const [commentId, setCommentId] = useState<string>("");
   const user = useSelector((state: any) => state.User.user);
+
+  console.log("user in comment section ", user);
 
   // console.log("post in comment section ", Posts);
   console.log("comment is in comment section ", comments);
@@ -207,37 +210,95 @@ const CommentSection: React.FC<CommentSectionProps> = ({
             {CommentEditModal && item._id === commentId && (
               <View
                 style={{
-                  width: 160,
-                  height: 100,
-                  backgroundColor: "#303030",
+                  width: 170,
+                  // height: 120,
+                  minHeight: 70,
+                  // backgroundColor: "#303030",
                   borderRadius: 10,
-                  gap: 5,
+                  gap: 8,
                   alignItems: "center",
                   justifyContent: "center",
-                  marginTop: 10,
+                  // marginTop:10 ,
                 }}
               >
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: "brown",
-                    width: "90%",
-                    borderRadius: 10,
-                    alignItems: "center",
-                  }}
-                >
-                  <Text style={{ color: "white", padding: 10 }}>edit</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: "darkred",
-                    width: "90%",
-                    borderRadius: 10,
-                    alignItems: "center",
-                  }}
-                  onPress={handelDeleteComment}
-                >
-                  <Text style={{ color: "white", padding: 10 }}>Delete</Text>
-                </TouchableOpacity>
+                {item.user._id === user._id ? (
+                  <>
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: "#363636",
+                        width: "90%",
+                        borderRadius: 10,
+                        alignItems: "center",
+                        flexDirection: "row",
+                        gap: 3,
+                        justifyContent: "center",
+                      }}
+                    >
+                      <AntDesign name="edit" size={20} color="white" />
+
+                      <Text
+                        style={{
+                          color: "white",
+                          padding: 10,
+                          fontSize: 15,
+                          fontWeight: "bold",
+                        }}
+                      >
+                        edit
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={{
+                        backgroundColor: "darkred",
+                        width: "90%",
+                        borderRadius: 10,
+                        alignItems: "center",
+                        flexDirection: "row",
+                        gap: 3,
+                        justifyContent: "center",
+                      }}
+                      onPress={handelDeleteComment}
+                    >
+                      <AntDesign name="delete" size={20} color="white" />
+                      <Text
+                        style={{
+                          color: "white",
+                          padding: 10,
+                          fontSize: 15,
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Delete
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                ) : (
+                  <TouchableOpacity
+                    style={{
+                      backgroundColor: "darkblue",
+                      width: "90%",
+                      borderRadius: 10,
+                      alignItems: "center",
+                      flexDirection: "row",
+                      gap: 3,
+                      justifyContent: "center",
+                    }}
+                  >
+                    {/* <AntDesign name="like2" size={20} color="white" /> */}
+                    {/* <AntDesign name="heart" size={20} color="white" /> */}
+                    <AntDesign name="hearto" size={20} color="white" />
+                    <Text
+                      style={{
+                        color: "white",
+                        padding: 10,
+                        fontSize: 15,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Like
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </View>
             )}
           </Pressable>

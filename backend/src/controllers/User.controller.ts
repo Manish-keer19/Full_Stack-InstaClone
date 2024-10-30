@@ -480,3 +480,59 @@ export const searchUsers = async (
     });
   }
 };
+
+export const fetchUserFeed = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const authenticatedReq = req as AuthenticatedRequest;
+    const userId = authenticatedReq.user.id;
+    console.log("userId ", userId);
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "User is not authenticated",
+      });
+    }
+
+    // Find the authenticated user and populate the following users and their posts
+    const user = await User.findById(userId)
+      .populate({
+        path: "following", // Populate the following users
+        populate: {
+          path: "posts", // Populate posts for each following user
+          populate: {
+            path: "comment", // Populate comments for each post
+            populate: {
+              path: "user", // Populate user details for each comment
+              select: "username profilePic", // Specify fields to return for comment user
+            },
+          },
+        },
+      })
+      .exec();
+
+    console.log("User data is ", user)
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Could not fetch the user feed",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "User feed fetched successfully",
+      userFeed: user.following, // Send the following users data
+    });
+  } catch (error) {
+    console.log("Could not fetch the user feed", error);
+    return res.status(500).json({
+      success: false,
+      message: "Could not fetch the user feed",
+    });
+  }
+};

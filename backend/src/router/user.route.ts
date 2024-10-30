@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  fetchUserFeed,
   FollowUser,
   getuserFulldata,
   searchUsers,
@@ -18,4 +19,5 @@ userRoute.post("/getuserFulldata", getuserFulldata);
 userRoute.post("/followuser", authentication, FollowUser);
 userRoute.post("/unFollowUser", authentication, UnFollowUser);
 userRoute.post("/searchUsers", authentication, searchUsers);
+userRoute.post("/fetchUserFeed", authentication, fetchUserFeed);
 export default userRoute;
