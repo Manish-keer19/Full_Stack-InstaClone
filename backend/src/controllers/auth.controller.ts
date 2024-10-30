@@ -1,11 +1,12 @@
 import { User } from "../models/User.model";
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 import optgenerator from "otp-generator";
 import { Otp } from "../models/otp";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { fetchAllDetailsUser } from "../utils/fetchAllDetailsUser";
+import { emit } from "process";
 dotenv.config();
 
 // generate otp
@@ -234,13 +235,193 @@ export const Login = async (req: Request, res: Response): Promise<any> => {
       success: true,
       message: "User logged in successfully",
       userdata,
-      token
+      token,
     });
   } catch (error) {
     console.log("could not login the user", error);
     return res.status(500).json({
       success: false,
       message: "could not login the user",
+    });
+  }
+};
+
+export const sendOtp = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { email } = req.body;
+    console.log("email is ", email);
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+
+    // check if user user exists or not
+    const isUserExist = await User.findOne({ email: email });
+    if (!isUserExist) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    // Generate OTP
+    const otp = optgenerator.generate(6, {
+      digits: true,
+      lowerCaseAlphabets: false,
+      upperCaseAlphabets: false,
+      specialChars: false,
+    });
+
+    console.log("otp is ", otp);
+
+    // Check if an OTP exists for the email
+    const existingOtp = await Otp.findOne({ email: email });
+
+    if (existingOtp) {
+      // Update existing OTP
+      existingOtp.otp = otp;
+      await existingOtp.save(); // Save the updated OTP
+      console.log("Updated OTP for existing user");
+    } else {
+      // Save new OTP to database
+      await Otp.create({ email: email, otp: otp });
+      console.log("Created new OTP for user");
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "OTP generated successfully",
+      otp, // Optionally return the generated OTP
+    });
+  } catch (error) {
+    console.log("error while generating OTP", error); // Added error logging
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong while generating OTP",
+    });
+  }
+};
+
+export const ResetPassword = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  // fetch the email password otp from req.body
+  // validate it
+  // check if user user exists or not
+  // check if otp is correct or not
+  // update the password
+  // return success response
+  
+  try {
+    // fetch the email password otp from req.body
+    const { email, password, otp } = req.body;
+    console.log("email is ", email);
+    console.log("password is ", password);
+    console.log("otp is ", otp);
+    // validate it
+    if (!email || !password || !otp) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+    // check if user user exists or not
+    const isUserExist = await User.findOne({ email: email });
+
+    if (!isUserExist) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    // check if otp is correct or not
+    const dbotp = await Otp.findOne({ email: email });
+    console.log("dbotp is ", dbotp);
+
+    if (!dbotp) {
+      return res.status(400).json({
+        success: false,
+        message: "otp timeout. please try again",
+      });
+    }
+    if (dbotp?.otp !== otp) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid OTP",
+      });
+    }
+
+    // update the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await User.updateOne({ email: email }, { password: hashedPassword });
+    // return success response
+    return res.status(200).json({
+      success: true,
+      message: "Password reset successfully",
+    });
+  } catch (error) {
+    console.log("could not reset the password", error);
+    return res.status(500).json({
+      success: false,
+      message: "could not reset the password",
+    });
+  }
+};
+
+export const changePassword = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { email, oldPassword, newPassword } = req.body;
+    console.log("email is ", email);
+    console.log("oldPassword is ", oldPassword);
+    console.log("newPassword is ", newPassword);
+    if (!email || !oldPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+    const isUserExist = await User.findOne({ email: email }, {}, { new: true });
+
+    if (!isUserExist) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // check new password is not same as old password
+    if (bcrypt.compareSync(newPassword, isUserExist.password)) {
+      return res.status(400).json({
+        success: false,
+        message: "New password cannot be same as old password",
+      });
+    }
+
+    if (!(await bcrypt.compare(oldPassword, isUserExist.password))) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid old password",
+      });
+    } else {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await User.updateOne({ email: email }, { password: hashedPassword });
+
+      return res.status(200).json({
+        success: true,
+        message: "Password changed successfully",
+      });
+    }
+  } catch (error) {
+    console.log("could not change the password", error);
+    return res.status(500).json({
+      success: false,
+      message: "could not change the password",
     });
   }
 };

@@ -129,6 +129,8 @@ import Search from "./src/Components/search/Search";
 import UserProfile from "./src/Components/search/UserProfile";
 import { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
+import ForgotPassword from "./src/Components/changePassword/ForgotPassword";
+import ChangePassword from "./src/Components/changePassword/ChangePassword";
 
 const Stack = createNativeStackNavigator();
 
@@ -147,6 +149,8 @@ export type RootStackParamList = {
   CreatePost: { file1: object | null | undefined };
   Search: undefined;
   UserProfile: undefined | { user: any };
+  ForgotPassword: undefined;
+  ChangePassword: undefined;
 };
 
 export default function Entryroute() {
@@ -174,7 +178,14 @@ export default function Entryroute() {
   if (loading) {
     // Display loading indicator while fetching user and token from AsyncStorage
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center",backgroundColor:'#212121' }}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#212121",
+        }}
+      >
         <ActivityIndicator size="large" color="white" />
       </View>
     );
@@ -185,7 +196,7 @@ export default function Entryroute() {
       <Stack.Navigator
         screenOptions={{ headerShown: false }}
         initialRouteName={initialPage}
-        // initialRouteName={"Post"}  
+        // initialRouteName={"Post"}
       >
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Profile" component={Profile} />
@@ -201,6 +212,8 @@ export default function Entryroute() {
         <Stack.Screen name="CreatePost" component={CreatePost} />
         <Stack.Screen name="Search" component={Search} />
         <Stack.Screen name="UserProfile" component={UserProfile} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+        <Stack.Screen name="ChangePassword" component={ChangePassword} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -720,8 +720,15 @@ export default function Profile() {
           >
             <Text style={styles.modalButtonText}>Login</Text>
           </TouchableOpacity>
+
           <TouchableOpacity style={styles.modalButton} onPress={handleLogout}>
             <Text style={styles.modalButtonText}>Logout</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.modalButton}
+            onPress={() => navigation.navigate("ChangePassword")}
+          >
+            <Text style={styles.modalButtonText}>Change Password</Text>
           </TouchableOpacity>
         </View>
       )}

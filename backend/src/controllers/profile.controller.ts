@@ -49,7 +49,7 @@ export const editProfile = async (
       console.log("bhai profile image ko update karna he profile ko");
       const imgres = await uploadInCloudinary({
         data: profileImagePath,
-        folder: "posts",
+        folder: "profile",
       });
 
       const newUser = await User.findOneAndUpdate(

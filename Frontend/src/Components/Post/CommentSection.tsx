@@ -335,7 +335,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
           <TouchableOpacity>
             <MaterialIcons
               name="send"
-              size={30}
+              size={32}
               color="#007AFF"
               style={styles.sendIcon}
               onPress={() => {
@@ -456,6 +456,9 @@ const styles = StyleSheet.create({
   },
   sendIcon: {
     marginLeft: 10,
+    padding: 5,
+    // borderWidth: 1,
+    // borderColor: "blue",
   },
   stickerIcon: {
     marginLeft: 10,

@@ -208,7 +208,9 @@ export default function Login() {
           {isSubmiting ? "Login please wait..." : "Login"}
         </Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.forgotPassword}>
+      <TouchableOpacity style={styles.forgotPassword}
+      onPress={()=>navigation.navigate("ForgotPassword")}>
+      
         <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
       </TouchableOpacity>
 

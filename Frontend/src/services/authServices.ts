@@ -121,10 +121,59 @@ class AuthService {
         console.log("res message is ", res.data.message);
         return res.data;
       } else {
-        console.log("could not login", res.data.message);
+        console.log("username is taken", res.data.message);
       }
     } catch (error) {
-      console.log("could not login", error);
+      console.log("some error occured during isUsernameAlreadyTaken", error);
+    }
+  }
+
+
+  async sendOtp(data: object): Promise<any> {
+    try {
+      const res = await apiClient.post("/auth/generateOtp", data); // Using apiClient with base URL
+      console.log("res of generate otp is ", res.data);
+      if (res.data.success) {
+        console.log("OTP generated");
+        return res.data;
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      console.log("Could not generate OTP, some error occurred");
+    }
+  }
+  async ResetPassword(data: object) {
+    console.log("data in ResetPassword authservice", data);
+    try {
+      const res = await apiClient.post("/auth/resetPassword", data);
+
+      console.log("res.data of ResetPassword", res.data);
+      if (res.data.success) {
+        console.log("ResetPassword completed");
+        console.log("res message is ", res.data.message);
+        return res.data;
+      } else {
+        console.log("could not ResetPassword", res.data.message);
+      }
+    } catch (error) {
+      console.log("could not ResetPassword", error);
+    }
+  }
+  async changePassword(data: object) {
+    console.log("data in changePassword authservice", data);
+    try {
+      const res = await apiClient.post("/auth/changePassword", data);
+
+      console.log("res.data of changePassword", res.data);
+      if (res.data.success) {
+        console.log("changePassword completed");
+        console.log("res message is ", res.data.message);
+        return res.data;
+      } else {
+        console.log("could not changePassword", res.data.message);
+      }
+    } catch (error) {
+      console.log("could not changePassword", error);
     }
   }
 }
