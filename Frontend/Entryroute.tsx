@@ -132,6 +132,8 @@ import { View, ActivityIndicator } from "react-native";
 import ForgotPassword from "./src/Components/changePassword/ForgotPassword";
 import ChangePassword from "./src/Components/changePassword/ChangePassword";
 import { useLoadUserData } from "./src/features/user/userSlice";
+import AddStory from "./src/Components/Story/AddStory";
+import CreateStory from "./src/Components/Story/CreateStory";
 
 const Stack = createNativeStackNavigator();
 
@@ -152,6 +154,8 @@ export type RootStackParamList = {
   UserProfile: undefined | { user: any };
   ForgotPassword: undefined;
   ChangePassword: undefined;
+  AddStory: undefined;
+  CreateStory: undefined|{imagedata:any};
 };
 
 export default function Entryroute() {
@@ -194,11 +198,13 @@ export default function Entryroute() {
   }
 
   return (
+
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{ headerShown: false }}
         initialRouteName={initialPage}
         // initialRouteName={"Post"}
+        // initialRouteName={"CreateStory"}
       >
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Profile" component={Profile} />
@@ -216,7 +222,10 @@ export default function Entryroute() {
         <Stack.Screen name="UserProfile" component={UserProfile} />
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         <Stack.Screen name="ChangePassword" component={ChangePassword} />
+        <Stack.Screen name="AddStory" component={AddStory} />
+        <Stack.Screen name="CreateStory" component={CreateStory} />
       </Stack.Navigator>
     </NavigationContainer>
+    
   );
 }

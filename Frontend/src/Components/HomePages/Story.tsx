@@ -1,13 +1,16 @@
-import { ScrollView, StyleSheet, Text, View, Image } from "react-native";
+import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/AntDesign";
 // import { images } from "../../Utils/imagedata";
 import { useSelector } from "react-redux";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../../../Entryroute";
 
 export default function Story() {
   const user = useSelector((state: any) => state.User.user);
   // console.log("user in story is", user);
   // console.log("user in story", user);
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const [images, setimages] = useState<any>([]);
   // console.log("images in story", images);
@@ -24,7 +27,9 @@ export default function Story() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollViewContent} // Use content container to limit items height
       >
-        <View style={styles.storyContainer}>
+        <TouchableOpacity style={styles.storyContainer}
+        onPress={()=>navigation.navigate("AddStory")}
+        >
           <View style={styles.imageContainer}>
             <Image
               style={styles.image}
@@ -46,7 +51,7 @@ export default function Story() {
             }}
           />
           <Text style={styles.text}>{user?.username}</Text>
-        </View>
+        </TouchableOpacity>
         {/* Repeat stories */}
         {images.map((item: any, index: any) => (
           <View key={index} style={styles.storyContainer}>

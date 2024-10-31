@@ -106,15 +106,15 @@ export const Postmodal: React.FC<PostmodalProps> = ({ PostData }) => {
               // borderWidth: 2,
               // borderColor: "blue",
               flexDirection: "row",
-              paddingLeft: 30,
+              paddingLeft: 40,
               alignItems: "center",
               gap: 20,
-              backgroundColor: "pink",
+              backgroundColor: "blue",
               borderRadius: 10,
             }}
           >
-            <AntDesignIcons name="hearto" size={35} color="black" />
-            <Text style={{ fontSize: 18, fontWeight: "bold", color: "black" }}>
+            <AntDesignIcons name="hearto" size={35} color="white" />
+            <Text style={{ fontSize: 18, fontWeight: "bold", color: "white" }}>
               Like
             </Text>
           </TouchableOpacity>
