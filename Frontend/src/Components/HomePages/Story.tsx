@@ -1,4 +1,11 @@
-import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/AntDesign";
 // import { images } from "../../Utils/imagedata";
@@ -16,10 +23,17 @@ export default function Story() {
   // console.log("images in story", images);
 
   useEffect(() => {
+
+      
     if (user) {
       setimages(user?.posts);
     }
   }, [user]);
+  
+
+  useEffect(() => {
+     
+  })
   return (
     <View style={styles.container}>
       <ScrollView
@@ -27,8 +41,9 @@ export default function Story() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollViewContent} // Use content container to limit items height
       >
-        <TouchableOpacity style={styles.storyContainer}
-        onPress={()=>navigation.navigate("AddStory")}
+        <TouchableOpacity
+          style={styles.storyContainer}
+          onPress={() => navigation.navigate("AddStory")}
         >
           <View style={styles.imageContainer}>
             <Image

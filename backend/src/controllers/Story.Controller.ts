@@ -508,3 +508,30 @@ export const createStory = async (
     });
   }
 };
+
+export const getStory = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const { id } = req.params;
+    console.log("id is ",id)
+    // const userId = id.split("_")[0];
+    const story = await Story.findOne({ user: id}, {}, { new: true });
+    console.log("story is ", story);
+    if (!story) {
+      return res.status(400).json({
+        success: false,
+        message: "Story not found",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Story found successfully",
+      story,
+    });
+  } catch (error) {
+    console.log("Could not get the story", error);
+    return res.status(500).json({
+      success: false,
+      message: "Could not get the story",
+    });
+  }
+};

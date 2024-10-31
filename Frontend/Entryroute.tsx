@@ -134,6 +134,7 @@ import ChangePassword from "./src/Components/changePassword/ChangePassword";
 import { useLoadUserData } from "./src/features/user/userSlice";
 import AddStory from "./src/Components/Story/AddStory";
 import CreateStory from "./src/Components/Story/CreateStory";
+import AllStories from "./src/Components/Story/AllStories";
 
 const Stack = createNativeStackNavigator();
 
@@ -155,7 +156,8 @@ export type RootStackParamList = {
   ForgotPassword: undefined;
   ChangePassword: undefined;
   AddStory: undefined;
-  CreateStory: undefined|{imagedata:any};
+  CreateStory: undefined | { imagedata: any };
+  AllStories: undefined;
 };
 
 export default function Entryroute() {
@@ -198,13 +200,13 @@ export default function Entryroute() {
   }
 
   return (
-
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{ headerShown: false }}
-        initialRouteName={initialPage}
+        // initialRouteName={initialPage}
         // initialRouteName={"Post"}
         // initialRouteName={"CreateStory"}
+        initialRouteName={"AllStories"}
       >
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Profile" component={Profile} />
@@ -224,8 +226,8 @@ export default function Entryroute() {
         <Stack.Screen name="ChangePassword" component={ChangePassword} />
         <Stack.Screen name="AddStory" component={AddStory} />
         <Stack.Screen name="CreateStory" component={CreateStory} />
+        <Stack.Screen name="AllStories" component={AllStories} />
       </Stack.Navigator>
     </NavigationContainer>
-    
   );
 }

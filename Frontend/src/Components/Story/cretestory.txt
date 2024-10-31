@@ -171,3 +171,57 @@ export default function CreateStory() {
 }
 
 const styles = StyleSheet.create({});
+.......................................
+
+
+
+
+   <Pressable
+        style={styles.imageContainer}
+        onPress={() => setIsZoomed(!isZoomed)}
+      >
+        {isZoomed ? (
+          <View style={styles.zoomedImageContainer}>
+            <ImageZoom
+
+              ref={imageRef}
+              style={styles.zoomedImage}
+              cropWidth={Dimensions.get("window").width}
+              cropHeight={Dimensions.get("window").height}
+              imageWidth={300}
+              imageHeight={300}
+              panToMove={true}
+              pinchToZoom={true}
+              enableCenterFocus={true} // Enables focus on the center during zoom
+              onMove={this.onMove} // Optional: Track movement for better user experience
+              maxScale={3} // Increase max zoom scale as per your requirement
+              minScale={1} // Minimum zoom level
+            >
+              <Image
+                style={styles.image}
+                source={{
+                  uri: file?.uri,
+                }}
+              />
+            </ImageZoom>
+          </View>
+        ) : (
+          <Image
+            style={styles.image}
+            source={{
+              uri: file?.uri,
+            }}
+          />
+        )}
+
+        {/* Draggable Text */}
+        <Animated.Text
+          {...panResponder.panHandlers}
+          style={[
+            styles.draggableText,
+            { left: textPosition.x, top: textPosition.y },
+          ]}
+        >
+          {text}
+        </Animated.Text>
+      </Pressable> 
