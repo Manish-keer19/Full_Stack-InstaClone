@@ -369,6 +369,7 @@ import { Story } from "../models/Story.model";
 import { User } from "../models/User.model";
 import { uploadInCloudinary } from "../utils/cloudinary.utils";
 import { UploadedFile } from "express-fileupload"; // Ensure this import if using express-fileupload
+import { fetchAllDetailsUser } from "../utils/fetchAllDetailsUser";
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -382,7 +383,8 @@ export const createStory = async (
   res: Response
 ): Promise<any> => {
   try {
-    const media = req.files?.media as UploadedFile | UploadedFile[];
+    const media = req.files?.media 
+    console.log("media is ", media);
     if (!media) {
       return res.status(400).json({
         success: false,
@@ -407,6 +409,7 @@ export const createStory = async (
         message: "User does not exist",
       });
     }
+    console.log("is user exist is ", isUserExist);
 
     const mediaFile = Array.isArray(media) ? media[0] : media;
     const mediaType = mediaFile.mimetype;
@@ -495,10 +498,13 @@ export const createStory = async (
       }
     }
 
+    const userdata = await fetchAllDetailsUser(req.user.email)
+  
     return res.status(201).json({
       success: true,
       message: "Story created successfully",
       story: userStory,
+      userdata
     });
   } catch (error) {
     console.log("Could not create the story", error);
@@ -512,9 +518,9 @@ export const createStory = async (
 export const getStory = async (req: Request, res: Response): Promise<any> => {
   try {
     const { id } = req.params;
-    console.log("id is ",id)
+    console.log("id is ", id);
     // const userId = id.split("_")[0];
-    const story = await Story.findOne({ user: id}, {}, { new: true });
+    const story = await Story.findOne({ user: id }, {}, { new: true });
     console.log("story is ", story);
     if (!story) {
       return res.status(400).json({

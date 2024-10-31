@@ -78,7 +78,7 @@ export const deletePost = async (req: any, res: any) => {
   // return success response
   try {
     // fetch the post id from req.body
-    const { postId, token } = req.body;
+    const { postId } = req.body;
     console.log("PostId is ", postId);
     // validate it
     if (!postId) {

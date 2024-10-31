@@ -16,26 +16,32 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import ImageZoom from "react-native-image-pan-zoom";
 import { captureRef } from "react-native-view-shot";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { StoryServiceInstance } from "../../services/storyServices";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../../Entryroute";
+import { Tuple } from "@reduxjs/toolkit";
+import { setUser } from "../../features/user/userSlice";
 
 export default function CreateStory({ route }: any) {
+  const dispatch = useDispatch();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { user, token } = useSelector((state: any) => state.User);
   const { imagedata } = route.params;
 
+  console.log("imagdata is ", imagedata);
   const [isZoomed, setIsZoomed] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [file, setFile] = useState(imagedata);
   const imageRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
   const [newText, setNewText] = useState("");
+  const [ispostSubmiting, setIspostSubmiting] = useState(false);
   const handleShare = async () => {
+    setIspostSubmiting(true);
+    let uri;
+    let media;
     try {
-      let uri;
-      let file;
       if (isZoomed) {
         uri = await captureRef(imageRef, {
           format: "png",
@@ -43,32 +49,38 @@ export default function CreateStory({ route }: any) {
           result: "tmpfile",
         });
 
-        file = {
+        media = {
           uri,
           name: "zoomed_image.png",
           type: "image/png",
         };
         //   console.log("Image URI:", uri);
       } else {
-        file = {
-          uri: imagedata.uri, // URI of the image
-          type:
-            imagedata.mediaType === "photo" ? "image/jpeg" : file1.mediaType, // Default type for photos
-          name: imagedata.filename, // Filename
+        media = {
+          uri: file.uri, // URI of the image
+          type: file.mediaType === "photo" ? "image/jpeg" : file1.mediaType, // Default type for photos
+          name: file.filename, // Filename
         };
       }
 
-      console.log("file is ", file);
+      console.log("file is ", media);
       const formData = new FormData();
-      formData.append("media", file);
+      formData.append("media", media);
       formData.append("token", token);
 
       console.log("form data is ", formData);
 
       const res = await StoryServiceInstance.creatStory(formData);
-      console.log("res in createstory", res);
-      navigation.navigate("Home");
+      if (res) {
+        console.log("res in createstory", res);
+        dispatch(setUser(res.userdata));
+        navigation.navigate("Home");
+      } else {
+        setIspostSubmiting(false);
+        alert("could not creaet the post pleases try again");
+      }
     } catch (error) {
+      setIspostSubmiting(false);
       console.error("Error uploading image:", error);
     }
   };
@@ -168,9 +180,18 @@ export default function CreateStory({ route }: any) {
 
       <View style={styles.footer}>
         <View style={styles.footerContainer}>
-          <TouchableOpacity style={styles.storyButton} onPress={handleShare}>
-            <Image style={styles.storyImage} source={{ uri: file?.uri }} />
-            <Text style={styles.buttonText}>Your story</Text>
+          <TouchableOpacity
+            style={styles.storyButton}
+            onPress={handleShare}
+            disabled={ispostSubmiting}
+          >
+            <Image
+              style={styles.storyImage}
+              source={{ uri: user?.profilePic }}
+            />
+            <Text style={styles.buttonText}>
+              {ispostSubmiting ? "Posting..." : "Post"}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={{

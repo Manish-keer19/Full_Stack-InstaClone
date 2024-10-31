@@ -31,6 +31,7 @@ class StoryService {
     } catch (error) {
       console.error("Error:", error);
       console.log("Could not create Story, some error occurred");
+      console.log("res is ", error.response.data);
     }
   }
 }

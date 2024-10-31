@@ -157,7 +157,7 @@ export type RootStackParamList = {
   ChangePassword: undefined;
   AddStory: undefined;
   CreateStory: undefined | { imagedata: any };
-  AllStories: undefined;
+  AllStories: undefined|{user: any};
 };
 
 export default function Entryroute() {
@@ -203,10 +203,10 @@ export default function Entryroute() {
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{ headerShown: false }}
-        // initialRouteName={initialPage}
+        initialRouteName={initialPage}
         // initialRouteName={"Post"}
         // initialRouteName={"CreateStory"}
-        initialRouteName={"AllStories"}
+        // initialRouteName={"AllStories"}
       >
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Profile" component={Profile} />

@@ -14,6 +14,7 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../../Entryroute";
 
 export default function Story() {
+  useEffect(() => {});
   const user = useSelector((state: any) => state.User.user);
   // console.log("user in story is", user);
   // console.log("user in story", user);
@@ -23,17 +24,12 @@ export default function Story() {
   // console.log("images in story", images);
 
   useEffect(() => {
-
-      
     if (user) {
       setimages(user?.posts);
     }
   }, [user]);
-  
 
-  useEffect(() => {
-     
-  })
+  useEffect(() => {});
   return (
     <View style={styles.container}>
       <ScrollView
@@ -43,7 +39,11 @@ export default function Story() {
       >
         <TouchableOpacity
           style={styles.storyContainer}
-          onPress={() => navigation.navigate("AddStory")}
+          onPress={() => {
+            user.userStories?.length > 0
+              ? navigation.navigate("AllStories")
+              : navigation.navigate("AddStory");
+          }}
         >
           <View style={styles.imageContainer}>
             <Image
@@ -53,18 +53,21 @@ export default function Story() {
               }}
             />
           </View>
-          <Icon
-            name="pluscircleo"
-            size={30}
-            color={"white"}
-            style={{
-              position: "absolute",
-              right: 14,
-              top: 82,
-              backgroundColor: "blue",
-              borderRadius: 50,
-            }}
-          />
+          {user?.userStories?.length == 0 && (
+            <Icon
+              name="pluscircleo"
+              size={30}
+              color={"white"}
+              style={{
+                position: "absolute",
+                right: 14,
+                top: 82,
+                backgroundColor: "blue",
+                borderRadius: 50,
+              }}
+            />
+          )}
+
           <Text style={styles.text}>{user?.username}</Text>
         </TouchableOpacity>
         {/* Repeat stories */}
