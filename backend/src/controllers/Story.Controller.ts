@@ -370,6 +370,7 @@ import { User } from "../models/User.model";
 import { uploadInCloudinary } from "../utils/cloudinary.utils";
 import { UploadedFile } from "express-fileupload"; // Ensure this import if using express-fileupload
 import { fetchAllDetailsUser } from "../utils/fetchAllDetailsUser";
+import mongoose, { Mongoose } from "mongoose";
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -383,7 +384,7 @@ export const createStory = async (
   res: Response
 ): Promise<any> => {
   try {
-    const media = req.files?.media 
+    const media = req.files?.media;
     console.log("media is ", media);
     if (!media) {
       return res.status(400).json({
@@ -498,13 +499,13 @@ export const createStory = async (
       }
     }
 
-    const userdata = await fetchAllDetailsUser(req.user.email)
-  
+    const userdata = await fetchAllDetailsUser(req.user.email);
+
     return res.status(201).json({
       success: true,
       message: "Story created successfully",
       story: userStory,
-      userdata
+      userdata,
     });
   } catch (error) {
     console.log("Could not create the story", error);
@@ -538,6 +539,124 @@ export const getStory = async (req: Request, res: Response): Promise<any> => {
     return res.status(500).json({
       success: false,
       message: "Could not get the story",
+    });
+  }
+};
+
+export const deleteStory = async (
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<any> => {
+  // fetch the story id from req.body
+  // validate it
+  // check if story exists
+  // delete the story
+  // delete the story from cloudinary
+  // delete the story from userstories
+  // return success response
+  try {
+    // fetch the story id from req.body
+    const { storyDocId, storyId } = req.body;
+    const userId = req.user.id;
+    // validate it
+    console.log("story Id", storyId);
+    console.log("storyDocId", storyDocId);
+    if (!storyId) {
+      return res.status(400).json({
+        success: false,
+        message: "story id is required",
+      });
+    }
+
+    // check if story exists
+    const isStoryExist = await Story.findById(storyDocId);
+    console.log("isStoryExist is ", isStoryExist);
+    if (!isStoryExist) {
+      return res.status(400).json({
+        success: false,
+        message: "story could not found",
+      });
+    }
+
+    if (!isStoryExist.stories.find((story: any) => story._id.equals(storyId))) {
+      return res.status(400).json({
+        success: false,
+        message: "story does not exist",
+      });
+    }
+
+    const publicId = isStoryExist?.stories.find((story: any) =>
+      story._id.equals(storyId)
+    )?.publicId;
+
+    if (!publicId) {
+      return res.status(400).json({
+        success: false,
+        message: "public id not found",
+      });
+    }
+
+    // delete the story from cloudinary
+    const cloudinaryDeleteImgRes = await uploadInCloudinary({
+      data: "",
+      folder: "",
+      isUpload: false,
+      publicId: publicId,
+    });
+    console.log("cloudinarydeleteImgRes is ", cloudinaryDeleteImgRes);
+
+    if (cloudinaryDeleteImgRes?.result !== "ok") {
+      return res.status(400).json({
+        success: false,
+        message: "could not delete the story from cloudinary",
+      });
+    }
+
+    let deletedStory;
+    // delete the story
+    if (isStoryExist.stories.length == 1) {
+      console.log("now we are going to delete the story Document");
+      deletedStory = await Story.findByIdAndDelete(isStoryExist._id);
+
+      // delete the story from userstories
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        {
+          $pull: {
+            userStories: deletedStory?._id,
+          },
+        },
+        { new: true }
+      );
+
+      console.log("deleted story ", deletedStory);
+      console.log("updated story ", updatedUser);
+    } else {
+      deletedStory = await Story.findByIdAndUpdate(
+        isStoryExist._id,
+        {
+          $pull: {
+            stories: { _id: storyId },
+          },
+        },
+        { new: true }
+      );
+
+      console.log("deleted story is ", deletedStory);
+    }
+
+    const userdata = await fetchAllDetailsUser(req.user.email);
+    // return success response
+    return res.status(200).json({
+      success: true,
+      message: "story has been deleted succefully",
+      userdata,
+    });
+  } catch (error) {
+    console.log("could not delete the story", error);
+    return res.status(500).json({
+      success: false,
+      message: "could not delete the story",
     });
   }
 };

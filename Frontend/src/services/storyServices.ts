@@ -1,3 +1,4 @@
+import { isAnyOf } from "@reduxjs/toolkit";
 import apiClient from "./apiClient";
 
 class StoryService {
@@ -28,9 +29,29 @@ class StoryService {
         console.log("Stories created successfully");
         return res.data;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error:", error);
       console.log("Could not create Story, some error occurred");
+      console.log("res is ", error.response.data);
+    }
+  }
+
+  async deleteStory(data: object): Promise<any> {
+    try {
+      console.log("data in deleteStory service ", data);
+      const res = await apiClient.post("/story/deleteStory", data, {
+        headers: {
+          "Content-Type": "multipart/form-data", // This will tell the server to expect a FormData object
+        },
+      }); // Using apiClient with base URL
+      console.log("res of deleteStory is ", res.data);
+      if (res.data.success) {
+        console.log("Story deleted successfully");
+        return res.data;
+      }
+    } catch (error: any) {
+      console.error("Error:", error);
+      console.log("Could not delete Story, some error occurred");
       console.log("res is ", error.response.data);
     }
   }

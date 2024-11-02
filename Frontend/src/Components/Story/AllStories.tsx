@@ -441,30 +441,43 @@ import {
   TouchableOpacity,
   Animated,
   ActivityIndicator,
+  Pressable,
+  Modal,
 } from "react-native";
 import { useSelector } from "react-redux";
-import AntDesign from "react-native-vector-icons/AntDesign";
 import { StoryServiceInstance } from "../../services/storyServices";
+import {
+  AntDesign,
+  FontAwesome,
+  FontAwesome5,
+  MaterialIcons,
+} from "@expo/vector-icons";
+import StoryEditModal from "../Modal/StoryEditModal";
 
 const STORY_DURATION = 10000; // 10 seconds
 
 export default function AllStories({ route }: any) {
   let { user } = useSelector((state: any) => state.User);
+  const currentUser = user;
   const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
   const progress = useRef(new Animated.Value(0)).current;
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  // const [stories, setStories] = useState<any>(null);
   const [stories, setStories] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [storyEditModal, setStoryEditModal] = useState(false);
 
   const anotherUser = route.params && route.params.user;
   if (anotherUser) {
     user = anotherUser;
   }
+
   const fetchStories = async () => {
     setLoading(true);
     try {
       const res = await StoryServiceInstance.getStories(user._id);
       if (res) {
+        console.log("Res is ", res);
         setStories(res.story);
       }
     } catch (error) {
@@ -474,8 +487,51 @@ export default function AllStories({ route }: any) {
     }
   };
 
+  // const story = {
+  //   story: {
+  //     _id: "671ce3d547c38efe28d4c5b0",
+  //     user: "67132fb18cb9126630acbb2a",
+  //     stories: [
+  //       {
+  //         content:
+  //           "https://res.cloudinary.com/manish19/image/upload/v1729946581/stories/enis7ybthzw95x90fn3f.jpg",
+  //         mediaType: "image",
+  //         createdAt: "2024-10-26T12:43:01.781Z",
+  //         publicId: "stories/enis7ybthzw95x90fn3f",
+  //         _id: "671ce3d547c38efe28d4c5b1",
+  //       },
+  //       {
+  //         content:
+  //           "https://res.cloudinary.com/manish19/image/upload/v1729946654/stories/zayootnqqx43fm1v1l9g.jpg",
+  //         mediaType: "image",
+  //         createdAt: "2024-10-26T12:44:15.521Z",
+  //         publicId: "stories/zayootnqqx43fm1v1l9g",
+  //         _id: "671ce41f47c38efe28d4c5ba",
+  //       },
+  //       {
+  //         content:
+  //           "https://res.cloudinary.com/manish19/image/upload/v1730362893/stories/klvry9fveihbu8kxnkdr.jpg",
+  //         mediaType: "image",
+  //         createdAt: "2024-10-31T08:21:35.577Z",
+  //         publicId: "stories/klvry9fveihbu8kxnkdr",
+  //         _id: "67233e0f5c2aa9504e50d9d6",
+  //       },
+  //       {
+  //         content:
+  //           "https://res.cloudinary.com/manish19/image/upload/v1730362974/stories/srgoeu8rprudhh2jwonj.png",
+  //         mediaType: "image",
+  //         createdAt: "2024-10-31T08:22:56.329Z",
+  //         publicId: "stories/srgoeu8rprudhh2jwonj",
+  //         _id: "67233e605c2aa9504e50d9e0",
+  //       },
+  //     ],
+  //     __v: 0,
+  //   },
+  // };
   useEffect(() => {
     fetchStories();
+    // setStories(story.story);
+    // setLoading(false);
   }, [user._id]);
 
   useEffect(() => {
@@ -542,6 +598,11 @@ export default function AllStories({ route }: any) {
     return `${differenceInDays}d ago`;
   };
 
+  const handleStoryEdit = (item: any) => {
+    console.log("story item is ", item);
+    setStoryEditModal(true);
+  };
+
   if (loading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
@@ -601,6 +662,62 @@ export default function AllStories({ route }: any) {
           activeOpacity={0.9}
         />
       </View>
+
+      {currentUser._id === user._id && (
+        <Pressable
+          style={{
+            width: "100%",
+            height: 70,
+            // backgroundColor: "#494949",
+            backgroundColor: "black",
+            position: "absolute",
+            bottom: 0,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <TouchableOpacity
+            style={{ flexDirection: "row", alignItems: "center" }}
+            onPress={() => handleStoryEdit(stories.stories[currentStoryIndex])}
+          >
+            <Image
+              source={{ uri: user?.profilePic }}
+              style={{ width: 35, height: 35, borderRadius: 50, margin: 10 }}
+            />
+            <Text style={{ color: "white", fontSize: 15, fontWeight: "bold" }}>
+              {user?.username}
+            </Text>
+          </TouchableOpacity>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 15,
+              marginRight: 15,
+            }}
+          >
+            <FontAwesome name="facebook" size={24} color="white" />
+            <AntDesign name="star" size={24} color="white" />
+            <MaterialIcons name="send" size={24} color="white" />
+            <MaterialIcons name="more" size={24} color="white" />
+          </View>
+        </Pressable>
+      )}
+
+      <Modal
+        visible={storyEditModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setStoryEditModal(false)}
+      >
+        <StoryEditModal
+          storydata={{
+            storyDocId: stories._id,
+            story: stories.stories[currentStoryIndex],
+          }}
+        />
+      </Modal>
     </View>
   );
 }
@@ -624,7 +741,7 @@ const styles = StyleSheet.create({
   progressContainer: {
     flexDirection: "row",
     position: "absolute",
-    top: 40,
+    top: 50,
     left: 10,
     right: 10,
     height: 2,
@@ -680,7 +797,8 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "85%",
     marginTop: 10,
-    alignItems: "center",
+    // alignItems: "center",
+    justifyContent: "center",
     flexDirection: "row",
   },
   leftTouchableArea: {

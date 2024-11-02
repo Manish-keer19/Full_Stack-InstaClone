@@ -58,7 +58,7 @@ export default function CreateStory({ route }: any) {
       } else {
         media = {
           uri: file.uri, // URI of the image
-          type: file.mediaType === "photo" ? "image/jpeg" : file1.mediaType, // Default type for photos
+          type: file.mediaType === "photo" ? "image/jpeg" : file.mediaType, // Default type for photos
           name: file.filename, // Filename
         };
       }
@@ -71,10 +71,10 @@ export default function CreateStory({ route }: any) {
       console.log("form data is ", formData);
 
       const res = await StoryServiceInstance.creatStory(formData);
+      navigation.navigate("Home");
       if (res) {
         console.log("res in createstory", res);
         dispatch(setUser(res.userdata));
-        navigation.navigate("Home");
       } else {
         setIspostSubmiting(false);
         alert("could not creaet the post pleases try again");

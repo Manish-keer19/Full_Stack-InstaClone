@@ -14,7 +14,11 @@
 
 import { RequestHandler, Router } from "express";
 import { authentication } from "../middleware/authantication"; // Ensure your authentication middleware adds 'user'
-import { createStory, getStory } from "../controllers/Story.Controller";
+import {
+  createStory,
+  deleteStory,
+  getStory,
+} from "../controllers/Story.Controller";
 
 const storyRoute = Router();
 
@@ -22,6 +26,11 @@ storyRoute.post(
   "/createStory",
   authentication,
   createStory as unknown as RequestHandler
+);
+storyRoute.post(
+  "/deleteStory",
+  authentication,
+  deleteStory as unknown as RequestHandler
 );
 storyRoute.get("/getStory/:id", getStory);
 
