@@ -135,6 +135,7 @@ import { useLoadUserData } from "./src/features/user/userSlice";
 import AddStory from "./src/Components/Story/AddStory";
 import CreateStory from "./src/Components/Story/CreateStory";
 import AllStories from "./src/Components/Story/AllStories";
+import ChatScreen from "./src/Components/Message/ChatScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -158,6 +159,7 @@ export type RootStackParamList = {
   AddStory: undefined;
   CreateStory: undefined | { imagedata: any };
   AllStories: undefined|{user: any};
+  ChatScreen: undefined;
 };
 
 export default function Entryroute() {
@@ -203,10 +205,11 @@ export default function Entryroute() {
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{ headerShown: false }}
-        initialRouteName={initialPage}
+        // initialRouteName={initialPage}
         // initialRouteName={"Post"}
         // initialRouteName={"CreateStory"}
         // initialRouteName={"AllStories"}
+        initialRouteName={"ChatScreen"}
       >
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Profile" component={Profile} />
@@ -227,6 +230,7 @@ export default function Entryroute() {
         <Stack.Screen name="AddStory" component={AddStory} />
         <Stack.Screen name="CreateStory" component={CreateStory} />
         <Stack.Screen name="AllStories" component={AllStories} />
+        <Stack.Screen name="ChatScreen" component={ChatScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
