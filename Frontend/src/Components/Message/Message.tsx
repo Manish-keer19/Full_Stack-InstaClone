@@ -5,12 +5,40 @@ import {
   TextInput,
   View,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AntDesignIcons from "react-native-vector-icons/AntDesign";
 import FeatherIcons from "react-native-vector-icons/Feather";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../../../Entryroute";
+import { UserServiceInstance } from "../../services/Userservice";
+import { useSelector } from "react-redux";
 
 export default function Message() {
+  const [usersData, setUsersData] = useState([]);
+  const { token } = useSelector((state: any) => state.User);
+
+  const fetchuserFollowingData = async () => {
+    try {
+      const response = await UserServiceInstance.fetchUserFollowingList({
+        token,
+      });
+
+      console.log("response is ", response);
+      if (response) {
+        console.log("userfolowing data fetched");
+        setUsersData(response.followingList);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchuserFollowingData();
+  }, [token]);
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -35,16 +63,20 @@ export default function Message() {
         {/* Messages Header */}
         <Text style={styles.sectionHeader}>Messages</Text>
         {/* Map through your message items */}
-        {[...Array(10)].map((_, i) => (
-          <View style={styles.messageItem} key={i}>
+        {usersData.map((user:any,i)=>(
+            <TouchableOpacity
+            style={styles.messageItem}
+            key={i}
+            onPress={() => navigation.navigate("UserChat",{user:user})}
+          >
             <Image
               source={{
-                uri: "https://res.cloudinary.com/manish19/image/upload/v1725781643/jjlvg8e1yww6cacpl25s.jpg",
+                uri: user.profilePic,
               }}
               style={styles.userImage}
             />
             <View style={styles.messageDetails}>
-              <Text style={styles.username}>Manish-keer19</Text>
+              <Text style={styles.username}>{user.username}</Text>
               <Text style={styles.messageText}>Mentioned you in a story</Text>
             </View>
             <AntDesignIcons
@@ -53,7 +85,7 @@ export default function Message() {
               size={30}
               style={styles.cameraIcon}
             />
-          </View>
+          </TouchableOpacity>
         ))}
 
         {/* Requests Header */}

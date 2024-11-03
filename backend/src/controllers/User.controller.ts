@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { User } from "../models/User.model";
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 import { fetchAllDetailsUser } from "../utils/fetchAllDetailsUser";
 
 interface AuthenticatedRequest extends Request {
@@ -9,121 +9,6 @@ interface AuthenticatedRequest extends Request {
     email: string;
   };
 }
-
-// export const FollowUser = async (req: Request, res: Response): Promise<any> => {
-//   // fetch the token and userId where current user want to follow that user
-//   // fecht the current user id  from req.user.id
-//   // validate all of these
-//   // check if user exists based on userId
-//   // add following array of current user
-//   // and also addd folowers array of another user that has been followed
-//   // save both of them
-//   // return success response
-
-//   try {
-//     const authenticatedReq = req as AuthenticatedRequest;
-//     const { userId, token } = req.body;
-
-//     console.log("userid is ", userId);
-//     console.log("token is ", token);
-//     //  validate
-//     if (!userId || !token) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "all filed are required",
-//       });
-//     }
-
-//     console.log("authuser is ", authenticatedReq.user);
-//     const currentUserId = authenticatedReq.user.id;
-//     console.log("currentuserId", currentUserId);
-
-//     if (!currentUserId) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "currentUserId is required",
-//       });
-//     }
-
-//     const iscurrenuserExist = await User.findOne({ _id: currentUserId });
-
-//     if (!iscurrenuserExist) {
-//       return res.status(400).json({
-//         success: false,
-//         messaage: "current user is not found",
-//       });
-//     }
-
-//     if (iscurrenuserExist.following == userId) {
-//       return res.json({
-//         success: false,
-//         message: "you have already followed the user",
-//       });
-//     }
-
-//     const isUserExist = await User.findOne({ _id: userId });
-//     if (!isUserExist) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "follower user not found",
-//       });
-//     }
-
-//     // add following array of current user
-//     const currentUser = await User.findByIdAndUpdate(
-//       currentUserId,
-//       {
-//         $push: {
-//           following: userId,
-//         },
-//       },
-//       { new: true }
-//     );
-
-//     console.log("current user is ", currentUser);
-
-//     if (!currentUser) {
-//       return res.json({
-//         success: false,
-//         message: "current user is null",
-//       });
-//     }
-
-//     // update the followers array of another user that has been followed
-
-//     const anotherUser = await User.findByIdAndUpdate(
-//       userId,
-//       {
-//         $push: {
-//           followers: currentUserId,
-//         },
-//       },
-//       { new: true }
-//     );
-//     console.log("another user is ", anotherUser);
-
-//     if (!anotherUser) {
-//       return res.json({
-//         success: false,
-//         message: "another  user is null",
-//       });
-//     }
-
-//     // succes res
-
-//     return res.status(200).json({
-//       success: true,
-//       message: "suceesfully follow the user ",
-//     });
-//   } catch (error) {
-//     console.log("could not follow the user", error);
-//     return res.status(500).json({
-//       success: false,
-//       message: "Could not follow the user",
-//     });
-//   }
-// };
-
 export const FollowUser = async (req: Request, res: Response): Promise<any> => {
   // fetch the token and userId where current user wants to follow that user
   // fetch the current user id from req.user.id
@@ -514,7 +399,7 @@ export const fetchUserFeed = async (
       })
       .exec();
 
-    console.log("User data is ", user)
+    console.log("User data is ", user);
 
     if (!user) {
       return res.status(400).json({
@@ -533,6 +418,51 @@ export const fetchUserFeed = async (
     return res.status(500).json({
       success: false,
       message: "Could not fetch the user feed",
+    });
+  }
+};
+
+export const fetchUserFollowingList = async (
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<any> => {
+  try {
+    // fetch the token and userId
+    const user = req.user;  
+    const userId = new mongoose.Types.ObjectId(user.id);
+    // validate it
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "User is not authenticated",
+      });
+    }
+    // check if user exists based on userId
+    const isUserExist = await User.findById(userId);
+    if (!isUserExist) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    //  fetch all following user
+    console.log("userid is ", userId);
+    const userFollowingList = await User.findById(userId, {}, { new: true })
+      .populate("following")
+      .exec();
+
+    // return success response
+    return res.status(200).json({
+      success: true,
+      message: "Following list fetched successfully",
+      followingList: userFollowingList?.following,
+    });
+  } catch (error) {
+    console.log("could not fetch the following list", error);
+    return res.status(500).json({
+      success: false,
+      message: "Could not fetch the following list",
     });
   }
 };

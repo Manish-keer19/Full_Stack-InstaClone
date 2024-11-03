@@ -14,7 +14,7 @@
 import http from "http";
 import { Server } from "socket.io";
 import app from "./app";
-import { initializeSocket } from "./socket/stocke";
+import { initializeSocket } from "./src/socket/socket";
 import dotenv from "dotenv";
 
 dotenv.config();

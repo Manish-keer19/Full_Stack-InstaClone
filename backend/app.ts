@@ -10,6 +10,7 @@ import Postroute from "./src/router/post.route";
 import likeRoute from "./src/router/Like.route";
 import commentRoute from "./src/router/comment.route";
 import storyRoute from "./src/router/story.route";
+import messageRoute from "./src/router/message.route";
 
 dotenv.config(); // Load environment variables from .env file
 
@@ -39,6 +40,7 @@ app.use("/api/v1/post", Postroute); // Post routes
 app.use("/api/v1/like", likeRoute); // Like routes
 app.use("/api/v1/comment", commentRoute); // comment routes
 app.use("/api/v1/story", storyRoute); // comment routes
+app.use("/api/v1/message", messageRoute); // Message routes
 
 // Basic root route
 app.get("/", (req: Request, res: Response) => {
