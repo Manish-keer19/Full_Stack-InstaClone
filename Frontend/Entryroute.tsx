@@ -207,13 +207,13 @@ export default function Entryroute() {
     <NavigationContainer>
       <Stack.Navigator
         screenOptions={{ headerShown: false }}
-        initialRouteName={initialPage}
+        // initialRouteName={initialPage}
         // initialRouteName={"Post"}
         // initialRouteName={"CreateStory"}
         // initialRouteName={"AllStories"}
         // initialRouteName={"ChatScreen"}
         // initialRouteName={"UserChat"}
-        // initialRouteName={"Messages"}
+        initialRouteName={"Messages"}
       >
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Profile" component={Profile} />

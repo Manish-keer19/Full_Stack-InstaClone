@@ -16,6 +16,8 @@ import { io } from "socket.io-client";
 import { useSelector } from "react-redux";
 import { useLoadUserData } from "../../features/user/userSlice";
 import { MessageServiceInstance } from "../../services/MessageService";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import { BASE_URL } from "../../services/apiClient";
 
 export default function UserChat({ route }: any) {
   useLoadUserData();
@@ -29,22 +31,55 @@ export default function UserChat({ route }: any) {
 
   const currentUserId = currentUser?._id;
   const anotherUserId = user?._id;
-  // const socket = io("http://192.168.81.139:3000");
-  const socket = io("http://192.168.190.139:3000");
+  const socket = io(BASE_URL);
   const [messages, setMessages] = useState<any>();
+  const [messageEditModal, setMessageEditModal] = useState(false);
   console.log("messages in user chat", messages);
 
   const [message, setMessage] = useState("");
+  const [selectedMessageID, setselectedMessageID] = useState<string>("");
+  const [selectedMessageText, setSelectedMessageText] = useState<string>("");
+  const [isEditable, setIsEditable] = useState<boolean>(false);
 
-  const handleSendMessage = () => {
-    const messageObj = {
-      currentUser: currentUserId,
-      anotherUser: anotherUserId,
-      sender: currentUser?._id,
-      message: message,
-    }; // Mark the message as sent by "me"
-    socket.emit("sendMessage", messageObj); // Send message to server
-    setMessage("");
+  const inputRef = useRef<TextInput | null>(null);
+  const handleSendMessage = async () => {
+    if (isEditable) {
+      // alert("editable true bro");
+
+      const data = {
+        currentUserId: currentUserId,
+        anotherUserId: anotherUserId,
+        messageId: selectedMessageID,
+        message: message,
+      };
+
+      try {
+        const res = await MessageServiceInstance.editMessage(data);
+        console.log("res is", res);
+        if (res) {
+          // alert("message edited successfully");
+          setMessages(res.messages.messages);
+          setMessage("");
+          setMessageEditModal(false);
+        } else {
+          setMessage("");
+          setMessageEditModal(false);
+        }
+      } catch (error) {
+        setMessage("");
+        setMessageEditModal(false);
+        console.log("could not edit the message", error);
+      }
+    } else {
+      const messageObj = {
+        currentUser: currentUserId,
+        anotherUser: anotherUserId,
+        sender: currentUser?._id,
+        message: message,
+      }; // Mark the message as sent by "me"
+      socket.emit("sendMessage", messageObj); // Send message to server
+      setMessage("");
+    }
   };
 
   useEffect(() => {
@@ -80,6 +115,34 @@ export default function UserChat({ route }: any) {
     fetchMessages();
   }, [user]);
 
+  const handleDeleteMessage = async () => {
+    const data = {
+      currentUserId: currentUserId,
+      anotherUserId: anotherUserId,
+      messageId: selectedMessageID,
+    };
+    try {
+      const res = await MessageServiceInstance.deleteMessage(data);
+      console.log("res is", res);
+      if (res) {
+        const messages = res.messages;
+        console.log("Message deletd succefully");
+        setMessages(res.messages.messages);
+      } else {
+        setMessageEditModal(false);
+      }
+    } catch (error) {
+      setMessageEditModal(false);
+      console.error("could not delete the message", error);
+    }
+  };
+
+  const handleEditMessage = (msg: any) => {
+    console.log("message is ", msg);
+    setMessage(msg.message);
+    inputRef.current?.focus();
+    setIsEditable(true);
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -112,7 +175,7 @@ export default function UserChat({ route }: any) {
         {messages?.length > 0 ? (
           <View style={styles.messageWrapper}>
             {messages.map((msg: any, i: any) => (
-              <View
+              <TouchableOpacity
                 key={i}
                 style={[
                   styles.message,
@@ -120,31 +183,157 @@ export default function UserChat({ route }: any) {
                     ? styles.userMessage
                     : styles.otherUserMessage,
                 ]}
+                onPress={() => {
+                  setMessageEditModal(false);
+                }}
+                onLongPress={() => {
+                  setselectedMessageID(msg._id);
+                  setMessageEditModal(true);
+                }}
               >
-                {msg.sender?._id == currentUser?._id ? (
-                  <>
-                    <Text style={styles.userMessageText}>{msg.message}</Text>
-                    <Image
-                      source={{
-                        uri: msg.sender?.profilePic,
+                <View
+                  style={{
+                    // borderWidth: 2,
+                    // borderColor: "yellow",
+                    gap: 30,
+                  }}
+                >
+                  {msg.sender?._id == currentUser?._id ? (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+
+                        gap: 10,
                       }}
-                      style={styles.userImageSmall}
-                    />
-                  </>
-                ) : (
-                  <>
-                    <Image
-                      source={{
-                        uri: msg.sender?.profilePic,
+                    >
+                      <Text style={styles.userMessageText}>{msg.message}</Text>
+                      <Image
+                        source={{
+                          uri: msg.sender?.profilePic,
+                        }}
+                        style={styles.userImageSmall}
+                      />
+                    </View>
+                  ) : (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 10,
                       }}
-                      style={styles.otherUserImageSmall}
-                    />
-                    <Text style={styles.otherUserMessageText}>
-                      {msg.message}
-                    </Text>
-                  </>
-                )}
-              </View>
+                    >
+                      <Image
+                        source={{
+                          uri: msg.sender?.profilePic,
+                        }}
+                        style={styles.otherUserImageSmall}
+                      />
+                      <Text style={styles.otherUserMessageText}>
+                        {msg.message}
+                      </Text>
+                    </View>
+                  )}
+
+                  {messageEditModal && msg._id == selectedMessageID && (
+                    <View
+                      style={{
+                        width: 170,
+                        // height: 120,
+                        minHeight: 70,
+                        // backgroundColor: "#303030",
+                        borderRadius: 10,
+                        gap: 8,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        // marginTop:10 ,
+                      }}
+                    >
+                      {msg.sender?._id == currentUser?._id ? (
+                        <>
+                          <TouchableOpacity
+                            style={{
+                              backgroundColor: "#363636",
+                              width: "90%",
+                              borderRadius: 10,
+                              alignItems: "center",
+                              flexDirection: "row",
+                              gap: 3,
+                              justifyContent: "center",
+                            }}
+                            onPress={() => {
+                              handleEditMessage(msg);
+                            }}
+                          >
+                            <AntDesign name="edit" size={20} color="white" />
+
+                            <Text
+                              style={{
+                                color: "white",
+                                padding: 10,
+                                fontSize: 15,
+                                fontWeight: "bold",
+                              }}
+                            >
+                              edit
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={{
+                              backgroundColor: "darkred",
+                              width: "90%",
+                              borderRadius: 10,
+                              alignItems: "center",
+                              flexDirection: "row",
+                              gap: 3,
+                              justifyContent: "center",
+                            }}
+                            onPress={handleDeleteMessage}
+                          >
+                            <AntDesign name="delete" size={20} color="white" />
+                            <Text
+                              style={{
+                                color: "white",
+                                padding: 10,
+                                fontSize: 15,
+                                fontWeight: "bold",
+                              }}
+                            >
+                              Delete
+                            </Text>
+                          </TouchableOpacity>
+                        </>
+                      ) : (
+                        <TouchableOpacity
+                          style={{
+                            backgroundColor: "darkblue",
+                            width: "90%",
+                            borderRadius: 10,
+                            alignItems: "center",
+                            flexDirection: "row",
+                            gap: 3,
+                            justifyContent: "center",
+                          }}
+                        >
+                          {/* <AntDesign name="like2" size={20} color="white" /> */}
+                          {/* <AntDesign name="heart" size={20} color="white" /> */}
+                          <AntDesign name="hearto" size={20} color="white" />
+                          <Text
+                            style={{
+                              color: "white",
+                              padding: 10,
+                              fontSize: 15,
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Like
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  )}
+                </View>
+              </TouchableOpacity>
             ))}
           </View>
         ) : (
@@ -171,11 +360,13 @@ export default function UserChat({ route }: any) {
           </View>
         )}
       </ScrollView>
-
       <View style={styles.inputContainer}>
         <View style={styles.inputWrapper}>
           <MaterialCommunityIcons name="camera" size={24} color="white" />
           <TextInput
+            ref={inputRef}
+            multiline
+            // textAlignVertical="top"
             style={styles.textInput}
             placeholder="Message..."
             placeholderTextColor={"white"}
@@ -185,7 +376,7 @@ export default function UserChat({ route }: any) {
         </View>
         <View style={styles.iconContainer}>
           {message.length > 0 ? (
-            <TouchableOpacity style={{ paddingHorizontal: 20 }}>
+            <TouchableOpacity style={{ paddingHorizontal: 10 }}>
               <FontAwesome
                 name="paper-plane"
                 size={24}
@@ -259,6 +450,8 @@ const styles = StyleSheet.create({
   messageWrapper: {
     paddingHorizontal: 10,
     marginTop: 20,
+    // borderWidth: 2,
+    // borderColor: "blue",
   },
   message: {
     flexDirection: "row",
@@ -266,7 +459,6 @@ const styles = StyleSheet.create({
     marginBottom: 25,
     // borderWidth: 2,
     // borderColor: "blue",
-    // minHeight: 300,
   },
   userMessage: {
     // borderWidth: 2,
@@ -281,7 +473,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     padding: 10,
     borderRadius: 10,
-    maxWidth: "70%",
+    maxWidth: "80%",
     marginLeft: 10,
   },
   otherUserMessage: {
@@ -294,7 +486,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     padding: 10,
     borderRadius: 10,
-    maxWidth: "70%",
+    maxWidth: "80%",
     marginRight: 10,
   },
   otherUserImageSmall: {
@@ -323,14 +515,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 20,
   },
+
   textInput: {
     color: "white",
     // borderWidth: 2,
     // borderColor: "blue",
     paddingRight: 80,
+    maxWidth: "80%",
   },
+
   iconContainer: {
     flexDirection: "row",
     gap: 15,
+    alignItems: "center",
   },
 });
