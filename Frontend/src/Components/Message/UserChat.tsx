@@ -43,6 +43,7 @@ export default function UserChat({ route }: any) {
 
   const inputRef = useRef<TextInput | null>(null);
   const handleSendMessage = async () => {
+    inputRef.current?.blur();
     if (isEditable) {
       // alert("editable true bro");
 
@@ -61,8 +62,10 @@ export default function UserChat({ route }: any) {
           setMessages(res.messages.messages);
           setMessage("");
           setMessageEditModal(false);
+          setIsEditable(false);
         } else {
           setMessage("");
+          setIsEditable(false);
           setMessageEditModal(false);
         }
       } catch (error) {
@@ -71,6 +74,14 @@ export default function UserChat({ route }: any) {
         console.log("could not edit the message", error);
       }
     } else {
+      const messageData = {
+        sender: {
+          _id: currentUserId,
+        },
+        message: message,
+      };
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+      setMessages((prev: any) => [...prev, messageData]);
       const messageObj = {
         currentUser: currentUserId,
         anotherUser: anotherUserId,
@@ -445,7 +456,9 @@ const styles = StyleSheet.create({
   },
   messageContainer: {
     marginTop: 20,
-    maxHeight: 600,
+    maxHeight: 630,
+    // borderWidth: 2,
+    // borderColor: "yellow",
   },
   messageWrapper: {
     paddingHorizontal: 10,
