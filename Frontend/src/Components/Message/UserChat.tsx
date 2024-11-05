@@ -26,7 +26,8 @@ export default function UserChat({ route }: any) {
   const currentUser = useSelector((state: any) => state.User.user);
   // console.log("currentUser in user chat", currentUser);
 
-  const { user } = route.params;
+  const { user } = route.params || {};
+
   // console.log("user in user chat", user);
   // Reference to ScrollView
   const scrollViewRef = useRef<ScrollView>(null);
@@ -51,8 +52,8 @@ export default function UserChat({ route }: any) {
     if (isEditable) {
       // alert("editable true bro");
 
-       console.log("anotaher user id is ", anotherUserId);
-       console.log("current user id is ", currentUserId);
+      console.log("anotaher user id is ", anotherUserId);
+      console.log("current user id is ", currentUserId);
       const data = {
         currentUserId: currentUserId,
         anotherUserId: anotherUserId,
@@ -81,14 +82,19 @@ export default function UserChat({ route }: any) {
         console.log("could not edit the message", error);
       }
     } else {
-      const messageData = {
-        sender: {
-          _id: currentUserId,
-        },
-        message: message,
-      };
+      // if (messages.length > 0) {
+      //   const messageData = {
+      //     sender: {
+      //       _id: currentUserId,
+      //     },
+      //     message: message,
+      //   };
+
+      //   setMessages((prev: any) => [...prev, messageData]);
+      // }
+
       scrollViewRef.current?.scrollToEnd({ animated: true });
-      setMessages((prev: any) => [...prev, messageData]);
+
       const messageObj = {
         currentUser: currentUserId,
         anotherUser: anotherUserId,

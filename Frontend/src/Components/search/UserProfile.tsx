@@ -79,13 +79,19 @@ export default function UserProfile({ route }: any) {
 
   // Show loader while fetching user data
   if (loading) {
-    return(
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center",backgroundColor:"black" }}>
-        
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "black",
+        }}
+      >
         <ActivityIndicator size="large" color="white" />
         <Text style={{ color: "white" }}>Loading...</Text>
-        </View>
-    )
+      </View>
+    );
   }
 
   // Handle case where user is not found
@@ -250,7 +256,10 @@ export default function UserProfile({ route }: any) {
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity style={styles.Messagebtn}>
+          <TouchableOpacity
+            style={styles.Messagebtn}
+            onPress={() => navigation.navigate("UserChat", { user: user })}
+          >
             <Text style={styles.buttonText}>Message</Text>
           </TouchableOpacity>
         </View>
