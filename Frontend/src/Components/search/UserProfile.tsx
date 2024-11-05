@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import AntDesignIcons from "@expo/vector-icons/AntDesign";
@@ -22,24 +23,50 @@ import { UserServiceInstance } from "../../services/Userservice";
 
 export default function UserProfile({ route }: any) {
   useLoadUserData();
-
+  const dispatch = useDispatch();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const currentUser = useSelector((state: any) => state.User.user);
   console.log("current use is ", currentUser);
   const token = useSelector((state: any) => state.User.token);
-  console.log("token in user profile", token);
-  const user = route.params && route.params.user;
-
-  // Set initial following state
-  const [isFollowing, setIsFollowing] = useState(
-    currentUser?.following?.some((item: any) => item._id === user._id)
-  );
-
-  console.log("isfollowing in useProfile ", isFollowing);
-  const dispatch = useDispatch();
-
-  console.log("User in profile", user);
   const [activeTab, setActiveTab] = useState("Posts");
+  console.log("token in user profile", token);
+
+  // Extract the user or userId from route params if available
+  const [user, setUser1] = useState<any>(route.params?.user || null);
+  const userId = route.params?.userId || user?._id;
+
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [loading, setLoading] = useState(!user); // Only set loading to true if user data is not available in route
+
+  const fetchUserData = async () => {
+    setLoading(true);
+    try {
+      const res = await UserServiceInstance.fetchUserdata({ userId });
+      if (res) {
+        const userData = res.userdata;
+        setUser1(userData); // Update user state with fetched data
+        setIsFollowing(
+          currentUser?.following?.some((item: any) => item._id === userData._id)
+        ); // Update following state
+      }
+    } catch (error) {
+      console.error("Could not fetch the user data in posts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch user data only if it's not available in route params
+  useEffect(() => {
+    if (!user && userId) {
+      fetchUserData();
+    } else if (user) {
+      // Set initial following state from route data if available
+      setIsFollowing(
+        currentUser?.following?.some((item: any) => item._id === user._id)
+      );
+    }
+  }, [user, userId]);
 
   const renderPost = ({ item }: any) => (
     <TouchableOpacity
@@ -50,8 +77,24 @@ export default function UserProfile({ route }: any) {
     </TouchableOpacity>
   );
 
+  // Show loader while fetching user data
+  if (loading) {
+    return(
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center",backgroundColor:"black" }}>
+        
+        <ActivityIndicator size="large" color="white" />
+        <Text style={{ color: "white" }}>Loading...</Text>
+        </View>
+    )
+  }
+
+  // Handle case where user is not found
   if (!user) {
-    return <Loader />;
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text style={{ color: "white" }}>User not found</Text>
+      </View>
+    );
   }
 
   const handleUnfolloweUser = async () => {
@@ -108,8 +151,8 @@ export default function UserProfile({ route }: any) {
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={{
-              borderWidth: 2,
-              borderColor: "yellow",
+              // borderWidth: 2,
+              // borderColor: "yellow",
               padding: 10,
             }}
           >

@@ -912,7 +912,7 @@ export default function Posts() {
                 <View style={styles.postHeader}>
                   <Pressable
                     style={styles.profileInfo}
-                    onPress={() => navigation.navigate("Post", { user: user })}
+                    onPress={() => navigation.navigate("UserProfile", { userId: item?.user })}
                   >
                     <Image
                       source={{ uri: item?.profilePic }}

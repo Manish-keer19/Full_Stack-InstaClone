@@ -146,7 +146,7 @@ export type RootStackParamList = {
   AddPost: undefined;
   ImagePicker: undefined;
   EditProfile: undefined;
-  Post: undefined | { user: any };
+  Post: undefined | { user?: any; userId?: any };
   Login: undefined;
   Signup: undefined;
   Messages: undefined;
@@ -154,7 +154,7 @@ export type RootStackParamList = {
   Loader: undefined;
   CreatePost: { file1: object | null | undefined };
   Search: undefined;
-  UserProfile: undefined | { user: any };
+  UserProfile: undefined | { user?: any; userId?: any };
   ForgotPassword: undefined;
   ChangePassword: undefined;
   AddStory: undefined;

@@ -623,7 +623,24 @@ export default function Profile() {
 
       {/* Profile Section */}
       <View style={styles.profileInfo}>
-        <Image style={styles.profileImage} source={{ uri: user?.profilePic }} />
+        {user?.userStories.length > 0 ? (
+          <TouchableOpacity
+            onPress={() => navigation.navigate("AllStories", { user: user })}
+            style={{ borderWidth: 2, borderColor: "yellow", borderRadius: 50 }}
+          >
+            <Image
+              style={styles.profileImage}
+              source={{ uri: user?.profilePic }}
+            />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity>
+            <Image
+              style={styles.profileImage}
+              source={{ uri: user?.profilePic }}
+            />
+          </TouchableOpacity>
+        )}
         <View style={styles.statsWrapper}>
           <View style={styles.statsContainer}>
             <Text style={styles.statsText}>{user.posts?.length}</Text>

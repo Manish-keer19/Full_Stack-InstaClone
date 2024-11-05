@@ -515,3 +515,58 @@ export const searchUserInMessage = async (
     });
   }
 };
+
+export const featchUserData = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { userId } = req.body;
+    console.log("userId is ", userId);
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "User email is required",
+      });
+    }
+
+    const userdata = await User.findById(userId, {}, { new: true })
+      .populate({
+        path: "posts",
+        populate: {
+          path: "comment",
+
+          populate: {
+            path: "user",
+          },
+        },
+      })
+      .populate("saved")
+      .populate("profile")
+      .populate("followers")
+      .populate("following")
+      .populate("userStories")
+      .populate("folowersStories")
+      .exec();
+
+    if (!userdata) {
+      return res.status(400).json({
+        success: false,
+        message: "Could not fetch the user data",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "User data fetched successfully",
+      userdata,
+    });
+  } catch (error) {
+    console.log("could not fetch the user data", error);
+    return res.status(500).json({
+      success: false,
+      message: "Could not fetch the user data",
+    });
+  }
+};

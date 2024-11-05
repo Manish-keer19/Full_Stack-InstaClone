@@ -1,5 +1,6 @@
 import { RequestHandler, Router } from "express";
 import {
+  featchUserData,
   fetchUserFeed,
   fetchUserFollowingList,
   FollowUser,
@@ -28,4 +29,5 @@ userRoute.post(
   fetchUserFollowingList as unknown as RequestHandler
 );
 userRoute.post("/searchUserInMessage", authentication, searchUserInMessage);
+userRoute.post("/fetchUserdata", featchUserData);
 export default userRoute;
