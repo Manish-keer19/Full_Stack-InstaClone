@@ -14,10 +14,28 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../../Entryroute";
 import { UserServiceInstance } from "../../services/Userservice";
 import { useSelector } from "react-redux";
-
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 export default function Message() {
   const [usersData, setUsersData] = useState([]);
   const { token } = useSelector((state: any) => state.User);
+  const [username, setUsername] = useState<string>("");
+  const [serachData, setSerachData] = useState<[]>([]);
+
+  const serchUserInMessage = async () => {
+    const data = {
+      token,
+      searchTerm: username,
+    };
+    try {
+      const res = await UserServiceInstance.searchUsersInMessage(data);
+      console.log("res in serchUserInMessage", res);
+      if (res) {
+        setSerachData(res.users);
+      }
+    } catch (error) {
+      console.log("could not get the searchUserInMessage", error);
+    }
+  };
 
   const fetchuserFollowingData = async () => {
     try {
@@ -43,7 +61,12 @@ export default function Message() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <AntDesignIcons name="arrowleft" color={"white"} size={30} />
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={{ padding: 10 }}
+        >
+          <MaterialCommunityIcons name="arrow-left" size={24} color="white" />
+        </TouchableOpacity>
         <Text style={styles.headerText}>Manish-keer19</Text>
         <FeatherIcons name="edit" color={"white"} size={30} />
       </View>
@@ -55,19 +78,53 @@ export default function Message() {
           placeholder="Search"
           placeholderTextColor={"#B0B0B0"}
           style={styles.searchInput}
+          value={username}
+          onChangeText={(value) => {
+            setUsername(value);
+            serchUserInMessage();
+          }}
         />
       </View>
 
       {/* Messages Section */}
       <ScrollView style={styles.messagesContainer}>
+        {serachData.length > 0 && (
+          <Text style={styles.sectionHeader}>Search Result</Text>
+        )}
+        {/* map through your serachData items */}
+        {serachData.map((user: any, i) => (
+          <TouchableOpacity
+            style={styles.messageItem}
+            key={i}
+            onPress={() => navigation.navigate("UserChat", { user: user })}
+          >
+            <Image
+              source={{
+                uri: user.profilePic,
+              }}
+              style={styles.userImage}
+            />
+            <View style={styles.messageDetails}>
+              <Text style={styles.username}>{user.username}</Text>
+              <Text style={styles.messageText}>Mentioned you in a story</Text>
+            </View>
+            <AntDesignIcons
+              name="camera"
+              color={"#B0B0B0"}
+              size={30}
+              style={styles.cameraIcon}
+            />
+          </TouchableOpacity>
+        ))}
+
         {/* Messages Header */}
         <Text style={styles.sectionHeader}>Messages</Text>
         {/* Map through your message items */}
-        {usersData.map((user:any,i)=>(
-            <TouchableOpacity
+        {usersData.map((user: any, i) => (
+          <TouchableOpacity
             style={styles.messageItem}
             key={i}
-            onPress={() => navigation.navigate("UserChat",{user:user})}
+            onPress={() => navigation.navigate("UserChat", { user: user })}
           >
             <Image
               source={{

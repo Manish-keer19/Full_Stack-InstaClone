@@ -1051,6 +1051,8 @@ const styles = StyleSheet.create({
   profileInfo: {
     flexDirection: "row",
     alignItems: "center",
+    // borderWidth: 2,
+    // borderColor: "yellow",
   },
   avatar: {
     width: 40,

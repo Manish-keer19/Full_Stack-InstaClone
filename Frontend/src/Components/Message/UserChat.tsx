@@ -18,14 +18,16 @@ import { useLoadUserData } from "../../features/user/userSlice";
 import { MessageServiceInstance } from "../../services/MessageService";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { BASE_URL } from "../../services/apiClient";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../../../Entryroute";
 
 export default function UserChat({ route }: any) {
   useLoadUserData();
   const currentUser = useSelector((state: any) => state.User.user);
-  console.log("currentUser in user chat", currentUser);
+  // console.log("currentUser in user chat", currentUser);
 
   const { user } = route.params;
-  console.log("user in user chat", user);
+  // console.log("user in user chat", user);
   // Reference to ScrollView
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -34,12 +36,14 @@ export default function UserChat({ route }: any) {
   const socket = io(BASE_URL);
   const [messages, setMessages] = useState<any>();
   const [messageEditModal, setMessageEditModal] = useState(false);
-  console.log("messages in user chat", messages);
+  // console.log("messages in user chat", messages);
 
   const [message, setMessage] = useState("");
   const [selectedMessageID, setselectedMessageID] = useState<string>("");
   const [selectedMessageText, setSelectedMessageText] = useState<string>("");
   const [isEditable, setIsEditable] = useState<boolean>(false);
+
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const inputRef = useRef<TextInput | null>(null);
   const handleSendMessage = async () => {
@@ -47,6 +51,8 @@ export default function UserChat({ route }: any) {
     if (isEditable) {
       // alert("editable true bro");
 
+       console.log("anotaher user id is ", anotherUserId);
+       console.log("current user id is ", currentUserId);
       const data = {
         currentUserId: currentUserId,
         anotherUserId: anotherUserId,
@@ -63,6 +69,7 @@ export default function UserChat({ route }: any) {
           setMessage("");
           setMessageEditModal(false);
           setIsEditable(false);
+          scrollViewRef.current?.scrollToEnd({ animated: true });
         } else {
           setMessage("");
           setIsEditable(false);
@@ -116,6 +123,7 @@ export default function UserChat({ route }: any) {
       console.log("res in user chat", res);
       if (res) {
         setMessages(res.messages.messages);
+        scrollViewRef.current?.scrollToEnd({ animated: true });
       }
     } catch (error) {
       console.log("could not get the messages", error);
@@ -139,6 +147,7 @@ export default function UserChat({ route }: any) {
         const messages = res.messages;
         console.log("Message deletd succefully");
         setMessages(res.messages.messages);
+        scrollViewRef.current?.scrollToEnd({ animated: true });
       } else {
         setMessageEditModal(false);
       }
@@ -149,6 +158,7 @@ export default function UserChat({ route }: any) {
   };
 
   const handleEditMessage = (msg: any) => {
+    setMessageEditModal(false);
     console.log("message is ", msg);
     setMessage(msg.message);
     inputRef.current?.focus();
@@ -158,7 +168,12 @@ export default function UserChat({ route }: any) {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <MaterialCommunityIcons name="arrow-left" size={24} color="white" />
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={{ padding: 10 }}
+          >
+            <MaterialCommunityIcons name="arrow-left" size={24} color="white" />
+          </TouchableOpacity>
           <View style={styles.userInfo}>
             <Image
               source={{
@@ -387,7 +402,13 @@ export default function UserChat({ route }: any) {
         </View>
         <View style={styles.iconContainer}>
           {message.length > 0 ? (
-            <TouchableOpacity style={{ paddingHorizontal: 10 }}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "darkblue",
+                padding: 10,
+                borderRadius: 10,
+              }}
+            >
               <FontAwesome
                 name="paper-plane"
                 size={24}
@@ -456,7 +477,7 @@ const styles = StyleSheet.create({
   },
   messageContainer: {
     marginTop: 20,
-    maxHeight: 630,
+    maxHeight: 620,
     // borderWidth: 2,
     // borderColor: "yellow",
   },

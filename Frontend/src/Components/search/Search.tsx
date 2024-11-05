@@ -71,7 +71,14 @@ export default function SearchComponent() {
   return (
     <View style={styles.screen}>
       <View style={styles.searchContainer}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          style={{
+            // borderWidth: 2,
+            // borderColor: "yellow",
+            paddingVertical: 10,
+          }}
+          onPress={() => navigation.goBack()}
+        >
           <AntDesignIcons name="arrowleft" color="white" size={30} />
         </TouchableOpacity>
         <View style={styles.inputWrapper}>

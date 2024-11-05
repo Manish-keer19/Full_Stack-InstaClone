@@ -40,12 +40,18 @@ export default function Story() {
         <TouchableOpacity
           style={styles.storyContainer}
           onPress={() => {
-            user.userStories?.length > 0
+            user?.userStories?.length > 0
               ? navigation.navigate("AllStories")
               : navigation.navigate("AddStory");
           }}
         >
-          <View style={styles.imageContainer}>
+          <View
+            style={[
+              user?.userStories?.length > 0
+                ? styles.imageStoryContainer
+                : styles.imageContainer,
+            ]}
+          >
             <Image
               style={styles.image}
               source={{
@@ -110,14 +116,21 @@ const styles = StyleSheet.create({
     // marginRight: 10,
   },
   imageContainer: {
-    borderWidth: 2,
     borderRadius: 50,
     height: 100,
     width: 100,
     alignItems: "center",
     justifyContent: "center",
-    borderColor: "gold",
     // borderColor: "pink",
+  },
+  imageStoryContainer: {
+    height: 100,
+    width: 100,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "gold",
+    borderRadius: 50,
   },
   image: {
     width: "90%",

@@ -428,7 +428,7 @@ export const fetchUserFollowingList = async (
 ): Promise<any> => {
   try {
     // fetch the token and userId
-    const user = req.user;  
+    const user = req.user;
     const userId = new mongoose.Types.ObjectId(user.id);
     // validate it
     if (!userId) {
@@ -463,6 +463,55 @@ export const fetchUserFollowingList = async (
     return res.status(500).json({
       success: false,
       message: "Could not fetch the following list",
+    });
+  }
+};
+
+export const searchUserInMessage = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const { searchTerm } = req.body;
+
+    console.log("searchTerm is ", req.body);
+    if (!searchTerm) {
+      return res.status(400).json({
+        success: false,
+        message: "Search term is required",
+      });
+    }
+    const users = await User.find(
+      {
+        username: { $regex: searchTerm, $options: "i" }, // Case-insensitive search
+      },
+      {},
+      { new: true }
+    );
+
+    // if (users.length === 0) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Could not fetch the user in message",
+    //   });
+    // }
+
+    // if (!users) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Could not fetch the user in message",
+    //   });
+    // }
+    return res.status(200).json({
+      success: true,
+      message: "Users retrieved successfully",
+      users,
+    });
+  } catch (error) {
+    console.log("could not featch the user in message", error);
+    return res.status(500).json({
+      success: false,
+      message: "Could not featch the user in message",
     });
   }
 };

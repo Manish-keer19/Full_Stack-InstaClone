@@ -4,6 +4,7 @@ import {
   fetchUserFollowingList,
   FollowUser,
   getuserFulldata,
+  searchUserInMessage,
   searchUsers,
   UnFollowUser,
 } from "../controllers/User.controller";
@@ -21,5 +22,10 @@ userRoute.post("/followuser", authentication, FollowUser);
 userRoute.post("/unFollowUser", authentication, UnFollowUser);
 userRoute.post("/searchUsers", authentication, searchUsers);
 userRoute.post("/fetchUserFeed", authentication, fetchUserFeed);
-userRoute.post("/fetchUserFollowingList", authentication, fetchUserFollowingList as unknown as RequestHandler) 
+userRoute.post(
+  "/fetchUserFollowingList",
+  authentication,
+  fetchUserFollowingList as unknown as RequestHandler
+);
+userRoute.post("/searchUserInMessage", authentication, searchUserInMessage);
 export default userRoute;

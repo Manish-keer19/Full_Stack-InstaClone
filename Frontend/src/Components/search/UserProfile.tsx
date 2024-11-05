@@ -105,7 +105,16 @@ export default function UserProfile({ route }: any) {
             paddingLeft: 10,
           }}
         >
-          <AntDesignIcons name="arrowleft" color={"white"} size={28} />
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={{
+              borderWidth: 2,
+              borderColor: "yellow",
+              padding: 10,
+            }}
+          >
+            <AntDesignIcons name="arrowleft" color={"white"} size={28} />
+          </TouchableOpacity>
           <Text style={styles.profileUsername}>{user?.username}</Text>
         </View>
 

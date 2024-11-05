@@ -152,6 +152,26 @@ class UserService {
       console.log("could not get the UserFollowingList", error);
     }
   }
+
+  async searchUsersInMessage(data: any) {
+    console.log("data in searchUsersInMessage userservice", data);
+    try {
+      const res = await apiClient.post("/user/searchUserInMessage", data);  
+
+      console.log("res.data is ", res.data);
+
+      if (res.data.success) {
+        console.log("data is ", res.data);
+        // alert("user data fech succesfully");
+        return res.data;
+      } else {
+        console.log("could not get the searchUserInMessage");
+      }
+    } catch (error) {
+      console.log("error", error);
+      console.log("could not get the searchUserInMessage", error);
+    }
+  }
 }
 
 export const UserServiceInstance = new UserService();

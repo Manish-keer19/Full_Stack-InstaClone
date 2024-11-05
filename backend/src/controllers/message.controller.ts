@@ -65,24 +65,50 @@ export const editMessage = async (
         message: "All fields are required",
       });
     }
-    // Find the document and update the specific message in the messages array
-    const updatedMessageDoc = await Message.findOneAndUpdate(
-      {
-        $or: [
-          { currentUser: currentUserId },
-          { anotherUser: anotherUserId },
-          { "messages._id": messageId },
-        ],
-      },
-      { $set: { "messages.$[elem].message": message } }, // Update the message text
-      {
-        new: true, // Return the updated document
-        arrayFilters: [{ "elem._id": messageId }], // Filter for the specific message in the array
-      }
-    ).populate({
-      path: "messages.sender",
-      model: "User",
-    });
+
+    let updatedMessageDoc;
+
+    if (currentUserId !== anotherUserId) {
+      console.log("bhai current user id or another user id is not equal");
+
+      // Find the document and update the specific message in the messages array
+      updatedMessageDoc = await Message.findOneAndUpdate(
+        {
+          $or: [
+            { currentUser: currentUserId, anotherUser: anotherUserId },
+            { currentUser: anotherUserId, anotherUser: currentUserId },
+          ],
+          "messages._id": messageId,
+        },
+        { $set: { "messages.$[elem].message": message } }, // Update the message text
+        {
+          new: true, // Return the updated document
+          arrayFilters: [{ "elem._id": messageId }], // Filter for the specific message in the array
+        }
+      ).populate({
+        path: "messages.sender",
+        model: "User",
+      });
+    } else {
+      console.log("bhai current user id or another user id is  equal");
+      updatedMessageDoc = await Message.findOneAndUpdate(
+        {
+          $and: [
+            { currentUser: currentUserId },
+            { anotherUser: currentUserId },
+            { "messages._id": messageId },
+          ],
+        },
+        { $set: { "messages.$[elem].message": message } }, // Update the message text
+        {
+          new: true, // Return the updated document
+          arrayFilters: [{ "elem._id": messageId }], // Filter for the specific message in the array
+        }
+      ).populate({
+        path: "messages.sender",
+        model: "User",
+      });
+    }
 
     console.log(updatedMessageDoc);
     if (!updatedMessageDoc) {
@@ -123,23 +149,44 @@ export const deleteMessage = async (
       });
     }
 
-    // delete that message from the messages array
-    const updatedMessageDoc = await Message.findOneAndUpdate(
-      {
-        $or: [
-          { currentUser: currentUserId },
-          { anotherUser: anotherUserId },
-          { "messages._id": messageId },
-        ],
-      },
-      { $pull: { messages: { _id: messageId } } }, // delete the message doc
-      {
-        new: true, // Return the updated document
-      }
-    ).populate({
-      path: "messages.sender",
-      model: "User",
-    });
+    let updatedMessageDoc;
+    if (currentUserId !== anotherUserId) {
+      // delete that message from the messages array
+      updatedMessageDoc = await Message.findOneAndUpdate(
+        {
+          $or: [
+            { currentUser: currentUserId, anotherUser: anotherUserId },
+            { currentUser: anotherUserId, anotherUser: currentUserId },
+          ],
+          "messages._id": messageId,
+        },
+        { $pull: { messages: { _id: messageId } } }, // delete the message doc
+        {
+          new: true, // Return the updated document
+        }
+      ).populate({
+        path: "messages.sender",
+        model: "User",
+      });
+    } else {
+      // delete that message from the messages array
+      updatedMessageDoc = await Message.findOneAndUpdate(
+        {
+          $and: [
+            { currentUser: currentUserId },
+            { anotherUser: currentUserId },
+            { "messages._id": messageId },
+          ],
+        },
+        { $pull: { messages: { _id: messageId } } }, // delete the message doc
+        {
+          new: true, // Return the updated document
+        }
+      ).populate({
+        path: "messages.sender",
+        model: "User",
+      });
+    }
 
     if (!updatedMessageDoc) {
       return res.status(400).json({

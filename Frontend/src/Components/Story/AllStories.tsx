@@ -453,8 +453,10 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import StoryEditModal from "../Modal/StoryEditModal";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../../../Entryroute";
 
-const STORY_DURATION = 10000; // 10 seconds
+const STORY_DURATION = 15000; // 10 seconds
 
 export default function AllStories({ route }: any) {
   let { user } = useSelector((state: any) => state.User);
@@ -466,6 +468,8 @@ export default function AllStories({ route }: any) {
   const [stories, setStories] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [storyEditModal, setStoryEditModal] = useState(false);
+
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const anotherUser = route.params && route.params.user;
   if (anotherUser) {
@@ -568,7 +572,8 @@ export default function AllStories({ route }: any) {
     if (currentStoryIndex + 1 < stories.stories.length) {
       setCurrentStoryIndex(currentStoryIndex + 1);
     } else {
-      setCurrentStoryIndex(0); // loop back to the first story
+      // setCurrentStoryIndex(0); // loop back to the first story
+      navigation.navigate("Home");
     }
     resetAnimation();
   };
@@ -578,6 +583,7 @@ export default function AllStories({ route }: any) {
       setCurrentStoryIndex(currentStoryIndex - 1);
     } else {
       setCurrentStoryIndex(stories.stories.length - 1); // go to the last story
+      // navigation.goBack();
     }
     resetAnimation();
   };
