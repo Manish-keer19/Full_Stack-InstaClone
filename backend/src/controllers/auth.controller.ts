@@ -156,7 +156,8 @@ export const Signup = async (req: Request, res: Response): Promise<any> => {
       username: username,
       email: email,
       password: hashedPassword,
-      profilePic: `https://ui-avatars.com/api/?name=${username}+${username}&background=random&color=000`,
+      profilePic: `https://i.pinimg.com/originals/29/54/34/295434a7de6346b49bb15bd3c5fdfdf5.jpg`,
+      // profilePic: `https://ui-avatars.com/api/?name=${username}+${username}&background=random&color=000`,
     });
 
     return res.status(200).json({
@@ -224,6 +225,27 @@ export const Login = async (req: Request, res: Response): Promise<any> => {
     const token = jwt.sign(payload, JWT_SECRET, {
       expiresIn: "1d",
     });
+    const JWT_SECRET_REFRESH = process.env.JWT_SECRET;
+    if (!JWT_SECRET_REFRESH) {
+      return res.status(500).json({
+        success: false,
+        message: "JWT secret is not defined",
+      });
+    }
+
+    // // Generate refresh token (long-lived, e.g., 7 days)
+    // const refreshToken = jwt.sign(payload, JWT_SECRET_REFRESH, {
+    //   expiresIn: "7d",
+    // });
+
+    // // Set refresh token as a cookie
+    // res.cookie("refreshToken", refreshToken, {
+    //   httpOnly: true,
+    //   secure: true, // Set to true for HTTPS, false for HTTP
+    //   sameSite: "strict", // Adjust based on your requirements
+    //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+    // });
+
     const user = isUserExist.toObject();
     user.token = token;
     user.password = "";
@@ -314,7 +336,7 @@ export const ResetPassword = async (
   // check if otp is correct or not
   // update the password
   // return success response
-  
+
   try {
     // fetch the email password otp from req.body
     const { email, password, otp } = req.body;

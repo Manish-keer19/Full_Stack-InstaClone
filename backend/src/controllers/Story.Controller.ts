@@ -521,7 +521,15 @@ export const getStory = async (req: Request, res: Response): Promise<any> => {
     const { id } = req.params;
     console.log("id is ", id);
     // const userId = id.split("_")[0];
-    const story = await Story.findOne({ user: id }, {}, { new: true });
+    const story = await Story.findOne({ user: id }, {}, { new: true })
+      .populate({
+        path: "stories", // Populate stories array
+        populate: {
+          path: "watchedBy", // Populate the user field inside each story
+          select: "username email _id profilePic", // Specify which fields you want from the user document
+        },
+      })
+      .exec();
     console.log("story is ", story);
     if (!story) {
       return res.status(400).json({
@@ -542,6 +550,7 @@ export const getStory = async (req: Request, res: Response): Promise<any> => {
     });
   }
 };
+
 
 export const deleteStory = async (
   req: AuthenticatedRequest,
@@ -657,6 +666,73 @@ export const deleteStory = async (
     return res.status(500).json({
       success: false,
       message: "could not delete the story",
+    });
+  }
+};
+
+export const adduserToStory = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    // featch the story id from req.body
+    const { storyDocId, storyId } = req.body;
+    const userId = req.user.id;
+    // validate it
+    console.log("story Id", storyId);
+    console.log("storyDocId", storyDocId);
+    if (!storyId || !storyDocId) {
+      return res.status(400).json({
+        success: false,
+        message: "story id is required",
+      });
+    }
+
+    // check if story exists
+    const isStoryExist = await Story.findById(storyDocId);
+    console.log("isStoryExist is ", isStoryExist);
+    if (!isStoryExist) {
+      return res.status(400).json({
+        success: false,
+        message: "story could not found",
+      });
+    }
+
+    // Check if the user has already watched the story
+    const alreadyWatched = await Story.findOne({
+      _id: storyDocId,
+      "stories._id": storyId,
+      "stories.watchedBy": userId,
+    });
+
+    if (alreadyWatched) {
+      return res.status(200).json({
+        success: true,
+        message: "User has already watched this story",
+      });
+    }
+    // update the story document
+    const updatedStory = await Story.findOneAndUpdate(
+      { _id: storyDocId, "stories._id": storyId },
+      { $addToSet: { "stories.$.watchedBy": userId } },
+      { new: true }
+    );
+    if (!updatedStory) {
+      return res.status(400).json({
+        success: false,
+        message: "story could not found",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "story has been watched by user",
+      updatedStory,
+    });
+  } catch (error) {
+    console.log("could not watched by user", error);
+    return res.status(500).json({
+      success: false,
+      message: "could not watched by user",
     });
   }
 };

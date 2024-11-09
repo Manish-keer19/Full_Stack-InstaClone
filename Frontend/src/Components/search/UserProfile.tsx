@@ -183,7 +183,7 @@ export default function UserProfile({ route }: any) {
 
       {/* Profile Section */}
       <View style={styles.profileInfo}>
-        {user?.userStories.length > 0 ? (
+        {user?.userStories?.length > 0 ? (
           <TouchableOpacity
             onPress={() => navigation.navigate("AllStories", { user: user })}
             style={{ borderWidth: 1, borderColor: "gold", borderRadius: 50 }}

@@ -19,6 +19,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { CommentServiceInstance } from "../../services/CommentServices";
 import { setUser } from "../../features/user/userSlice";
 import { AntDesign } from "@expo/vector-icons";
+import {
+  NavigationProp,
+  useNavigation,
+  useNavigationState,
+} from "@react-navigation/native";
+import { RootStackParamList } from "../../../Entryroute";
 
 // Define types for User, Comment, and Props
 type User = {
@@ -50,6 +56,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   commentModal,
   setCommentModal,
 }) => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const token = useSelector((state: any) => state.User.token);
   const dispatch = useDispatch();
   // console.log("comment is in comment section ", comment);
@@ -191,10 +198,19 @@ const CommentSection: React.FC<CommentSectionProps> = ({
             // style={{ borderWidth: 2, borderColor: "gold" }}
           >
             <View style={styles.commentContainer}>
-              <Image
-                style={styles.profilePic}
-                source={{ uri: item?.user?.profilePic }}
-              />
+              <TouchableOpacity
+                onPress={() => {
+                  setCommentModal(false);
+                  navigation.navigate("UserProfile", {
+                    userId: item?.user?._id,
+                  });
+                }}
+              >
+                <Image
+                  style={styles.profilePic}
+                  source={{ uri: item?.user?.profilePic }}
+                />
+              </TouchableOpacity>
 
               <View style={styles.commentTextContainer}>
                 <Text style={styles.username}>{item?.user?.username}</Text>

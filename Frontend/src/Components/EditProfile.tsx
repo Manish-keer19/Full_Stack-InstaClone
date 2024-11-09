@@ -258,13 +258,16 @@ export default function EditProfile() {
     const data = new FormData();
 
     // Append form data
-    data.append("name", name);
-    data.append("username", username);
-    data.append("bio", bio);
-    data.append("pronoun", pronoun);
-    data.append("email", user?.email);
+
     data.append("token", token);
 
+    if (name || username || bio || pronoun) {
+      data.append("name", name);
+      data.append("username", username);
+      data.append("bio", bio);
+      data.append("pronoun", pronoun);
+      data.append("email", user?.email);
+    }
     if (profileImage) {
       data.append("profileImage", {
         uri: profileImage,

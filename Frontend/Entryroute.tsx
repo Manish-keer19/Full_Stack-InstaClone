@@ -137,6 +137,7 @@ import CreateStory from "./src/Components/Story/CreateStory";
 import AllStories from "./src/Components/Story/AllStories";
 import ChatScreen from "./src/Components/Message/ChatScreen";
 import UserChat from "./src/Components/Message/UserChat";
+import AudioCall from "./src/Components/Message/AudioCall";
 
 const Stack = createNativeStackNavigator();
 
@@ -162,6 +163,7 @@ export type RootStackParamList = {
   AllStories: undefined | { user: any };
   ChatScreen: undefined;
   UserChat: undefined | { user: any };
+  AudioCall: undefined;
 };
 
 export default function Entryroute() {
@@ -214,6 +216,7 @@ export default function Entryroute() {
         // initialRouteName={"ChatScreen"}
         // initialRouteName={"UserChat"}
         // initialRouteName={"Messages"}
+        // initialRouteName={"AudioCall"}
       >
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Profile" component={Profile} />
@@ -236,6 +239,7 @@ export default function Entryroute() {
         <Stack.Screen name="AllStories" component={AllStories} />
         <Stack.Screen name="ChatScreen" component={ChatScreen} />
         <Stack.Screen name="UserChat" component={UserChat} />
+        <Stack.Screen name="AudioCall" component={AudioCall} />
       </Stack.Navigator>
     </NavigationContainer>
   );

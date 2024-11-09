@@ -27,13 +27,13 @@ export const editProfile = async (
 
     console.log("profile image path is ", profileImagePath);
 
-    // Validate the incoming data
-    if (!email || !name || !username || !bio || !pronoun) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required",
-      });
-    }
+    // // Validate the incoming data
+    // if (!email || !name || !username || !bio || !pronoun) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "All fields are required",
+    //   });
+    // }
 
     // Find user by email
     const user = await User.findOne({ email }).populate("profile");
@@ -62,8 +62,9 @@ export const editProfile = async (
         { new: true }
       );
       console.log("newuser is ", newUser);
-    }
-    if (user.profile) {
+
+    
+    }  if (user.profile) {
       console.log("bhai update karna he profile ko");
       // Profile exists, update the profile
       const updatedProfile = await Profile.findOneAndUpdate(

@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { User } from "../models/User.model";
 import mongoose, { mongo } from "mongoose";
 import { fetchAllDetailsUser } from "../utils/fetchAllDetailsUser";
+import { emit } from "process";
+import { uploadInCloudinary } from "../utils/cloudinary.utils";
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -384,20 +386,33 @@ export const fetchUserFeed = async (
 
     // Find the authenticated user and populate the following users and their posts
     const user = await User.findById(userId)
-      .populate({
-        path: "following", // Populate the following users
-        populate: {
-          path: "posts", // Populate posts for each following user
-          populate: {
+  .populate({
+    path: "following", // Populate the following users
+    populate: [
+      {
+        path: "posts", // Populate posts for each following user
+        populate: [
+          {
+            path: "user", // Populate user details for each post
+            select: "username profilePic _id userStories", // Specify fields to return for post user
+          },
+          {
             path: "comment", // Populate comments for each post
             populate: {
               path: "user", // Populate user details for each comment
-              select: "username profilePic", // Specify fields to return for comment user
+              select: "username profilePic _id", // Specify fields to return for comment user
             },
           },
-        },
-      })
-      .exec();
+        ],
+      },
+      {
+        path: "userStories", // Populate userStories for each following user
+        select: "_id content createdAt", // Specify fields to return for userStories
+      },
+    ],
+  })
+  .exec();
+
 
     console.log("User data is ", user);
 
@@ -567,6 +582,68 @@ export const featchUserData = async (
     return res.status(500).json({
       success: false,
       message: "Could not fetch the user data",
+    });
+  }
+};
+
+export const chnageProfilePic = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const email = req.body.user.email;
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "User email is required",
+      });
+    }
+    const profileImage = req.files?.profileImage;
+
+    // Handle different types of `profileImage`
+    const profileImagePath = Array.isArray(profileImage)
+      ? profileImage[0]?.tempFilePath // Take the first file if it's an array
+      : profileImage?.tempFilePath; // If it's a single file
+
+    console.log("profile image path is ", profileImagePath);
+    // Find user by email
+    const user = await User.findOne({ email: email }).populate("profile");
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (profileImage && profileImagePath) {
+      console.log("bhai profile image ko update karna he profile ko");
+      const imgres = await uploadInCloudinary({
+        data: profileImagePath,
+        folder: "profile",
+      });
+
+      const newUser = await User.findOneAndUpdate(
+        { email: email },
+        {
+          $set: {
+            profilePic: imgres?.secure_url,
+          },
+        },
+        { new: true }
+      );
+      console.log("newuser is ", newUser);
+
+      return res.status(200).json({
+        success: true,
+        message: "Profile updated successfully",
+      });
+    }
+  } catch (error) {
+    console.log("could not change the profile picture", error);
+    return res.status(500).json({
+      success: false,
+      message: "Could not change the profile picture",
     });
   }
 };

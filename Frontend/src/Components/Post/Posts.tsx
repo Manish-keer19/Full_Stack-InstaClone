@@ -386,10 +386,6 @@
 //   },
 // });
 
-
-
-
-
 import {
   StyleSheet,
   Text,
@@ -546,10 +542,19 @@ export default function Posts({ route }: any) {
                 style={styles.profileInfo}
                 onPress={() => navigation.navigate("Post", { user: user })}
               >
-                <Image
-                  source={{ uri: user?.profilePic }}
-                  style={styles.avatar}
-                />
+                <TouchableOpacity
+                  onPress={() => {
+                    setCommentModal(false);
+                    navigation.navigate("UserProfile", {
+                      userId: item?.user?._id,
+                    });
+                  }}
+                >
+                  <Image
+                    source={{ uri: user?.profilePic }}
+                    style={styles.avatar}
+                  />
+                </TouchableOpacity>
                 <View style={styles.userDetails}>
                   <Text style={styles.username}>{user?.username}</Text>
                   <Text style={styles.location}>{item?.location}</Text>

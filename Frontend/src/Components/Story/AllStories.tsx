@@ -456,12 +456,12 @@ import StoryEditModal from "../Modal/StoryEditModal";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../../Entryroute";
 
-const STORY_DURATION = 15000; // 10 seconds
+// const STORY_DURATION = 5000; // 10 seconds
 
 export default function AllStories({ route }: any) {
-  let { user } = useSelector((state: any) => state.User);
+  let { user, token } = useSelector((state: any) => state.User);
   const currentUser = user;
-  const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
+  const [currentStoryIndex, setCurrentStoryIndex] = useState<number>(0);
   const progress = useRef(new Animated.Value(0)).current;
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   // const [stories, setStories] = useState<any>(null);
@@ -538,54 +538,59 @@ export default function AllStories({ route }: any) {
     // setLoading(false);
   }, [user._id]);
 
-  useEffect(() => {
-    if (!loading && stories) {
-      startProgressAnimation();
-    }
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, [loading, currentStoryIndex]);
-
-  const startProgressAnimation = () => {
-    Animated.timing(progress, {
-      toValue: 1,
-      duration: STORY_DURATION,
-      useNativeDriver: false,
-    }).start(({ finished }) => {
-      if (finished) {
-        handleNextStory();
-      }
-    });
-
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(handleNextStory, STORY_DURATION);
-  };
-
-  const resetAnimation = () => {
-    progress.setValue(0);
-    if (timerRef.current) clearTimeout(timerRef.current);
-    startProgressAnimation();
-  };
-
-  const handleNextStory = () => {
+  const handleNextStory = async () => {
     if (currentStoryIndex + 1 < stories.stories.length) {
       setCurrentStoryIndex(currentStoryIndex + 1);
     } else {
-      // setCurrentStoryIndex(0); // loop back to the first story
-      navigation.navigate("Home");
+      setCurrentStoryIndex(0); // loop back to the first story
     }
-    resetAnimation();
+
+    // Check if the user has watched the current story
+    if (
+      !stories.stories[currentStoryIndex].watchedBy.some(
+        (user: any) => user._id === currentUser._id
+      )
+    ) {
+      // await handleStoryWatched(); // Mark the story as watched if not watched already
+      if (user._id !== currentUser._id) {
+        await handleStoryWatched();
+      } else {
+        console.log("how can i view own story");
+      }
+      console.log("currenuserID is ", currentUser._id);
+      console.log("sotry data is ", stories.stories[currentStoryIndex]);
+      console.log("You have not watched this story");
+    } else {
+      console.log("You have already watched this story");
+    }
   };
 
-  const handlePrevStory = () => {
+  const handlePrevStory = async () => {
     if (currentStoryIndex - 1 >= 0) {
       setCurrentStoryIndex(currentStoryIndex - 1);
     } else {
       setCurrentStoryIndex(stories.stories.length - 1); // go to the last story
-      // navigation.goBack();
     }
-    resetAnimation();
+
+    // Check if the user has watched the current story
+    if (
+      !stories.stories[currentStoryIndex].watchedBy.some(
+        (user: any) => user._id === currentUser._id
+      )
+    ) {
+      if (user._id !== currentUser._id) {
+        console.log("how can i view own story");
+        await handleStoryWatched();
+      } else {
+        console.log("how can i view own story");
+      }
+      console.log("currenuserID is ", currentUser._id);
+      console.log("sotry data is ", stories.stories[currentStoryIndex]);
+      // await handleStoryWatched(); // Mark the story as watched if not watched already
+      console.log("You have not watched this story");
+    } else {
+      console.log("You have already watched this story");
+    }
   };
 
   const calculateTimeAgo = (createdAt: string) => {
@@ -607,6 +612,24 @@ export default function AllStories({ route }: any) {
   const handleStoryEdit = (item: any) => {
     console.log("story item is ", item);
     setStoryEditModal(true);
+  };
+
+  const handleStoryWatched = async () => {
+    try {
+      // Prepare data to send to the API
+      const data = {
+        token: token,
+        userId: user._id, // Current user watching the story
+        storyId: stories.stories[currentStoryIndex]._id, // Current story ID
+        storyDocId: stories._id,
+      };
+
+      // Call the API to add the user to the story
+      const response = await StoryServiceInstance.addUserToStory(data); // Calling the service function
+      console.log("User added to story:", response);
+    } catch (error) {
+      console.error("Error watching story:", error);
+    }
   };
 
   if (loading) {

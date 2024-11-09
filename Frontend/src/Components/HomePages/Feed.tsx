@@ -871,8 +871,7 @@ export default function Posts() {
     const data = users.flatMap((user: any) =>
       user.posts.map((post: any) => ({
         ...post,
-        profilePic: user.profilePic,
-        username: user.username,
+        user: user,
       }))
     );
 
@@ -912,14 +911,41 @@ export default function Posts() {
                 <View style={styles.postHeader}>
                   <Pressable
                     style={styles.profileInfo}
-                    onPress={() => navigation.navigate("UserProfile", { userId: item?.user })}
+                    onPress={() =>
+                      navigation.navigate("UserProfile", { userId: item?.user })
+                    }
                   >
-                    <Image
-                      source={{ uri: item?.profilePic }}
-                      style={styles.avatar}
-                    />
+                    {item?.user?.userStories?.length > 0 ? (
+                      <TouchableOpacity
+                        style={{
+                          borderWidth: 2,
+                          borderColor: "yellow",
+                          borderRadius: 50,
+                        }}
+                        onPress={() =>
+                          navigation.navigate("AllStories", {
+                            user: item.user,
+                          })
+                        }
+                      >
+                        <Image
+                          source={{ uri: item?.user?.profilePic }}
+                          style={styles.avatar}
+                        />
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity>
+                        <Image
+                          source={{ uri: item?.user?.profilePic }}
+                          style={styles.avatar}
+                        />
+                      </TouchableOpacity>
+                    )}
+
                     <View style={styles.userDetails}>
-                      <Text style={styles.username}>{item?.username}</Text>
+                      <Text style={styles.username}>
+                        {item?.user?.username}
+                      </Text>
                       <Text style={styles.location}>{item?.location}</Text>
                     </View>
                   </Pressable>
@@ -994,7 +1020,7 @@ export default function Posts() {
                     {item?.likes?.length} likes
                   </Text>
                   <Text style={styles.postDescription}>
-                    <Text style={styles.username}>{user?.username} </Text>
+                    <Text style={styles.username}>{item?.user?.username} </Text>
                     {item.caption}
                   </Text>
                 </View>
@@ -1053,12 +1079,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     // borderWidth: 2,
     // borderColor: "yellow",
+    gap: 10,
   },
   avatar: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    marginRight: 10,
   },
   userDetails: {
     justifyContent: "center",

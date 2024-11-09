@@ -16,6 +16,7 @@ import { Server } from "socket.io";
 import app from "./app";
 import { initializeSocket } from "./src/socket/socket";
 import dotenv from "dotenv";
+import { initializeCallerSocket } from "./src/socket/caller";
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ const io = new Server(server, {
 });
 
 initializeSocket(io);
+// initializeCallerSocket(io);
 
 server.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

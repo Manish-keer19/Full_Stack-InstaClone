@@ -55,6 +55,22 @@ class StoryService {
       console.log("res is ", error.response.data);
     }
   }
+
+  async addUserToStory(data: object): Promise<any> {
+    try {
+      console.log("data in addUserToStory service ", data);
+      const res = await apiClient.post("/story/adduserToStory", data); // Using apiClient with base URL
+      console.log("res of addUserToStory is ", res.data);
+      if (res.data.success) {
+        console.log("User watch the Story successfully");
+        return res.data;
+      }
+    } catch (error: any) {
+      console.error("Error:", error);
+      console.log("Could not add user to Story, some error occurred");
+      console.log("res is ", error.response.data);
+    }
+  }
 }
 
 export const StoryServiceInstance = new StoryService();

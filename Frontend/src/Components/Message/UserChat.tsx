@@ -180,18 +180,25 @@ export default function UserChat({ route }: any) {
           >
             <MaterialCommunityIcons name="arrow-left" size={24} color="white" />
           </TouchableOpacity>
-          <View style={styles.userInfo}>
+          <TouchableOpacity
+            style={styles.userInfo}
+            onPress={() => {
+              console.log("user id ", user?._id);
+              navigation.navigate("UserProfile", { userId: user?._id });
+            }}
+          >
             <Image
               source={{
                 uri: user?.profilePic,
               }}
               style={styles.userImage}
             />
+
             <View>
               <Text style={styles.userName}>{user?.username}</Text>
               <Text style={styles.userStatus}>Online</Text>
             </View>
-          </View>
+          </TouchableOpacity>
         </View>
         <View style={styles.headerRight}>
           <MaterialIcons name="call" size={24} color="white" />
@@ -240,6 +247,7 @@ export default function UserChat({ route }: any) {
                       }}
                     >
                       <Text style={styles.userMessageText}>{msg.message}</Text>
+
                       <Image
                         source={{
                           uri: msg.sender?.profilePic,
@@ -255,12 +263,21 @@ export default function UserChat({ route }: any) {
                         gap: 10,
                       }}
                     >
-                      <Image
-                        source={{
-                          uri: msg.sender?.profilePic,
-                        }}
-                        style={styles.otherUserImageSmall}
-                      />
+                      <TouchableOpacity
+                        style={{}}
+                        onPress={() =>
+                          navigation.navigate("UserProfile", {
+                            userId: msg.sender?._id,
+                          })
+                        }
+                      >
+                        <Image
+                          source={{
+                            uri: msg.sender?.profilePic,
+                          }}
+                          style={styles.otherUserImageSmall}
+                        />
+                      </TouchableOpacity>
                       <Text style={styles.otherUserMessageText}>
                         {msg.message}
                       </Text>
@@ -445,7 +462,7 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     width: "100%",
     height: "100%",
-    paddingTop: 30,
+    paddingTop: 40,
   },
   header: {
     width: "100%",

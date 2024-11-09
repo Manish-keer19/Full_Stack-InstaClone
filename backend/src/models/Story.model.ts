@@ -7,7 +7,7 @@ const StorySchema = new Schema({
     required: true,
   },
   stories: [
-    {
+    {  
       content: {
         type: String, // URL or path of the media (image or video)
         required: true,
@@ -25,6 +25,13 @@ const StorySchema = new Schema({
         type: String,
         required: true,
       },
+
+      watchedBy: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+        },
+      ],
     },
   ],
 });

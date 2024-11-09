@@ -19,7 +19,7 @@ export default function Signup() {
   const [otp, setotp] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [isUsernameAlreadyTaken, setIsUsernameAlreadyTaken] =
-    useState<boolean>(true);
+    useState<boolean>(false);
 
   const handlesingup = async () => {
     if (!email || !password || !otp || !username) {

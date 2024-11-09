@@ -1,5 +1,6 @@
 import { RequestHandler, Router } from "express";
 import {
+  chnageProfilePic,
   featchUserData,
   fetchUserFeed,
   fetchUserFollowingList,
@@ -30,4 +31,5 @@ userRoute.post(
 );
 userRoute.post("/searchUserInMessage", authentication, searchUserInMessage);
 userRoute.post("/fetchUserdata", featchUserData);
+userRoute.post("/chnageProfilePic", chnageProfilePic);
 export default userRoute;

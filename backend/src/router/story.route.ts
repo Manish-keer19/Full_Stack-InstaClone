@@ -15,6 +15,7 @@
 import { RequestHandler, Router } from "express";
 import { authentication } from "../middleware/authantication"; // Ensure your authentication middleware adds 'user'
 import {
+  adduserToStory,
   createStory,
   deleteStory,
   getStory,
@@ -31,6 +32,11 @@ storyRoute.post(
   "/deleteStory",
   authentication,
   deleteStory as unknown as RequestHandler
+);
+storyRoute.post(
+  "/adduserToStory",
+  authentication,
+  adduserToStory as unknown as RequestHandler
 );
 storyRoute.get("/getStory/:id", getStory);
 

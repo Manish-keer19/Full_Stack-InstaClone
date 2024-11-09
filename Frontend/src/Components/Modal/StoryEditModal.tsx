@@ -16,7 +16,11 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../../Entryroute";
 import { StoryServiceInstance } from "../../services/storyServices";
-import { setUser } from "../../features/user/userSlice";
+import {
+  loadUserdata,
+  setUser,
+  useLoadUserData,
+} from "../../features/user/userSlice";
 export default function StoryEditModal({ storydata }: any) {
   const dispatch = useDispatch();
   const { token } = useSelector((state: any) => state.User);
@@ -96,7 +100,10 @@ export default function StoryEditModal({ storydata }: any) {
         >
           <View style={{ flexDirection: "row", gap: 10 }}>
             <AntDesign name="eye" size={24} color="white" />
-            <Text style={{ color: "white" }}>{"10000000B"}</Text>
+            <Text style={{ color: "white" }}>
+              {storydata.story.watchedBy.length}
+            </Text>
+            {/* <Text style={{ color: "white" }}>{"10000000B"}</Text> */}
           </View>
 
           <TouchableOpacity onPress={handleDeleteStory} disabled={isdeleting}>
@@ -129,7 +136,7 @@ export default function StoryEditModal({ storydata }: any) {
             minHeight: 200,
           }}
         >
-          {[...Array(10)].map((_, i) => (
+          {/* {[...Array(10)].map((_, i) => (
             <View
               key={i}
               style={{
@@ -154,6 +161,47 @@ export default function StoryEditModal({ storydata }: any) {
                 </View>
                 <Text style={{ color: "white", fontSize: 16 }}>
                   {user?.username}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 20,
+                  //   margin: 10,
+                }}
+              >
+                <Entypo name="dots-three-vertical" size={24} color="white" />
+                <FontAwesome name="share" size={24} color="white" />
+              </View>
+            </View>
+          ))} */}
+
+          {storydata.story.watchedBy.map((item: any, i: number) => (
+            <View
+              key={i}
+              style={{
+                // borderWidth: 2,
+                // borderColor: "orange",
+                paddingHorizontal: 20,
+                padding: 10,
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 20 }}
+              >
+                <View>
+                  <Image
+                    source={{
+                      uri: item.profilePic,
+                    }}
+                    style={{ height: 40, width: 40, borderRadius: 50 }}
+                  />
+                </View>
+                <Text style={{ color: "white", fontSize: 16 }}>
+                  {item.username}
                 </Text>
               </View>
               <View
