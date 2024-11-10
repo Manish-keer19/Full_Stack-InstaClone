@@ -112,14 +112,13 @@ export default function Message() {
                 }
               }}
             >
-
-            <Image
-              source={{
-                uri: user.profilePic,
-              }}
-              style={styles.userImage}
+              <Image
+                source={{
+                  uri: user.profilePic,
+                }}
+                style={styles.userImage}
               />
-              </TouchableOpacity>
+            </TouchableOpacity>
             <View style={styles.messageDetails}>
               <Text style={styles.username}>{user.username}</Text>
               <Text style={styles.messageText}>Mentioned you in a story</Text>

@@ -461,7 +461,7 @@ import { RootStackParamList } from "../../../Entryroute";
 export default function AllStories({ route }: any) {
   let { user, token } = useSelector((state: any) => state.User);
   const currentUser = user;
-  const [currentStoryIndex, setCurrentStoryIndex] = useState<number>(0);
+  const [currentStoryIndex, setCurrentStoryIndex] = useState<number | any>();
   const progress = useRef(new Animated.Value(0)).current;
   // const timerRef = useRef<NodeJS.Timeout | null>(null);
   // const [stories, setStories] = useState<any>(null);
@@ -483,6 +483,7 @@ export default function AllStories({ route }: any) {
       if (res) {
         console.log("Res is ", res);
         setStories(res.story);
+        setCurrentStoryIndex(0);
       }
     } catch (error) {
       console.log("Error fetching stories:", error);
@@ -614,23 +615,62 @@ export default function AllStories({ route }: any) {
     setStoryEditModal(true);
   };
 
+  // const handleStoryWatched = async () => {
+  //   try {
+  //     // Prepare data to send to the API
+  //     const data = {
+  //       token: token,
+  //       userId: user._id, // Current user watching the story
+  //       storyId: stories.stories[currentStoryIndex]._id, // Current story ID
+  //       storyDocId: stories._id,
+  //     };
+
+  //     // Call the API to add the user to the story
+  //     const response = await StoryServiceInstance.addUserToStory(data); // Calling the service function
+  //     console.log("User added to story:", response);
+  //   } catch (error) {
+  //     console.error("Error watching story:", error);
+  //   }
+  // };
+
+  // Watch the story when the currentStoryIndex changes
+
   const handleStoryWatched = async () => {
     try {
-      // Prepare data to send to the API
-      const data = {
-        token: token,
-        userId: user._id, // Current user watching the story
-        storyId: stories.stories[currentStoryIndex]._id, // Current story ID
-        storyDocId: stories._id,
-      };
+      // Check if the user has already watched the current story
+      const alreadyWatched = stories.stories[currentStoryIndex].watchedBy.some(
+        (watchedUser: any) => watchedUser._id === currentUser._id
+      );
 
-      // Call the API to add the user to the story
-      const response = await StoryServiceInstance.addUserToStory(data); // Calling the service function
-      console.log("User added to story:", response);
+      if (alreadyWatched) {
+        console.log("bhai tu story dekh chuka h");
+      }
+
+      // Only proceed if the user hasn't watched the story yet
+      if (!alreadyWatched && user._id !== currentUser._id) {
+        const data = {
+          token: token,
+          userId: user._id,
+          storyId: stories.stories[currentStoryIndex]._id,
+          storyDocId: stories._id,
+        };
+
+        const response = await StoryServiceInstance.addUserToStory(data);
+        console.log("User added to story:", response);
+      } else {
+        console.log("User has already watched this story.");
+      }
     } catch (error) {
       console.error("Error watching story:", error);
     }
   };
+
+  useEffect(() => {
+    if (stories && stories.stories && currentStoryIndex >= 0) {
+      // console.log("bhai tu to story dekh riha h");
+      handleStoryWatched();
+    }
+  }, [currentStoryIndex, stories]);
 
   if (loading) {
     return (
