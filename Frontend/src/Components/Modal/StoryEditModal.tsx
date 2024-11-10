@@ -21,7 +21,7 @@ import {
   setUser,
   useLoadUserData,
 } from "../../features/user/userSlice";
-export default function StoryEditModal({ storydata }: any) {
+export default function StoryEditModal({ storydata, closeModal }: any) {
   const dispatch = useDispatch();
   const { token } = useSelector((state: any) => state.User);
   const [isdeleting, setIsdeleting] = useState(false);
@@ -190,19 +190,42 @@ export default function StoryEditModal({ storydata }: any) {
               }}
             >
               <View
-                style={{ flexDirection: "row", alignItems: "center", gap: 20 }}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 15,
+                  cursor: "pointer",
+                }}
               >
-                <View>
+                <TouchableOpacity
+                  style={{
+                    borderWidth: 2,
+                    borderColor: "gold",
+                    borderRadius: 50,
+                    padding: 2,
+                  }}
+                  onPress={() => {
+                    closeModal();
+                    navigation.navigate("AllStories", { user: item });
+                  }}
+                >
                   <Image
                     source={{
                       uri: item.profilePic,
                     }}
                     style={{ height: 40, width: 40, borderRadius: 50 }}
                   />
-                </View>
-                <Text style={{ color: "white", fontSize: 16 }}>
-                  {item.username}
-                </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    closeModal();
+                    navigation.navigate("UserProfile", { userId: item._id });
+                  }}
+                >
+                  <Text style={{ color: "white", fontSize: 16 }}>
+                    {item.username}
+                  </Text>
+                </TouchableOpacity>
               </View>
               <View
                 style={{

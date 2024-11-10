@@ -98,12 +98,28 @@ export default function Message() {
             key={i}
             onPress={() => navigation.navigate("UserChat", { user: user })}
           >
+            <TouchableOpacity
+              style={{
+                borderWidth: user.userStories.length > 0 ? 1 : 0, // Conditional border
+                borderColor:
+                  user.userStories.length > 0 ? "yellow" : "transparent",
+                borderRadius: 50,
+                padding: user.userStories.length > 0 ? 4 : 0,
+              }}
+              onPress={() => {
+                if (user.userStories.length > 0) {
+                  navigation.navigate("AllStories", { user: user });
+                }
+              }}
+            >
+
             <Image
               source={{
                 uri: user.profilePic,
               }}
               style={styles.userImage}
-            />
+              />
+              </TouchableOpacity>
             <View style={styles.messageDetails}>
               <Text style={styles.username}>{user.username}</Text>
               <Text style={styles.messageText}>Mentioned you in a story</Text>
@@ -126,12 +142,27 @@ export default function Message() {
             key={i}
             onPress={() => navigation.navigate("UserChat", { user: user })}
           >
-            <Image
-              source={{
-                uri: user.profilePic,
+            <TouchableOpacity
+              style={{
+                borderWidth: user.userStories.length > 0 ? 1 : 0, // Conditional border
+                borderColor:
+                  user.userStories.length > 0 ? "yellow" : "transparent",
+                borderRadius: 50,
+                padding: user.userStories.length > 0 ? 4 : 0,
               }}
-              style={styles.userImage}
-            />
+              onPress={() => {
+                if (user.userStories.length > 0) {
+                  navigation.navigate("AllStories", { user: user });
+                }
+              }}
+            >
+              <Image
+                source={{
+                  uri: user.profilePic,
+                }}
+                style={styles.userImage}
+              />
+            </TouchableOpacity>
             <View style={styles.messageDetails}>
               <Text style={styles.username}>{user.username}</Text>
               <Text style={styles.messageText}>Mentioned you in a story</Text>
@@ -235,12 +266,13 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
+    gap: 19,
   },
   userImage: {
     width: 50,
     height: 50,
     borderRadius: 25,
-    marginRight: 10,
+    // marginRight: 10,
   },
   messageDetails: {
     flex: 1,

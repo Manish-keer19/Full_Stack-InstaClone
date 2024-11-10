@@ -186,7 +186,12 @@ export default function UserProfile({ route }: any) {
         {user?.userStories?.length > 0 ? (
           <TouchableOpacity
             onPress={() => navigation.navigate("AllStories", { user: user })}
-            style={{ borderWidth: 1, borderColor: "gold", borderRadius: 50 }}
+            style={{
+              borderWidth: 2,
+              borderColor: "yellow",
+              borderRadius: 50,
+              padding: 5,
+            }}
           >
             <Image
               style={styles.profileImage}

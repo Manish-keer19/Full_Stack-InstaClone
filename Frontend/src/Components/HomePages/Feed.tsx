@@ -806,8 +806,8 @@ export default function Posts() {
   const [post, setPost] = useState<[]>([]);
   const { user, token } = useSelector((state: any) => state.User);
 
-  console.log("user is ", user?._id);
-  console.log("token is ", token);
+  // console.log("user is ", user?._id);
+  // console.log("token is ", token);
   const userId = user?._id;
 
   const [posts, setPosts] = useState<any[]>([]);
@@ -839,7 +839,7 @@ export default function Posts() {
         });
       }
     } catch (error) {
-      console.error("Error toggling like:", error);
+      // console.error("Error toggling like:", error);
       setPostLikeStatus((prev) => {
         const newStatus = [...prev];
         newStatus[i] = isLiked; // Revert the like status on error
@@ -859,7 +859,7 @@ export default function Posts() {
       const res = await UserServiceInstance.fetchUserFeed(data);
       if (res) {
         const allPosts = setAllPosts(res.userFeed);
-        console.log("All Posts:", allPosts); // Log all posts
+        // console.log("All Posts:", allPosts); // Log all posts
         setPosts(allPosts);
       }
     } catch (error) {
@@ -921,6 +921,7 @@ export default function Posts() {
                           borderWidth: 2,
                           borderColor: "yellow",
                           borderRadius: 50,
+                          padding: 3,
                         }}
                         onPress={() =>
                           navigation.navigate("AllStories", {

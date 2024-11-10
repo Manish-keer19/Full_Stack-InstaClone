@@ -52,6 +52,12 @@ export const editProfile = async (
         folder: "profile",
       });
 
+       if (!imgres) {
+        return res.status(400).json({
+          success: false,
+          message: "Error uploading profile image",
+        });
+      }
       const newUser = await User.findOneAndUpdate(
         { email: email },
         {

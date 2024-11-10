@@ -4,7 +4,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 // Extend the Request interface to include a user property
 interface CustomRequest extends Request {
   user?: JwtPayload; // Optional user property
-}
+}    
 
 // Authentication middleware
 export const authentication = (

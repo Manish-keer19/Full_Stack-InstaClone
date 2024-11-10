@@ -1,4 +1,3 @@
-import { populate } from "dotenv";
 import { User } from "../models/User.model";
 import path from "path";
 

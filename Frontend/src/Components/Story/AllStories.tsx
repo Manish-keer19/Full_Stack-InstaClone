@@ -463,7 +463,7 @@ export default function AllStories({ route }: any) {
   const currentUser = user;
   const [currentStoryIndex, setCurrentStoryIndex] = useState<number>(0);
   const progress = useRef(new Animated.Value(0)).current;
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  // const timerRef = useRef<NodeJS.Timeout | null>(null);
   // const [stories, setStories] = useState<any>(null);
   const [stories, setStories] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -663,13 +663,25 @@ export default function AllStories({ route }: any) {
       </View>
 
       <View style={styles.header}>
-        <View style={styles.userInfo}>
-          <Image source={{ uri: user?.profilePic }} style={styles.profilePic} />
-          <View style={styles.addIcon}>
-            <AntDesign name="plus" size={12} color="white" />
+        <TouchableOpacity
+          style={{ flexDirection: "row", alignItems: "center" }}
+          onPress={() => {
+            navigation.navigate("UserProfile", {
+              userId: user._id,
+            });
+          }}
+        >
+          <View style={styles.userInfo}>
+            <Image
+              source={{ uri: user?.profilePic }}
+              style={styles.profilePic}
+            />
+            <View style={styles.addIcon}>
+              <AntDesign name="plus" size={12} color="white" />
+            </View>
           </View>
-        </View>
-        <Text style={styles.username}>{user.username}</Text>
+          <Text style={styles.username}>{user.username}</Text>
+        </TouchableOpacity>
         <Text style={styles.timeAgo}>
           {calculateTimeAgo(stories.stories[currentStoryIndex].createdAt)}
         </Text>
@@ -745,6 +757,7 @@ export default function AllStories({ route }: any) {
             storyDocId: stories._id,
             story: stories.stories[currentStoryIndex],
           }}
+          closeModal={() => setStoryEditModal(false)}
         />
       </Modal>
     </View>
@@ -791,14 +804,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 8,
+    //  borderWidth:2,
+    // borderColor:"blue"
   },
   userInfo: {
     position: "relative",
+    // borderWidth:2,
+    // borderColor:"blue"
   },
   profilePic: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     borderRadius: 50,
+    //  borderWidth:2,
+    // borderColor:"blue"
   },
   addIcon: {
     backgroundColor: "blue",
@@ -806,8 +825,8 @@ const styles = StyleSheet.create({
     width: 15,
     height: 15,
     position: "absolute",
-    bottom: 4,
-    right: 5,
+    bottom: 2,
+    right: 3,
     alignItems: "center",
     justifyContent: "center",
   },

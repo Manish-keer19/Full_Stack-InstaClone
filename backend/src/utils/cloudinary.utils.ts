@@ -11,7 +11,7 @@ interface UploadInCloudinaryParams {
   isUpload?: boolean; // Optional parameter for upload or delete
   publicId?: string | null; // Optional parameter for the public ID of the image to delete
 }
-
+    
 export const uploadInCloudinary = async ({
   data,
   folder,

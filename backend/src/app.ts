@@ -1,16 +1,16 @@
 import express, { Request, Response } from "express";
-import { connectDb } from "./src/config/connectDb";
-import userRoute from "./src/router/user.route";
-import profileRoute from "./src/router/Profile.route";
+import { connectDb } from "./config/connectDb";
+import userRoute from "./router/user.route";
+import profileRoute from "./router/Profile.route";
 import cors from "cors"; // Import CORS package
 import dotenv from "dotenv";
-import authRoute from "./src/router/auth.route";
+import authRoute from "./router/auth.route";
 import fileUpload from "express-fileupload";
-import Postroute from "./src/router/post.route";
-import likeRoute from "./src/router/Like.route";
-import commentRoute from "./src/router/comment.route";
-import storyRoute from "./src/router/story.route";
-import messageRoute from "./src/router/message.route";
+import Postroute from "./router/post.route"; 
+import likeRoute from "./router/Like.route";
+import commentRoute from "./router/comment.route";
+import storyRoute from "./router/story.route";
+import messageRoute from "./router/message.route";
 
 dotenv.config(); // Load environment variables from .env file
 

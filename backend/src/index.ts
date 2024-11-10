@@ -14,9 +14,9 @@
 import http from "http";
 import { Server } from "socket.io";
 import app from "./app";
-import { initializeSocket } from "./src/socket/socket";
+import { initializeSocket } from "./socket/socket";
 import dotenv from "dotenv";
-import { initializeCallerSocket } from "./src/socket/caller";
+import { initializeCallerSocket } from "./socket/caller";
 
 dotenv.config();
 

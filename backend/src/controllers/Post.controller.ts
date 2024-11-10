@@ -33,6 +33,12 @@ export const createPost = async (req: any, res: any) => {
     });
     console.log("image res is ", imgres);
     //  creaete post entry in db
+    if(!imgres){
+      return res.status(400).json({
+        success: false,
+        message: "Image could not be uploaded",
+      });
+    }
     const newPost = await Post.create({
       caption: caption,
       image: imgres?.secure_url,

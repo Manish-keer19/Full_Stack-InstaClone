@@ -18,6 +18,7 @@ import {
   adduserToStory,
   createStory,
   deleteStory,
+  getFolllowersStories,
   getStory,
 } from "../controllers/Story.Controller";
 
@@ -39,5 +40,6 @@ storyRoute.post(
   adduserToStory as unknown as RequestHandler
 );
 storyRoute.get("/getStory/:id", getStory);
+storyRoute.post("/getFolllowersStories", authentication,getFolllowersStories as unknown as RequestHandler);
 
 export default storyRoute;

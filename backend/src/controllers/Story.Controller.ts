@@ -371,6 +371,7 @@ import { uploadInCloudinary } from "../utils/cloudinary.utils";
 import { UploadedFile } from "express-fileupload"; // Ensure this import if using express-fileupload
 import { fetchAllDetailsUser } from "../utils/fetchAllDetailsUser";
 import mongoose, { Mongoose } from "mongoose";
+import { populate } from "dotenv";
 
 interface AuthenticatedRequest extends Request {
   user: {
@@ -434,6 +435,12 @@ export const createStory = async (
       folder: "stories",
     });
 
+    if (!newMedia) {
+      return res.status(400).json({
+        success: false,
+        message: "Could not create the story new media is null",
+      });
+    }
     // Check if a story document already exists for this user
     let userStory = await Story.findOne({ user: userId });
 
@@ -526,7 +533,7 @@ export const getStory = async (req: Request, res: Response): Promise<any> => {
         path: "stories", // Populate stories array
         populate: {
           path: "watchedBy", // Populate the user field inside each story
-          select: "username email _id profilePic", // Specify which fields you want from the user document
+          select: "username email _id profilePic userStories", // Specify which fields you want from the user document
         },
       })
       .exec();
@@ -550,7 +557,6 @@ export const getStory = async (req: Request, res: Response): Promise<any> => {
     });
   }
 };
-
 
 export const deleteStory = async (
   req: AuthenticatedRequest,
@@ -613,6 +619,12 @@ export const deleteStory = async (
       publicId: publicId,
     });
     console.log("cloudinarydeleteImgRes is ", cloudinaryDeleteImgRes);
+    if (!cloudinaryDeleteImgRes) {
+      return res.status(400).json({
+        success: false,
+        message: "could not delete the story from cloudinary",
+      });
+    }
 
     if (cloudinaryDeleteImgRes?.result !== "ok") {
       return res.status(400).json({
@@ -733,6 +745,54 @@ export const adduserToStory = async (
     return res.status(500).json({
       success: false,
       message: "could not watched by user",
+    });
+  }
+};
+
+export const getFolllowersStories = async (
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<any> => {
+  try {
+    //  get userId from req.user
+    const userId = req.user.id;
+    // get user following detail only stories
+    const stories = await User.findById(userId)
+      .select("following")
+      .populate({
+        path: "following",
+        select: "userStories",
+        populate: {
+          path: "userStories",
+          select: "user",
+          populate: {
+            path: "user",
+            select: "username _id profilePic",
+          },
+        },
+      });
+
+    if (!stories) {
+      return res.status(400).json({
+        success: false,
+        message: "could not get the story of followers",
+      });
+    }
+
+    const filteredStories = stories.following.filter(
+      (user: any) => user.userStories && user.userStories.length > 0
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "users following stories found successfully",
+      stories: filteredStories,
+    });
+  } catch (error) {
+    console.log("could not get the story of followers", error);
+    return res.status(500).json({
+      success: false,
+      message: "could not get the story of followers",
     });
   }
 };

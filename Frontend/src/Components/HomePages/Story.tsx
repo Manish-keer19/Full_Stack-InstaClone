@@ -5,6 +5,7 @@ import {
   View,
   Image,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Icon from "react-native-vector-icons/AntDesign";
@@ -12,24 +13,50 @@ import Icon from "react-native-vector-icons/AntDesign";
 import { useSelector } from "react-redux";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../../Entryroute";
+import { StoryServiceInstance } from "../../services/storyServices";
 
 export default function Story() {
-  useEffect(() => {});
-  const user = useSelector((state: any) => state.User.user);
+  const { user, token } = useSelector((state: any) => state.User);
   // console.log("user in story is", user);
   // console.log("user in story", user);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  const [images, setimages] = useState<any>([]);
-  // console.log("images in story", images);
+  const [allUserStories, setallUserStories] = useState([]);
+  const [isStoryfetched, setisStoryfetched] = useState(false);
+
+  // console.log("allUserStories", allUserStories);
+  const getFollwerkiStorys = async () => {
+    if (!token) {
+      return;
+    }
+    const data = {
+      token: token,
+    };
+
+    try {
+      const res = await StoryServiceInstance.getFolllowersStories(data);
+      if (res.success) {
+        // alert("bhai yaha aaya");
+        const allUserStories = res?.stories
+          .map((user: any) => user?.userStories) // Get each user's userStories array
+          .flat(); // Flatten to create a single array of all user stories
+        console.log("allUserStories", allUserStories);
+        setallUserStories(allUserStories);
+        setisStoryfetched(true);
+      }
+    } catch (error: any) {
+      setisStoryfetched(false);
+      console.log(
+        "could not getFolllowersStories, some error occurred",
+        error.response.data
+      );
+      console.log("res is ", error.response.data);
+    }
+  };
 
   useEffect(() => {
-    if (user) {
-      setimages(user?.posts);
-    }
-  }, [user]);
-
-  useEffect(() => {});
+    getFollwerkiStorys();
+  }, [token, user]);
   return (
     <View style={styles.container}>
       <ScrollView
@@ -59,36 +86,41 @@ export default function Story() {
               }}
             />
           </View>
-          {user?.userStories?.length == 0 && (
-            <Icon
-              name="pluscircleo"
-              size={30}
-              color={"white"}
-              style={{
-                position: "absolute",
-                right: 14,
-                top: 82,
-                backgroundColor: "blue",
-                borderRadius: 50,
-              }}
-            />
-          )}
+
+          <Icon
+            name="pluscircleo"
+            size={30}
+            color={"white"}
+            style={{
+              position: "absolute",
+              right: 14,
+              top: 82,
+              backgroundColor: "blue",
+              borderRadius: 50,
+            }}
+          />
 
           <Text style={styles.text}>{user?.username}</Text>
         </TouchableOpacity>
-        {/* Repeat stories */}
-        {images.map((item: any, index: any) => (
-          <View key={index} style={styles.storyContainer}>
-            <View style={styles.imageContainer}>
+        {/* user's following stories  */}
+        {allUserStories.map((item: any, itemIndex: any) => (
+          <TouchableOpacity
+            key={itemIndex}
+            style={styles.storyContainer}
+            onPress={() => {
+              navigation.navigate("AllStories", { user: item.user });
+            }}
+          >
+            <View style={styles.imageStoryContainer}>
               <Image
                 style={styles.image}
                 source={{
-                  uri: item.image,
+                  uri: item.user.profilePic,
                 }}
               />
             </View>
-            <Text style={styles.text}>Manish keer</Text>
-          </View>
+            <Text style={styles.text}>{item.user.username}</Text>
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </View>
@@ -116,7 +148,7 @@ const styles = StyleSheet.create({
     // marginRight: 10,
   },
   imageContainer: {
-    borderRadius: 50,
+    // borderRadius: 50,
     height: 100,
     width: 100,
     alignItems: "center",

@@ -71,6 +71,21 @@ class StoryService {
       console.log("res is ", error.response.data);
     }
   }
+
+  async getFolllowersStories(data: object): Promise<any> {
+    try {
+      console.log("data in getFolllowersStories service ", data);
+      const res = await apiClient.post("/story/getFolllowersStories", data); // Using apiClient with base URL
+      console.log("res of getFolllowersStories is ", res.data);
+      if (res.data.success) {
+        console.log("user's following Stories fetched successfully");
+        return res.data;
+      }
+    } catch (error: any) {
+      console.log("Could not getFolllowersStories, some error occurred",error);
+      console.log("res is in error ", error.response.data);
+    }
+  }
 }
 
 export const StoryServiceInstance = new StoryService();

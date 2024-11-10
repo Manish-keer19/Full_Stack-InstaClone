@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { fetchAllDetailsUser } from "../utils/fetchAllDetailsUser";
 import { emit } from "process";
-dotenv.config();
+dotenv.config();     
 
 // generate otp
 export const generateOtp = async (

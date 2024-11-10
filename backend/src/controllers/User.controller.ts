@@ -386,33 +386,32 @@ export const fetchUserFeed = async (
 
     // Find the authenticated user and populate the following users and their posts
     const user = await User.findById(userId)
-  .populate({
-    path: "following", // Populate the following users
-    populate: [
-      {
-        path: "posts", // Populate posts for each following user
+      .populate({
+        path: "following", // Populate the following users
         populate: [
           {
-            path: "user", // Populate user details for each post
-            select: "username profilePic _id userStories", // Specify fields to return for post user
+            path: "posts", // Populate posts for each following user
+            populate: [
+              {
+                path: "user", // Populate user details for each post
+                select: "username profilePic _id userStories", // Specify fields to return for post user
+              },
+              {
+                path: "comment", // Populate comments for each post
+                populate: {
+                  path: "user", // Populate user details for each comment
+                  select: "username profilePic _id", // Specify fields to return for comment user
+                },
+              },
+            ],
           },
           {
-            path: "comment", // Populate comments for each post
-            populate: {
-              path: "user", // Populate user details for each comment
-              select: "username profilePic _id", // Specify fields to return for comment user
-            },
+            path: "userStories", // Populate userStories for each following user
+            select: "_id content createdAt", // Specify fields to return for userStories
           },
         ],
-      },
-      {
-        path: "userStories", // Populate userStories for each following user
-        select: "_id content createdAt", // Specify fields to return for userStories
-      },
-    ],
-  })
-  .exec();
-
+      })
+      .exec();
 
     console.log("User data is ", user);
 
@@ -623,6 +622,12 @@ export const chnageProfilePic = async (
         folder: "profile",
       });
 
+      if (!imgres) {
+        return res.status(400).json({
+          success: false,
+          message: "Could not change the profile picture",
+        });
+      }
       const newUser = await User.findOneAndUpdate(
         { email: email },
         {
