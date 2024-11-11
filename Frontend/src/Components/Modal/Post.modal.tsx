@@ -12,7 +12,7 @@ interface PostmodalProps {
   PostData: any;
 }
 export const Postmodal: React.FC<PostmodalProps> = ({ PostData }) => {
-  console.log("PostData is in Postmodal ", PostData);
+  // console.log("PostData is in Postmodal ", PostData);
   const { token, user } = useSelector((state: any) => state.User);
 
   const dispatch = useDispatch();
@@ -27,7 +27,7 @@ export const Postmodal: React.FC<PostmodalProps> = ({ PostData }) => {
     setIsdeleting(true);
     const data = {
       token,
-      postId: PostData.postId,
+      postId: PostData.post._id,
     };
     try {
       const res = await PostServiceInstance.deletePost(data);
@@ -38,6 +38,7 @@ export const Postmodal: React.FC<PostmodalProps> = ({ PostData }) => {
         navigation.navigate("Profile");
       }
     } catch (error) {
+      setIsdeleting(false);
       console.log("could not delete the post", error);
     }
   };
@@ -53,7 +54,7 @@ export const Postmodal: React.FC<PostmodalProps> = ({ PostData }) => {
       }}
     >
       <View style={{ alignItems: "center", justifyContent: "center", gap: 10 }}>
-        {PostData.post.user == PostData.userID ? (
+        {PostData.post.user._id == PostData.userID ? (
           <>
             <TouchableOpacity
               style={{

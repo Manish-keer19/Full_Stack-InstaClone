@@ -16,7 +16,8 @@ class StoryService {
       console.log("Could not fetch Stories, some error occurred");
     }
   }
-  async creatStory(data: object): Promise<any> {
+  async creatStory(data: any): Promise<any> {
+    console.log("we are in createStory service");
     try {
       console.log("data in createStory service ", data);
       const res = await apiClient.post("/story/createStory", data, {
@@ -62,13 +63,17 @@ class StoryService {
       const res = await apiClient.post("/story/adduserToStory", data); // Using apiClient with base URL
       console.log("res of addUserToStory is ", res.data);
       if (res.data.success) {
+        console.log("res.success is ",res.data.success);
         console.log("User watch the Story successfully");
         return res.data;
+      }else{
+        console.log("Could not add user to Story, some error occurred");
+        console.log("res success should be false", res.data);
+        return null
       }
     } catch (error: any) {
       console.error("Error:", error);
       console.log("Could not add user to Story, some error occurred");
-      console.log("res is ", error.response.data);
     }
   }
 
@@ -82,7 +87,7 @@ class StoryService {
         return res.data;
       }
     } catch (error: any) {
-      console.log("Could not getFolllowersStories, some error occurred",error);
+      console.log("Could not getFolllowersStories, some error occurred", error);
       console.log("res is in error ", error.response.data);
     }
   }

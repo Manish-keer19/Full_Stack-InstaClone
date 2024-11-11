@@ -22,17 +22,19 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../../Entryroute";
 import { Tuple } from "@reduxjs/toolkit";
 import { setUser } from "../../features/user/userSlice";
+import { ResizeMode, Video } from "expo-av";
+
 
 export default function CreateStory({ route }: any) {
   const dispatch = useDispatch();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { user, token } = useSelector((state: any) => state.User);
-  const { imagedata } = route.params;
+  const { mediaData } = route.params;
 
-  console.log("imagdata is ", imagedata);
+  console.log("imagdata is ", mediaData);
   const [isZoomed, setIsZoomed] = useState(false);
   const [imageFile, setImageFile] = useState(null);
-  const [file, setFile] = useState(imagedata);
+  const [file, setFile] = useState(mediaData);
   const imageRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
   const [newText, setNewText] = useState("");
@@ -42,30 +44,20 @@ export default function CreateStory({ route }: any) {
     let uri;
     let media;
     try {
-      if (isZoomed) {
-        uri = await captureRef(imageRef, {
-          format: "png",
-          quality: 1.0,
-          result: "tmpfile",
-        });
+      media = {
+        uri: file.uri, // URI of the image
+        type: file.mediaType === "photo" ? "image/jpeg" : "video/mp4", // Default type for photos
+        name: file.filename, // Filename
+      };
 
-        media = {
-          uri,
-          name: "zoomed_image.png",
-          type: "image/png",
-        };
-        //   console.log("Image URI:", uri);
-      } else {
-        media = {
-          uri: file.uri, // URI of the image
-          type: file.mediaType === "photo" ? "image/jpeg" : file.mediaType, // Default type for photos
-          name: file.filename, // Filename
-        };
-      }
-
-      console.log("file is ", media);
+    
+      console.log("media is ", media);
       const formData = new FormData();
-      formData.append("media", media);
+      formData.append("media", {
+        uri: media.uri,
+        type: media.type,
+        name: media.name,
+      });
       formData.append("token", token);
 
       console.log("form data is ", formData);
@@ -144,33 +136,21 @@ export default function CreateStory({ route }: any) {
         style={styles.imageContainer}
         onPress={() => setIsZoomed(!isZoomed)}
       >
-        {isZoomed ? (
-          <View style={styles.zoomedImageContainer}>
-            <ImageZoom
-              ref={imageRef}
-              style={styles.zoomedImage}
-              cropWidth={Dimensions.get("window").width}
-              cropHeight={Dimensions.get("window").height}
-              imageWidth={300}
-              imageHeight={300}
-              panToMove={true}
-              pinchToZoom={true}
-              enableCenterFocus={true} // Enables focus on the center during zoom
-              onMove={this.onMove} // Optional: Track movement for better user experience
-              maxScale={3} // Increase max zoom scale as per your requirement
-              minScale={1} // Minimum zoom level
-            >
-              <Image
-                style={styles.image}
-                source={{
-                  uri: file?.uri,
-                }}
-              />
-            </ImageZoom>
-          </View>
-        ) : (
+        {mediaData.mediaType === "photo" ? (
           <Image
             style={styles.image}
+            source={{
+              uri: file?.uri,
+            }}
+          />
+        ) : (
+          <Video
+          useNativeControls
+          shouldPlay
+          
+          isLooping={true}
+          resizeMode={ResizeMode.COVER}
+            style={styles.video}
             source={{
               uri: file?.uri,
             }}
@@ -268,6 +248,13 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     resizeMode: "contain",
+  },
+  video: {
+    // borderWidth:2,
+    // borderColor:"yellow",
+    width: "100%",
+    height: "70%",
+  
   },
   zoomedImageContainer: {
     width: "100%",

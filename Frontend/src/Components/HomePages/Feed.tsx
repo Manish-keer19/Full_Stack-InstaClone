@@ -859,7 +859,7 @@ export default function Posts() {
       const res = await UserServiceInstance.fetchUserFeed(data);
       if (res) {
         const allPosts = setAllPosts(res.userFeed);
-        // console.log("All Posts:", allPosts); // Log all posts
+        console.log("All Posts:", allPosts); // Log all posts
         setPosts(allPosts);
       }
     } catch (error) {

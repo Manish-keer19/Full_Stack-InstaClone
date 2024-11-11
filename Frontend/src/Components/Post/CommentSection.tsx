@@ -71,7 +71,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
 
   console.log("user in comment section ", user);
 
-  // console.log("post in comment section ", Posts);
+  console.log("post in comment section ", Posts);
   console.log("comment is in comment section ", comments);
 
   useEffect(() => {
@@ -199,11 +199,23 @@ const CommentSection: React.FC<CommentSectionProps> = ({
           >
             <View style={styles.commentContainer}>
               <TouchableOpacity
+                style={{
+                  borderWidth: item.user.userStories?.length > 0 ? 2 : 0,
+                  borderColor: "yellow",
+                  borderRadius: item.user.userStories?.length > 0 ? 50 : 0,
+                  padding: item.user.userStories?.length > 0 ? 3 : 0,
+                }}
                 onPress={() => {
-                  setCommentModal(false);
-                  navigation.navigate("UserProfile", {
-                    userId: item?.user?._id,
-                  });
+                  if (item?.user?.userStories?.length > 0) {
+                    setCommentModal(false);
+                    navigation.navigate("AllStories", { user: item?.user });
+                  } else {
+                    setCommentModal(false);
+                    setCommentModal(false);
+                    navigation.navigate("UserProfile", {
+                      userId: item?.user?._id,
+                    });
+                  }
                 }}
               >
                 <Image
@@ -465,6 +477,7 @@ const styles = StyleSheet.create({
     // borderWidth:2,
     // borderColor:"blue"
   },
+
   profilePic: {
     width: 40,
     height: 40,

@@ -159,7 +159,7 @@ export type RootStackParamList = {
   ForgotPassword: undefined;
   ChangePassword: undefined;
   AddStory: undefined;
-  CreateStory: undefined | { imagedata: any };
+  CreateStory: undefined | { mediaData: any };
   AllStories: undefined | { user: any };
   ChatScreen: undefined;
   UserChat: undefined | { user: any };

@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   Image,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -21,9 +22,10 @@ import {
   setUser,
   useLoadUserData,
 } from "../../features/user/userSlice";
+import { ResizeMode, Video } from "expo-av";
 export default function StoryEditModal({ storydata, closeModal }: any) {
   const dispatch = useDispatch();
-  const { token } = useSelector((state: any) => state.User);
+  const { token, user } = useSelector((state: any) => state.User);
   const [isdeleting, setIsdeleting] = useState(false);
   console.log("storydata", storydata);
 
@@ -51,7 +53,6 @@ export default function StoryEditModal({ storydata, closeModal }: any) {
     }
   };
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const user = useSelector((state: any) => state.User.user);
   console.log("storydata", storydata);
   const [storyInfo, setStoryInfo] = useState(storydata.story);
   return (
@@ -66,12 +67,29 @@ export default function StoryEditModal({ storydata, closeModal }: any) {
           justifyContent: "center",
         }}
       >
-        <TouchableOpacity style={{}}>
-          <Image
-            source={{ uri: storyInfo.content }}
-            style={{ height: 250, width: 145 }}
-          />
-        </TouchableOpacity>
+        <Pressable
+          style={{}}
+          onPress={() => {
+            closeModal();
+          }}
+        >
+          {storyInfo?.mediaType === "image" ? (
+            <Image
+              source={{ uri: storyInfo.content }}
+              style={{ height: 250, width: 145 }}
+            />
+          ) : (
+            <Video
+              // shouldPlay
+              // isLooping
+              isMuted
+              resizeMode={ResizeMode.COVER}
+              // useNativeControls
+              style={{ height: 250, width: 145 }}
+              source={{ uri: storyInfo.content }}
+            />
+          )}
+        </Pressable>
         <TouchableOpacity
           onPress={() => navigation.navigate("AddStory")}
           style={{

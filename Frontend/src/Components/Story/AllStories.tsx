@@ -455,6 +455,7 @@ import {
 import StoryEditModal from "../Modal/StoryEditModal";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../../Entryroute";
+import { ResizeMode, Video } from "expo-av";
 
 // const STORY_DURATION = 5000; // 10 seconds
 
@@ -468,10 +469,12 @@ export default function AllStories({ route }: any) {
   const [stories, setStories] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [storyEditModal, setStoryEditModal] = useState(false);
+  const [mutedVideo, setMutedVideo] = useState(false);
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const anotherUser = route.params && route.params.user;
+
   if (anotherUser) {
     user = anotherUser;
   }
@@ -546,24 +549,24 @@ export default function AllStories({ route }: any) {
       setCurrentStoryIndex(0); // loop back to the first story
     }
 
-    // Check if the user has watched the current story
-    if (
-      !stories.stories[currentStoryIndex].watchedBy.some(
-        (user: any) => user._id === currentUser._id
-      )
-    ) {
-      // await handleStoryWatched(); // Mark the story as watched if not watched already
-      if (user._id !== currentUser._id) {
-        await handleStoryWatched();
-      } else {
-        console.log("how can i view own story");
-      }
-      console.log("currenuserID is ", currentUser._id);
-      console.log("sotry data is ", stories.stories[currentStoryIndex]);
-      console.log("You have not watched this story");
-    } else {
-      console.log("You have already watched this story");
-    }
+    // // Check if the user has watched the current story
+    // if (
+    //   !stories.stories[currentStoryIndex].watchedBy.some(
+    //     (user: any) => user._id === currentUser._id
+    //   )
+    // ) {
+
+    //   if (user._id !== currentUser._id) {
+    //     // await handleStoryWatched();
+    //   } else {
+    //     // console.log("how can i view own story");
+    //   }
+    //   // console.log("currenuserID is ", currentUser._id);
+    //   // console.log("sotry data is ", stories.stories[currentStoryIndex]);
+    //   // console.log("You have not watched this story");
+    // } else {
+    //   console.log("You have already watched this story");
+    // }
   };
 
   const handlePrevStory = async () => {
@@ -574,24 +577,24 @@ export default function AllStories({ route }: any) {
     }
 
     // Check if the user has watched the current story
-    if (
-      !stories.stories[currentStoryIndex].watchedBy.some(
-        (user: any) => user._id === currentUser._id
-      )
-    ) {
-      if (user._id !== currentUser._id) {
-        console.log("how can i view own story");
-        await handleStoryWatched();
-      } else {
-        console.log("how can i view own story");
-      }
-      console.log("currenuserID is ", currentUser._id);
-      console.log("sotry data is ", stories.stories[currentStoryIndex]);
-      // await handleStoryWatched(); // Mark the story as watched if not watched already
-      console.log("You have not watched this story");
-    } else {
-      console.log("You have already watched this story");
-    }
+    // if (
+    //   !stories.stories[currentStoryIndex].watchedBy.some(
+    //     (user: any) => user._id === currentUser._id
+    //   )
+    // ) {
+    //   if (user._id !== currentUser._id) {
+    //     console.log("how can i view own story");
+    //     await handleStoryWatched();
+    //   } else {
+    //     console.log("how can i view own story");
+    //   }
+    //   console.log("currenuserID is ", currentUser._id);
+    //   console.log("sotry data is ", stories.stories[currentStoryIndex]);
+    //   // await handleStoryWatched(); // Mark the story as watched if not watched already
+    //   console.log("You have not watched this story");
+    // } else {
+    //   console.log("You have already watched this story");
+    // }
   };
 
   const calculateTimeAgo = (createdAt: string) => {
@@ -635,19 +638,22 @@ export default function AllStories({ route }: any) {
 
   // Watch the story when the currentStoryIndex changes
 
-  const handleStoryWatched = async () => {
+  const handleStoryWatched = async (currentStoryIndex: number) => {
+    console.log("currentStoryIndex is ", currentStoryIndex);
     try {
       // Check if the user has already watched the current story
       const alreadyWatched = stories.stories[currentStoryIndex].watchedBy.some(
         (watchedUser: any) => watchedUser._id === currentUser._id
       );
+      console.log("alreadyWatched is ", alreadyWatched);
 
       if (alreadyWatched) {
         console.log("bhai tu story dekh chuka h");
       }
 
       // Only proceed if the user hasn't watched the story yet
-      if (!alreadyWatched && user._id !== currentUser._id) {
+      else if (!alreadyWatched && user._id !== currentUser._id) {
+        console.log("bhai tu story dekh sakta he h");
         const data = {
           token: token,
           userId: user._id,
@@ -655,10 +661,18 @@ export default function AllStories({ route }: any) {
           storyDocId: stories._id,
         };
 
-        const response = await StoryServiceInstance.addUserToStory(data);
-        console.log("User added to story:", response);
+        try {
+          const res = await StoryServiceInstance.addUserToStory(data);
+          if (res.success) {
+            console.log("you watched the story of ", user.username);
+          }else{
+            console.log(res.message);
+          }
+        } catch (error) {
+          console.log("Error watching story:", error);
+        }
       } else {
-        console.log("User has already watched this story.");
+        console.log("bhai tu teri he story kese dekh sakta he h");
       }
     } catch (error) {
       console.error("Error watching story:", error);
@@ -667,8 +681,8 @@ export default function AllStories({ route }: any) {
 
   useEffect(() => {
     if (stories && stories.stories && currentStoryIndex >= 0) {
-      // console.log("bhai tu to story dekh riha h");
-      handleStoryWatched();
+      console.log("curentStoryIndex has changed");
+      handleStoryWatched(currentStoryIndex);
     }
   }, [currentStoryIndex, stories]);
 
@@ -733,10 +747,22 @@ export default function AllStories({ route }: any) {
           onPress={handlePrevStory}
           activeOpacity={0.9}
         />
-        <Image
-          style={styles.storyImage}
-          source={{ uri: stories.stories[currentStoryIndex].content }}
-        />
+        {stories.stories[currentStoryIndex].mediaType === "image" ? (
+          <Image
+            style={styles.storyImage}
+            source={{ uri: stories.stories[currentStoryIndex].content }}
+          />
+        ) : (
+          <Video
+            // useNativeControls
+            shouldPlay
+            isLooping
+            // isMuted
+            resizeMode={ResizeMode.COVER}
+            style={styles.storyImage}
+            source={{ uri: stories.stories[currentStoryIndex].content }}
+          />
+        )}
         <TouchableOpacity
           style={styles.rightTouchableArea}
           onPress={handleNextStory}
@@ -898,7 +924,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   storyImage: {
-    height: "90%",
+    height: "100%",
     width: "95%",
     borderRadius: 10,
   },

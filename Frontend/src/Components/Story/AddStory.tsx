@@ -117,10 +117,9 @@ export default function AddStory() {
   );
 
   const hadleShareImgtoNextPage = (item: any) => {
-console.log("item",item);
+    console.log("item", item);
 
-  navigation.navigate("CreateStory", { imagedata: item });
-
+    navigation.navigate("CreateStory", { mediaData: item });
   };
 
   return (

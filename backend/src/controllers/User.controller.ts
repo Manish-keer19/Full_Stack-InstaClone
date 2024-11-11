@@ -400,7 +400,7 @@ export const fetchUserFeed = async (
                 path: "comment", // Populate comments for each post
                 populate: {
                   path: "user", // Populate user details for each comment
-                  select: "username profilePic _id", // Specify fields to return for comment user
+                  select: "username profilePic _id userStories", // Specify fields to return for comment user
                 },
               },
             ],

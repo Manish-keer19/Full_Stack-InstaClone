@@ -431,7 +431,7 @@ export default function Posts({ route }: any) {
     user = anotheruser;
   }
 
-  console.log("user in posts", user);
+  // console.log("user in posts", user);
 
   // console.log("postlike in posts", postlike);
   // console.log("post in posts", post);
@@ -543,11 +543,21 @@ export default function Posts({ route }: any) {
                 onPress={() => navigation.navigate("Post", { user: user })}
               >
                 <TouchableOpacity
+                  style={{
+                    borderWidth: item.user.userStories.length > 0 ? 2 : 0,
+                    borderColor: "gold",
+                    borderRadius: item.user.userStories.length > 0 ? 50 : 0,
+                    padding: item.user.userStories.length > 0 ? 2 : 0,
+                  }}
                   onPress={() => {
-                    setCommentModal(false);
-                    navigation.navigate("UserProfile", {
-                      userId: item?.user?._id,
-                    });
+                    if (item.user.userStories.length > 0) {
+                      navigation.navigate("AllStories", { user: user });
+                    } else {
+                      setCommentModal(false);
+                      navigation.navigate("UserProfile", {
+                        userId: item?.user?._id,
+                      });
+                    }
                   }}
                 >
                   <Image
@@ -699,12 +709,14 @@ const styles = StyleSheet.create({
   profileInfo: {
     flexDirection: "row",
     alignItems: "center",
+    gap: 10,
   },
   avatar: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    marginRight: 10,
+
+    // marginRight: 10,
   },
   userDetails: {
     justifyContent: "center",

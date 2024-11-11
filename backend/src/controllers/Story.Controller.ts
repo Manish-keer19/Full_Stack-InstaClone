@@ -687,6 +687,7 @@ export const adduserToStory = async (
   res: Response
 ) => {
   try {
+    console.log("hume user ko story me add karna h");
     // featch the story id from req.body
     const { storyDocId, storyId } = req.body;
     const userId = req.user.id;
@@ -713,13 +714,18 @@ export const adduserToStory = async (
     // Check if the user has already watched the story
     const alreadyWatched = await Story.findOne({
       _id: storyDocId,
-      "stories._id": storyId,
-      "stories.watchedBy": userId,
+      stories: {
+        $elemMatch: {
+          _id: storyId,
+          watchedBy: userId,
+        },
+      },
     });
+    // console.log("alreadyWatched is ", alreadyWatched);
 
     if (alreadyWatched) {
       return res.status(200).json({
-        success: true,
+        success: false,
         message: "User has already watched this story",
       });
     }
@@ -735,6 +741,7 @@ export const adduserToStory = async (
         message: "story could not found",
       });
     }
+    console.log("user has been watched the story succesfully");
     return res.status(200).json({
       success: true,
       message: "story has been watched by user",
