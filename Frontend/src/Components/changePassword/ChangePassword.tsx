@@ -4,6 +4,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert
 } from "react-native";
 import React, { useState } from "react";
 import { AuthServiceInstance } from "../../services/authServices";
@@ -23,14 +24,14 @@ export default function ChangePassword() {
 
   const handleChangPassword = async () => {
     const data = { email, newPassword, oldPassword, token };
-    console.log("data is ", data);
+    // console.log("data is ", data);
     try {
       setIschangepassword(true);
       const res = await AuthServiceInstance.changePassword(data);
-      console.log("res is ", res);
+      // console.log("res is ", res);
       if (res) {
         setIschangepassword(false);
-        alert("password change succefully");
+        Alert.alert("password change succefully");
         navigation.navigate("Profile");
       } else {
         setIschangepassword(false);
@@ -38,7 +39,7 @@ export default function ChangePassword() {
     } catch (error) {
       setemail("");
       setIschangepassword(false);
-      console.log("could not ResetPassword", error);
+      // console.log("could not ResetPassword", error);
     }
   };
   return (
@@ -58,7 +59,7 @@ export default function ChangePassword() {
               placeholderTextColor={"#aaa"}
               value={email}
               onChangeText={(value) => {
-                // console.log("email is ", email);
+                console.log("email is ", email);
                 setemail(value);
               }}
             />
@@ -86,7 +87,7 @@ export default function ChangePassword() {
               placeholderTextColor={"#aaa"}
               value={oldPassword}
               onChangeText={(value) => {
-                // console.log("email is ", email);
+                console.log("email is ", email);
                 setOldPassword(value);
               }}
             />

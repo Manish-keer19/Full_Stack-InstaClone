@@ -1,6 +1,0 @@
-[build]
-  functions = "netlify/functions"   # Path to Netlify functions directory
-  publish = "dist"                  # The directory with your compiled JS files
-
-[[plugins]]
-  package = "@netlify/plugin-functions-install-core"  # Plugin for managing functions

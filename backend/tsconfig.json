@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",  // Make sure output goes to 'dist' folder
     "target": "ES6",
-    "module": "CommonJS",
-    "esModuleInterop": true
+    "module": "commonjs",
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "strict": true
   },
-  "include": [
-    "src/**/*.ts"  // Ensure all TypeScript files are included
-  ]
+  "include": ["src/**/*"]
 }

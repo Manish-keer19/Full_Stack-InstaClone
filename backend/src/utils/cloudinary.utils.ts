@@ -10,6 +10,7 @@ interface UploadInCloudinaryParams {
   folder: string;
   isUpload?: boolean; // Optional parameter for upload or delete
   publicId?: string | null; // Optional parameter for the public ID of the image to delete
+  resourceType?: "image" | "video" | "raw";
 }
     
 export const uploadInCloudinary = async ({
@@ -17,6 +18,8 @@ export const uploadInCloudinary = async ({
   folder,
   isUpload = true,
   publicId =null,
+  resourceType = "image",
+  
 }: UploadInCloudinaryParams): Promise<UploadApiResponse | void> => {
   // Configuration
   cloudinary.config({
@@ -43,7 +46,9 @@ export const uploadInCloudinary = async ({
       if (!publicId) {
         throw new Error("Public ID is required for deletion");
       }
-      return await cloudinary.uploader.destroy(publicId);
+      return await cloudinary.uploader.destroy(publicId,{
+        resource_type:resourceType
+      });
     } catch (error) {
       console.log(
         "Some error occurred during the file deletion from Cloudinary"

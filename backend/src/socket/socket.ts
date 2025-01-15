@@ -22,8 +22,15 @@ import { Server, Socket } from "socket.io";
 import { Message } from "../models/Messages.modal";
 
 export const initializeSocket = (io: Server) => {
+  let onlineUsers = new Map();
   io.on("connection", (socket: Socket) => {
     console.log(`User connected: ${socket.id}`);
+    // console.log("New user connected:", socket.id);
+
+    socket.on("userOnline", (userId) => {
+      onlineUsers.set(userId, socket.id); // Store user's online status
+      io.emit("userhasOnline", { userId, socketId: socket.id });
+    });
 
     // Listen for "sendMessage" event from the client
     socket.on("sendMessage", async (message) => {
@@ -36,6 +43,10 @@ export const initializeSocket = (io: Server) => {
           `currentUser: ${currentUser}, anotherUser: ${anotherUser}, message: ${msgText}`
         );
 
+        // Emit the "receiveMessage" event to the client
+        io.emit("receiveMessage", msgText);
+
+        // Check if the message already exists
         const isMessageExist = await Message.findOne({
           $or: [
             { currentUser: currentUser, anotherUser: anotherUser },
@@ -72,7 +83,7 @@ export const initializeSocket = (io: Server) => {
             });
 
           // Emit the "receiveMessage" event to the client
-          io.emit("receiveMessage", messageData);
+          io.emit("receiveAllMessage", messageData);
         } else {
           console.log("bhai message create karna he ");
           // create entry in the database
@@ -99,9 +110,9 @@ export const initializeSocket = (io: Server) => {
               model: "User", // ensure it references the correct model
             })
             .exec();
-
+          console.log("messageData is ", messageData);
           // Emit the "receiveMessage" event to the client
-          io.emit("receiveMessage", messageData);
+          io.emit("receiveAllMessage", messageData);
         }
       } else {
         console.log("Received data is not an object or is undefined");
@@ -110,6 +121,16 @@ export const initializeSocket = (io: Server) => {
 
     socket.on("disconnect", () => {
       console.log(`User disconnected: ${socket.id}`);
+
+      const userId = [...onlineUsers.entries()].find(
+        ([, socketId]) => socketId === socket.id
+      )?.[0];
+
+      socket.emit("userOffline", { userId, socketId: socket.id });
+      if (userId) {
+        onlineUsers.delete(userId);
+      }
+      console.log("User disconnected:", socket.id);
     });
   });
 };

@@ -14,11 +14,11 @@ export const createPost = async (req: any, res: any) => {
   try {
     // fetch the caption ,image and location
     const { caption, location } = req.body;
-    console.log("caption is ", caption);
-    console.log("location is ", location);
-    console.log("req.files is ", req.files);
+    // console.log("caption is ", caption);
+    // console.log("location is ", location);
+    // console.log("req.files is ", req.files);
     const image = req.files.image ? req.files.image : null;
-    console.log("image is ", image);
+    // console.log("image is ", image);
     // validate it
     if (!caption || !location || !image) {
       return res.status(400).json({
@@ -26,14 +26,29 @@ export const createPost = async (req: any, res: any) => {
         message: "All fields are required",
       });
     }
+
+    // console.log("image is ", image);
+
+    let mediaType;
+
+    image.mimetype.startsWith("image/")
+      ? (mediaType = "image")
+      : (mediaType = "video");
+
+      console.log("media type is ", mediaType);
+    // return res.status(200).json({
+    //   success: true,
+    //   message: "just for testing this create post has been stoped",
+    // });
+
     // put the image in cloudinary
     const imgres = await uploadInCloudinary({
       data: image.tempFilePath,
       folder: "posts",
     });
-    console.log("image res is ", imgres);
+    // console.log("image res is ", imgres);
     //  creaete post entry in db
-    if(!imgres){
+    if (!imgres) {
       return res.status(400).json({
         success: false,
         message: "Image could not be uploaded",
@@ -45,6 +60,7 @@ export const createPost = async (req: any, res: any) => {
       location: location,
       user: req.user.id,
       imagePublicId: imgres?.public_id,
+      mediaType: mediaType,
     });
 
     // add post id to user
@@ -55,10 +71,10 @@ export const createPost = async (req: any, res: any) => {
       },
       { new: true }
     );
-    console.log("new user is ", newUser);
+    // console.log("new user is ", newUser);
 
     const userdata = await fetchAllDetailsUser(req?.user?.email);
-    console.log("userdata is ", userdata);
+    // console.log("userdata is ", userdata);
 
     // return res
     return res.status(200).json({
@@ -67,7 +83,7 @@ export const createPost = async (req: any, res: any) => {
       userdata,
     });
   } catch (error) {
-    console.log("could not create post", error);
+    // console.log("could not create post", error);
     return res.status(500).json({
       success: false,
       message: "could not create post",
@@ -85,7 +101,7 @@ export const deletePost = async (req: any, res: any) => {
   try {
     // fetch the post id from req.body
     const { postId } = req.body;
-    console.log("PostId is ", postId);
+    // console.log("PostId is ", postId);
     // validate it
     if (!postId) {
       return res.status(400).json({
@@ -103,6 +119,32 @@ export const deletePost = async (req: any, res: any) => {
         message: "Post not found",
       });
     }
+
+    // delete the image from cloudinary
+    const deletedImg = await uploadInCloudinary({
+      data: "",
+      folder: "",
+      isUpload: false,
+      publicId: post?.imagePublicId,
+      resourceType: post.mediaType,
+    });
+
+    // console.log("deleted img is ", deletedImg);
+
+    if (!deletedImg) {
+      return res.status(400).json({
+        success: false,
+        message: "could not delete the post from cloudinary",
+      });
+    }
+
+    if (deletedImg?.result !== "ok") {
+      return res.status(400).json({
+        success: false,
+        message: "could not delete the Post from cloudinary",
+      });
+    }
+
     // delete the post
     const deletedPost = await Post.findByIdAndDelete(postId, { new: true });
     if (!deletedPost) {
@@ -112,21 +154,11 @@ export const deletePost = async (req: any, res: any) => {
       });
     }
 
-    console.log("deletedPost is ", deletedPost);
+    // console.log("deletedPost is ", deletedPost);
     // delete all comment of that post
-    console.log("all the comments of this post are deleting");
+    // console.log("all the comments of this post are deleting");
     const deletedComment = await Comment.deleteMany({ post: postId });
-    console.log("deletedComment is ", deletedComment);
-
-    // delete the image from cloudinary
-    const deletedImg = await uploadInCloudinary({
-      data: "",
-      folder: "",
-      isUpload: false,
-      publicId: deletedPost?.imagePublicId,
-    });
-
-    console.log("deleted img is ", deletedImg);
+    // console.log("deletedComment is ", deletedComment);
 
     // remove that postid from user
     const user = await User.findByIdAndUpdate(req.user.id, {
@@ -159,3 +191,37 @@ export const deletePost = async (req: any, res: any) => {
     });
   }
 };
+
+
+// const updatePostsWithTimestamps = async () => {
+// //   try {
+// //     // Update all posts without createdAt or updatedAt
+// //     await Post.updateMany(
+// //       { createdAt: { $exists: false } }, // Posts without createdAt field
+// //       { $set: { createdAt: new Date(), updatedAt: new Date() } } // Set both createdAt and updatedAt
+// //     );
+//     console.log("Timestamps added successfully!");
+// //   } catch (error) {
+// //     console.error("Error adding timestamps:", error);
+// //   }
+// // };
+
+// // // Call the function to update posts
+// // updatePostsWithTimestamps();
+
+// const updatePosts = async () => {
+//   try {
+//     // Update all posts that don't have a mediaType field
+//     await Post.updateMany(
+//       { mediaType: { $exists: false } }, // Only update posts without a mediaType field
+//       { $set: { mediaType: 'image' } }   // Set the mediaType to 'image'
+//     );
+    console.log("Posts updated successfully!");
+//   } catch (error) {
+//     console.error("Error updating posts:", error);
+//   }
+// };
+
+// // Call the function to update posts
+// updatePosts();
+

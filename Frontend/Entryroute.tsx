@@ -110,59 +110,59 @@
 //   );
 // }
 
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import HomeScreen from "./src/Components/HomePages/HomeScreen";
-import Profile from "./src/Components/Profile/Profile";
-import AddPost from "./src/Components/AddPost/AddPost";
-import ImagePicker1 from "./src/Components/ImagePicker";
-import EditProfile from "./src/Components/EditProfile";
-import Post from "./src/Components/Post/Posts";
-import Login from "./src/auth/Login";
-import Signup from "./src/auth/Signup";
-import Message from "./src/Components/Message/Message";
-import Notification from "./src/Components/Notification/Notification";
-import Loader from "./src/Components/Loader";
-import CreatePost from "./src/Components/AddPost/CreatePost";
-import Search from "./src/Components/search/Search";
-import UserProfile from "./src/Components/search/UserProfile";
-import { useEffect, useState } from "react";
-import { View, ActivityIndicator } from "react-native";
-import ForgotPassword from "./src/Components/changePassword/ForgotPassword";
-import ChangePassword from "./src/Components/changePassword/ChangePassword";
-import { useLoadUserData } from "./src/features/user/userSlice";
-import AddStory from "./src/Components/Story/AddStory";
-import CreateStory from "./src/Components/Story/CreateStory";
-import AllStories from "./src/Components/Story/AllStories";
-import ChatScreen from "./src/Components/Message/ChatScreen";
-import UserChat from "./src/Components/Message/UserChat";
-import AudioCall from "./src/Components/Message/AudioCall";
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+
+import HomeScreen from './src/Components/HomePages/HomeScreen';
+import Profile from './src/Components/Profile/Profile';
+import AddPost from './src/Components/AddPost/AddPost';
+import EditProfile from './src/Components/EditProfile';
+import Post from './src/Components/Post/Posts';
+import Login from './src/auth/Login';
+import Signup from './src/auth/Signup';
+import Message from './src/Components/Message/Message';
+import Notification from './src/Components/Notification/Notification';
+import Loader from './src/Components/Loader';
+import CreatePost from './src/Components/AddPost/CreatePost';
+import Search from './src/Components/search/Search';
+import UserProfile from './src/Components/search/UserProfile';
+import {useEffect, useState} from 'react';
+import ForgotPassword from './src/Components/changePassword/ForgotPassword';
+import ChangePassword from './src/Components/changePassword/ChangePassword';
+import {useLoadUserData} from './src/features/user/userSlice';
+import AddStory from './src/Components/Story/AddStory';
+import CreateStory from './src/Components/Story/CreateStory';
+import AllStories from './src/Components/Story/AllStories';
+import ChatScreen from './src/Components/Message/ChatScreen';
+import UserChat from './src/Components/Message/UserChat';
+import AudioCall from './src/Components/Message/AudioCall';
+import {ActivityIndicator, View} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createNativeStackNavigator();
 
 export type RootStackParamList = {
   Home: undefined;
-  Profile: undefined | { user: any };
+  Profile: undefined | {user: any};
   AddPost: undefined;
   ImagePicker: undefined;
   EditProfile: undefined;
-  Post: undefined | { user?: any; userId?: any };
+  Post: undefined | {user?: any; userId?: any};
   Login: undefined;
   Signup: undefined;
   Messages: undefined;
   Notification: undefined;
   Loader: undefined;
-  CreatePost: { file1: object | null | undefined };
+  CreatePost: {file1: object | null | undefined};
   Search: undefined;
-  UserProfile: undefined | { user?: any; userId?: any };
+  UserProfile: undefined | {user?: any; userId?: any};
   ForgotPassword: undefined;
   ChangePassword: undefined;
   AddStory: undefined;
-  CreateStory: undefined | { mediaData: any };
-  AllStories: undefined | { user: any };
+  CreateStory: undefined | {mediaData: any};
+  AllStories: undefined | {user: any};
   ChatScreen: undefined;
-  UserChat: undefined | { user: any };
+  UserChat: undefined | {user: any};
   AudioCall: undefined;
 };
 
@@ -174,13 +174,13 @@ export default function Entryroute() {
   useEffect(() => {
     const checkUserAuth = async () => {
       try {
-        const token = await AsyncStorage.getItem("token");
-        const user = await AsyncStorage.getItem("userData");
+        const token = await AsyncStorage.getItem('token');
+        const user = await AsyncStorage.getItem('userData');
 
-        setInitialPage(token && user ? "Home" : "Login");
+        setInitialPage(token && user ? 'Home' : 'Login');
       } catch (error) {
-        console.error("Error retrieving token or user:", error);
-        setInitialPage("Login"); // Default to Login if error occurs
+        console.error('Error retrieving token or user:', error);
+        setInitialPage('Login'); // Default to Login if error occurs
       } finally {
         setLoading(false); // Set loading to false after check
       }
@@ -195,11 +195,10 @@ export default function Entryroute() {
       <View
         style={{
           flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "#212121",
-        }}
-      >
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#212121',
+        }}>
         <ActivityIndicator size="large" color="white" />
       </View>
     );
@@ -208,8 +207,9 @@ export default function Entryroute() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        screenOptions={{ headerShown: false }}
+        screenOptions={{headerShown: false}}
         initialRouteName={initialPage}
+        // initialRouteName={'Login'}
         // initialRouteName={"Post"}
         // initialRouteName={"CreateStory"}
         // initialRouteName={"AllStories"}
@@ -221,7 +221,7 @@ export default function Entryroute() {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen name="AddPost" component={AddPost} />
-        <Stack.Screen name="ImagePicker" component={ImagePicker1} />
+
         <Stack.Screen name="EditProfile" component={EditProfile} />
         <Stack.Screen name="Post" component={Post} />
         <Stack.Screen name="Login" component={Login} />

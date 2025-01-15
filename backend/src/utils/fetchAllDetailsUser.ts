@@ -23,7 +23,6 @@ export const fetchAllDetailsUser = async (email: any, id?: string) => {
     .populate("profile")
     .populate("followers")
     .populate("following")
-    .populate("userStories")
-    .populate("folowersStories")
+
     .exec();
 };

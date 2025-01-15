@@ -104,7 +104,7 @@ const ProfileSlice = createSlice({
   reducers: {
     setProfileData: (state, action: PayloadAction<Profile>) => {
       state.profileData = action.payload;
-      console.log("Profile saved successfully in Redux:", state.profileData);
+      // console.log("Profile saved successfully in Redux:", state.profileData);
 
       // Save profileData to AsyncStorage
       AsyncStorage.setItem("profileData", JSON.stringify(state.profileData))
@@ -121,7 +121,7 @@ const ProfileSlice = createSlice({
     },
     clearProfileData: (state) => {
       state.profileData = null; // Clear profile data
-      console.log("Profile cleared in Redux");
+      // console.log("Profile cleared in Redux");
 
       // Remove profileData from AsyncStorage
       AsyncStorage.removeItem("profileData")

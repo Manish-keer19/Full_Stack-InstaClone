@@ -1,5 +1,6 @@
 import {
   ActivityIndicator,
+  Alert,
   Image,
   Pressable,
   ScrollView,
@@ -7,27 +8,29 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from "react-native";
-import React, { useState } from "react";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import { useDispatch, useSelector } from "react-redux";
-import Entypo from "react-native-vector-icons/Entypo";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "../../../Entryroute";
-import { StoryServiceInstance } from "../../services/storyServices";
+} from 'react-native';
+import React, {useState} from 'react';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import {useDispatch, useSelector} from 'react-redux';
+import Entypo from 'react-native-vector-icons/Entypo';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {RootStackParamList} from '../../../Entryroute';
+import {StoryServiceInstance} from '../../services/storyServices';
 import {
   loadUserdata,
   setUser,
   useLoadUserData,
-} from "../../features/user/userSlice";
-import { ResizeMode, Video } from "expo-av";
-export default function StoryEditModal({ storydata, closeModal }: any) {
+} from '../../features/user/userSlice';
+import Video from 'react-native-video';
+// import { ResizeMode, Video } from "expo-av";
+export default function StoryEditModal({storydata, closeModal}: any) {
+  // console.log('storydata in edit modal', storydata);
   const dispatch = useDispatch();
-  const { token, user } = useSelector((state: any) => state.User);
+  const {token, user} = useSelector((state: any) => state.User);
   const [isdeleting, setIsdeleting] = useState(false);
-  console.log("storydata", storydata);
+  // console.log('storydata', storydata);
 
   const handleDeleteStory = async () => {
     setIsdeleting(true);
@@ -36,89 +39,83 @@ export default function StoryEditModal({ storydata, closeModal }: any) {
       storyId: storydata.story._id,
       token: token,
     };
-    console.log("data is ", data);
+    // console.log('data is ', data);
     try {
       const res = await StoryServiceInstance.deleteStory(data);
-      console.log("res is in story edit modal", res);
+      // console.log('res is in story edit modal', res);
       if (res) {
         setIsdeleting(false);
-        console.log("Story deleted successfully");
-        alert("story deleted successfully");
+        // console.log('Story deleted successfully');
+        Alert.alert('story deleted successfully');
         dispatch(setUser(res.userdata));
-        navigation.navigate("Home");
+        navigation.navigate('Home');
       }
     } catch (error) {
       setIsdeleting(false);
-      console.log("could not delete the story", error);
+      // console.log('could not delete the story', error);
     }
   };
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  console.log("storydata", storydata);
+  // console.log('storydata', storydata);
   const [storyInfo, setStoryInfo] = useState(storydata.story);
   return (
-    <View style={{ width: "100%", height: "100%" }}>
+    <View style={{width: '100%', height: '100%'}}>
       <View
         style={{
-          width: "100%",
-          height: "40%",
-          backgroundColor: "#212121",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+          width: '100%',
+          height: '40%',
+          backgroundColor: '#212121',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
         <Pressable
           style={{}}
           onPress={() => {
             closeModal();
-          }}
-        >
-          {storyInfo?.mediaType === "image" ? (
+          }}>
+          {storyInfo?.mediaType === 'image' ? (
             <Image
-              source={{ uri: storyInfo.content }}
-              style={{ height: 250, width: 145 }}
+              source={{uri: storyInfo.content}}
+              style={{height: 250, width: 145}}
             />
           ) : (
             <Video
-              // shouldPlay
-              // isLooping
-              isMuted
-              resizeMode={ResizeMode.COVER}
-              // useNativeControls
-              style={{ height: 250, width: 145 }}
-              source={{ uri: storyInfo.content }}
+              paused
+              resizeMode="cover"
+              poster={storyInfo.content}
+              style={{height: 250, width: 145}}
+              source={{uri: storyInfo.content}}
             />
           )}
         </Pressable>
         <TouchableOpacity
-          onPress={() => navigation.navigate("AddStory")}
+          onPress={() => navigation.navigate('AddStory')}
           style={{
             width: 90,
             height: 200,
-            backgroundColor: "black",
-            alignItems: "center",
-            justifyContent: "center",
+            backgroundColor: 'black',
+            alignItems: 'center',
+            justifyContent: 'center',
             borderRadius: 10,
-          }}
-        >
+          }}>
           <MaterialIcons name="add" size={30} color="white" />
         </TouchableOpacity>
       </View>
-      <View style={{ width: "100%", height: "60%", backgroundColor: "black" }}>
+      <View style={{width: '100%', height: '60%', backgroundColor: 'black'}}>
         <View
           style={{
             // borderWidth: 2,
             // borderColor: "blue",
             padding: 10,
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
             margin: 10,
-          }}
-        >
-          <View style={{ flexDirection: "row", gap: 10 }}>
+          }}>
+          <View style={{flexDirection: 'row', gap: 10}}>
             <AntDesign name="eye" size={24} color="white" />
-            <Text style={{ color: "white" }}>
+            <Text style={{color: 'white'}}>
               {storydata.story.watchedBy.length}
             </Text>
             {/* <Text style={{ color: "white" }}>{"10000000B"}</Text> */}
@@ -128,7 +125,7 @@ export default function StoryEditModal({ storydata, closeModal }: any) {
             {isdeleting ? (
               <View>
                 <ActivityIndicator color="white" />
-                <Text style={{ color: "white", fontWeight: "bold" }}>
+                <Text style={{color: 'white', fontWeight: 'bold'}}>
                   Please wait
                 </Text>
               </View>
@@ -139,12 +136,11 @@ export default function StoryEditModal({ storydata, closeModal }: any) {
         </View>
         <Text
           style={{
-            color: "white",
+            color: 'white',
             fontSize: 18,
-            fontWeight: "bold",
+            fontWeight: 'bold',
             padding: 15,
-          }}
-        >
+          }}>
           Veiwers
         </Text>
         <ScrollView
@@ -152,8 +148,7 @@ export default function StoryEditModal({ storydata, closeModal }: any) {
             // borderWidth: 2,
             // borderColor: "pink",
             minHeight: 200,
-          }}
-        >
+          }}>
           {/* {[...Array(10)].map((_, i) => (
             <View
               key={i}
@@ -203,56 +198,56 @@ export default function StoryEditModal({ storydata, closeModal }: any) {
                 // borderColor: "orange",
                 paddingHorizontal: 20,
                 padding: 10,
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
               <View
                 style={{
-                  flexDirection: "row",
-                  alignItems: "center",
+                  flexDirection: 'row',
+                  alignItems: 'center',
                   gap: 15,
-                  cursor: "pointer",
-                }}
-              >
+                  cursor: 'pointer',
+                }}>
                 <TouchableOpacity
                   style={{
-                    borderWidth: 2,
-                    borderColor: "gold",
                     borderRadius: 50,
                     padding: 2,
+                    borderWidth: item.userStories ? 2 : 0,
+                    borderColor: item.userStories ? 'gold' : 'transparent',
                   }}
                   onPress={() => {
+                    // console.log('item is ', item);
                     closeModal();
-                    navigation.navigate("AllStories", { user: item });
-                  }}
-                >
+                    if (item.userStories) {
+                      navigation.navigate('AllStories', {user: item});
+                    } else {
+                      navigation.navigate('UserProfile', {userId: item._id});
+                    }
+                  }}>
                   <Image
                     source={{
                       uri: item.profilePic,
                     }}
-                    style={{ height: 40, width: 40, borderRadius: 50 }}
+                    style={{height: 40, width: 40, borderRadius: 50}}
                   />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
                     closeModal();
-                    navigation.navigate("UserProfile", { userId: item._id });
-                  }}
-                >
-                  <Text style={{ color: "white", fontSize: 16 }}>
+                    navigation.navigate('UserProfile', {userId: item._id});
+                  }}>
+                  <Text style={{color: 'white', fontSize: 16}}>
                     {item.username}
                   </Text>
                 </TouchableOpacity>
               </View>
               <View
                 style={{
-                  flexDirection: "row",
-                  alignItems: "center",
+                  flexDirection: 'row',
+                  alignItems: 'center',
                   gap: 20,
                   //   margin: 10,
-                }}
-              >
+                }}>
                 <Entypo name="dots-three-vertical" size={24} color="white" />
                 <FontAwesome name="share" size={24} color="white" />
               </View>

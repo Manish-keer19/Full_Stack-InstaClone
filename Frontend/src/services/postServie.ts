@@ -5,7 +5,7 @@ import apiClient from "./apiClient";
 class PostService {
   async createPost(data: any) {
     try {
-      console.log("data in postService ", data);
+      // console.log("data in postService ", data);
 
       const res = await apiClient.post("/post/createpost", data, {
         headers: {
@@ -14,34 +14,34 @@ class PostService {
         },
       });
 
-      console.log("res.data is ", res.data);
+      // console.log("res.data is ", res.data);
       if (res.data.success) {
-        console.log("post created");
+        // console.log("post created");
         return res.data;
       } else {
-        console.log("could not create the post");
+        // console.log("could not create the post");
         return null;
       }
     } catch (error) {
-      console.log("could not create the post", error);
+      // console.log("could not create the post", error);
     }
   }
 
   async deletePost(data: any) {
     try {
-      console.log("data in postService ", data);
+      // console.log("data in postService ", data);
       const res = await apiClient.post("/post/deletePost", data);
 
-      console.log("res.data is ", res.data);
+      // console.log("res.data is ", res.data);
       if (res.data.success) {
-        console.log("post deleted succesfully");
+        // console.log("post deleted succesfully");
         return res.data;
       } else {
-        console.log("could not delete the post");
+        // console.log("could not delete the post");
         return null;
       }
     } catch (error) {
-      console.log("could not delete the post", error);
+      // console.log("could not delete the post", error);
     }
   }
 }

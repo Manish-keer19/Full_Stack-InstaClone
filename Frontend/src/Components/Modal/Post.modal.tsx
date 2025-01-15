@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useState } from "react";
-import FeatherIcons from "@expo/vector-icons/Feather";
-import AntDesignIcons from "@expo/vector-icons/AntDesign";
+import FeatherIcons from "react-native-vector-icons/Feather";
+import AntDesignIcons from "react-native-vector-icons/AntDesign";
 import { PostServiceInstance } from "../../services/postServie";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../features/user/userSlice";
@@ -31,15 +31,15 @@ export const Postmodal: React.FC<PostmodalProps> = ({ PostData }) => {
     };
     try {
       const res = await PostServiceInstance.deletePost(data);
-      console.log("res in Postmodal ", res);
+      // console.log("res in Postmodal ", res);
       if (res) {
-        console.log("post deleted succesfully in Posmodal");
+        // console.log("post deleted succesfully in Posmodal");
         dispatch(setUser(res.userdata));
         navigation.navigate("Profile");
       }
     } catch (error) {
       setIsdeleting(false);
-      console.log("could not delete the post", error);
+      // console.log("could not delete the post", error);
     }
   };
   return (

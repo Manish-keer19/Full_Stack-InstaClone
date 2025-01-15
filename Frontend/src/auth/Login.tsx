@@ -1,224 +1,143 @@
-// import {
-//   Button,
-//   StyleSheet,
-//   Text,
-//   TextInput,
-//   View,
-//   TouchableOpacity,
-//   Image,
-// } from "react-native";
-// import React from "react";
-// import Logo from "../../assets/imges/instagram_logo2.png";
-
-// export default function Login() {
-//   return (
-//     <View style={styles.container}>
-//       <View style={styles.logoContainer}>
-//         <Image style={{ width: 70, height: 70 }} source={Logo} />
-//       </View>
-//       <View style={styles.inputContainer}>
-//         <TextInput
-//           style={styles.input}
-//           placeholder="Email"
-//           placeholderTextColor="#B0B0B0"
-//         />
-//         <TextInput
-//           style={styles.input}
-//           placeholder="Password"
-//           secureTextEntry={true}
-//           placeholderTextColor="#B0B0B0"
-//         />
-//       </View>
-//       <TouchableOpacity style={styles.button}>
-//         <Text style={styles.buttonText}>Log in</Text>
-//       </TouchableOpacity>
-//       <TouchableOpacity style={styles.forgotPassword}>
-//         <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-//       </TouchableOpacity>
-
-//       <View style={{ borderWidth: 2, borderColor: "yellow" }}>
-//         <TouchableOpacity style={styles.registerButton}>
-//           <Text style={styles.registerText}>Create New Account</Text>
-//         </TouchableOpacity>
-//         <Text style={styles.methodIcon}>Meta Icon</Text>
-//       </View>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: "black", // Set background color to black
-//     justifyContent: "center",
-//     paddingHorizontal: 20,
-//   },
-//   logoContainer: {
-//     alignItems: "center",
-//     marginBottom: 40,
-//   },
-//   logo: {
-//     fontSize: 30,
-//     fontWeight: "bold",
-//     color: "#FFFFFF", // Set logo color to white for contrast
-//   },
-//   inputContainer: {
-//     // borderWidth:2,
-//     // borderColor:"pink",
-//     marginTop: 20,
-//     marginBottom: 20,
-//     gap: 15,
-//   },
-//   input: {
-//     // backgroundColor: "#1E1E1E", // Darker input background for contrast
-//     borderWidth: 2,
-//     borderColor: "pink",
-//     borderRadius: 20,
-//     padding: 16,
-//     marginVertical: 5,
-//     fontSize: 16,
-//     color: "#FFFFFF", // Set text color to white
-//   },
-//   button: {
-//     backgroundColor: "#0095F6",
-//     borderRadius: 20,
-//     paddingVertical: 15,
-//     alignItems: "center",
-//     marginVertical: 10,
-//   },
-//   buttonText: {
-//     color: "#fff",
-//     fontWeight: "bold",
-//     fontSize: 16,
-//   },
-//   forgotPassword: {
-//     alignItems: "center",
-//     marginVertical: 10,
-//   },
-//   forgotPasswordText: {
-//     color: "#0095F6",
-//   },
-//   registerButton: {
-//     borderWidth: 2,
-//     borderColor: "#0095F6",
-//     borderRadius: 20,
-//     paddingVertical: 15,
-//     alignItems: "center",
-//     marginVertical: 10,
-//   },
-//   registerText: {
-//     color: "#0095F6",
-//     fontWeight: "bold",
-//     fontSize: 16,
-//   },
-//   methodIcon: {
-//     textAlign: "center",
-//     marginTop: 20,
-//     fontSize: 16,
-//     color: "#B0B0B0",
-//   },
-// });
-
 import {
-  Button,
   StyleSheet,
   Text,
   TextInput,
   View,
   TouchableOpacity,
   Image,
-} from "react-native";
-import React, { useState } from "react";
-import Logo from "../../assets/imges/instagram_logo2.png";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "../../Entryroute";
-import { AuthServiceInstance } from "../services/authServices";
-import { useDispatch } from "react-redux";
-import { setToken, setUser } from "../features/user/userSlice";
+  Alert,
+  ToastAndroid,
+} from 'react-native';
+import React, {useState} from 'react';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {RootStackParamList} from '../../Entryroute';
+import {AuthServiceInstance} from '../services/authServices';
+import {useDispatch} from 'react-redux';
+import {setToken, setUser} from '../features/user/userSlice';
+import instaLogo from '../../assets/image/nstagram_logo2.png';
+import {useForm, Controller} from 'react-hook-form';
 
+interface LoginProps {
+  email: string;
+  password: string;
+}
 export default function Login() {
+  const {
+    control,
+    handleSubmit,
+    formState: {errors},
+  } = useForm<LoginProps>();
   const dispatch = useDispatch();
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  // const [email, setEmail] = useState<string>('');
+  // const [password, setPassword] = useState<string>('');
   const [isSubmiting, setIsSubmiting] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const handleSubmit = async () => {
-    const data = {
-      email,
-      password,
-    };
-    console.log("data in login form is ", data);
+  const onSubmit = async (data: any) => {
+    setLoading(true);
+    console.log('data in login form is ', data);
+    setIsSubmiting(true);
+
+    if (loading) {
+      ToastAndroid.show('Please wait', ToastAndroid.SHORT);
+    }
     try {
       const res = await AuthServiceInstance.login(data);
 
-      console.log("Res is ", res);
+      console.log('Res is ', res);
       if (res.success) {
-        // alert("logged in succefully");
+        ToastAndroid.show('logged in succefully', ToastAndroid.SHORT);
         dispatch(setToken(res.token));
         dispatch(setUser(res.userdata));
         setIsSubmiting(false);
-        setEmail("");
-        setPassword("");
-        navigation.navigate("Home");
+        navigation.navigate('Home');
       }
     } catch (error) {
-      console.log("could not login here in login.tsx", error);
+      console.log('could not login here in login.tsx', error);
       setIsSubmiting(false);
-      setEmail("");
-      setPassword("");
-      alert("Could not login");
+      ToastAndroid.show('invalid password', ToastAndroid.LONG);
     }
   };
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
-        <Image style={{ width: 70, height: 70 }} source={Logo} />
+        <Image style={{width: 70, height: 70}} source={instaLogo} />
       </View>
       <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          placeholderTextColor="#B0B0B0"
-          value={email}
-          onChangeText={(value) => {
-            setEmail(value);
+        <Controller
+          name="email"
+          control={control}
+          rules={{
+            required: 'Email is required',
+            pattern: {
+              value: /^\S+@\S+$/i,
+              message: 'Invalid email address',
+            },
           }}
+          render={({field: {onChange, onBlur, value}}) => (
+            <TextInput
+              style={styles.input}
+              placeholder="Email"
+              placeholderTextColor="#B0B0B0"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+            />
+          )}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry={true}
-          placeholderTextColor="#B0B0B0"
-          value={password}
-          onChangeText={(value) => {
-            setPassword(value);
+        {errors.email && (
+          <Text style={{color: 'red'}}>{errors.email.message}</Text>
+        )}
+        <Controller
+          control={control}
+          name="password"
+          rules={{
+            required: 'Password is required',
+            minLength: {
+              value: 2,
+              message: 'Password must be at least 6 characters',
+            },
+            maxLength: {
+              value: 20,
+              message: 'Password must be at most 20 characters',
+            },
           }}
+          render={({field: {onChange, onBlur, value}}) => (
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              secureTextEntry={true}
+              placeholderTextColor="#B0B0B0"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+            />
+          )}
         />
+        {errors.password && (
+          <Text style={{color: 'red'}}>{errors.password.message}</Text>
+        )}
       </View>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => {
-          setIsSubmiting(true);
-          handleSubmit();
-        }}
-        disabled={isSubmiting}
-      >
+        onPress={handleSubmit(onSubmit)}
+        disabled={isSubmiting}>
         <Text style={styles.buttonText}>
-          {isSubmiting ? "Login please wait..." : "Login"}
+          {isSubmiting ? 'Login please wait...' : 'Login'}
         </Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.forgotPassword}
-      onPress={()=>navigation.navigate("ForgotPassword")}>
-      
+      <TouchableOpacity
+        style={styles.forgotPassword}
+        onPress={() => navigation.navigate('ForgotPassword')}>
         <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
       </TouchableOpacity>
 
       <View style={styles.footerContainer}>
         <TouchableOpacity
           style={styles.registerButton}
-          onPress={() => navigation.navigate("Signup")}
-        >
+          onPress={() => navigation.navigate('Signup')}>
+          {/* <Text style={styles.registerText}>Create New Account</Text> */}
           <Text style={styles.registerText}>Create New Account</Text>
         </TouchableOpacity>
         <Text style={styles.methodIcon}>Meta Icon</Text>
@@ -230,12 +149,12 @@ export default function Login() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black", // Set background color to black
-    justifyContent: "center",
-    paddingHorizontal: 20,
+    backgroundColor: 'black', // Set background color to black
+    justifyContent: 'center',
+    // paddingHorizontal: 20,
   },
   logoContainer: {
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: 40,
   },
   inputContainer: {
@@ -245,54 +164,54 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 2,
-    borderColor: "pink",
+    borderColor: 'pink',
     borderRadius: 20,
     padding: 16,
     marginVertical: 5,
     fontSize: 16,
-    color: "#FFFFFF", // Set text color to white
+    color: '#FFFFFF', // Set text color to white
   },
   button: {
-    backgroundColor: "#0095F6",
+    backgroundColor: '#0095F6',
     borderRadius: 20,
     paddingVertical: 15,
-    alignItems: "center",
+    alignItems: 'center',
     marginVertical: 10,
   },
   buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
+    color: '#fff',
+    fontWeight: 'bold',
     fontSize: 16,
   },
   forgotPassword: {
-    alignItems: "center",
+    alignItems: 'center',
     marginVertical: 10,
   },
   forgotPasswordText: {
-    color: "#0095F6",
+    color: '#0095F6',
   },
   footerContainer: {
-    alignItems: "center", // Center items in the footer
+    alignItems: 'center', // Center items in the footer
     marginTop: 20, // Optional margin for spacing
   },
   registerButton: {
     borderWidth: 2,
-    borderColor: "#0095F6",
+    borderColor: '#0095F6',
     borderRadius: 20,
     paddingVertical: 15,
-    alignItems: "center",
+    alignItems: 'center',
     marginVertical: 10,
-    width: "100%", // Optional: Make the button full width
+    width: '100%', // Optional: Make the button full width
   },
   registerText: {
-    color: "#0095F6",
-    fontWeight: "bold",
+    color: '#0095F6',
+    fontWeight: 'bold',
     fontSize: 16,
   },
   methodIcon: {
-    textAlign: "center",
+    textAlign: 'center',
     marginTop: 10,
     fontSize: 16,
-    color: "#B0B0B0",
+    color: '#B0B0B0',
   },
 });

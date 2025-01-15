@@ -21,12 +21,12 @@
 // //     // Set user action
 // //     setUser: (state, action: PayloadAction<object | null>) => {
 // //       state.user = action.payload;
-// //       console.log("userdata in userslice ", state.user);
+//       console.log("userdata in userslice ", state.user);
 
 // //       // Save user data to AsyncStorage
 // //       AsyncStorage.setItem("userData", JSON.stringify(state.user))
 // //         .then(() => {
-// //           console.log("User saved successfully in AsyncStorage");
+//           console.log("User saved successfully in AsyncStorage");
 // //         })
 // //         .catch((error) => {
 // //           console.error(
@@ -38,12 +38,12 @@
 
 // //     setToken: (state, action: PayloadAction<string | null>) => {
 // //       state.token = action.payload;
-// //       console.log("token in userslice ", state.token);
+//       console.log("token in userslice ", state.token);
 
 // //       // Save token to AsyncStorage
 // //       AsyncStorage.setItem("token", JSON.stringify(state.token))
 // //         .then(() => {
-// //           console.log("Token saved successfully in AsyncStorage");
+//           console.log("Token saved successfully in AsyncStorage");
 // //         })
 // //         .catch((error) => {
 // //           console.error("Could not save the token into AsyncStorage", error);
@@ -114,12 +114,12 @@
 //     // Set user action
 //     setUser: (state, action: PayloadAction<object | null>) => {
 //       state.user = action.payload;
-//       console.log("userdata in userslice ", state.user);
+      // console.log("userdata in userslice ", state.user);
 
 //       // Save user data to AsyncStorage
 //       AsyncStorage.setItem("userData", JSON.stringify(state.user))
 //         .then(() => {
-//           console.log("User saved successfully in AsyncStorage");
+          // console.log("User saved successfully in AsyncStorage");
 //         })
 //         .catch((error) => {
 //           console.error(
@@ -131,12 +131,12 @@
 
 //     setToken: (state, action: PayloadAction<string | null>) => {
 //       state.token = action.payload;
-//       console.log("token in userslice ", state.token);
+      // console.log("token in userslice ", state.token);
 
 //       // Save token to AsyncStorage
 //       AsyncStorage.setItem("token", JSON.stringify(state.token))
 //         .then(() => {
-//           console.log("Token saved successfully in AsyncStorage");
+          // console.log("Token saved successfully in AsyncStorage");
 //         })
 //         .catch((error) => {
 //           console.error("Could not save the token into AsyncStorage", error);
@@ -144,12 +144,12 @@
 //     },
 //     loadTokenData: (state, action: PayloadAction<string | null>) => {
 //       state.token = action.payload;
-//       console.log("token is in loadtokendata ", state.token);
+      // console.log("token is in loadtokendata ", state.token);
 //     },
 //     // Load user data action
 //     loadUserdata: (state, action: PayloadAction<object | null>) => {
 //       state.user = action.payload; // Load the user data
-//       console.log("user is  in Loadeduerdata ", state.user);
+      // console.log("user is  in Loadeduerdata ", state.user);
 //     },
 //   },
 // });
@@ -198,7 +198,7 @@
 // //   try {
 // //     await AsyncStorage.removeItem('userData');
 
-// //     console.log("userData removed successfully");
+//     console.log("userData removed successfully");
 // //   } catch (error) {
 // //     console.error("Error removing userData:", error);
 // //   }
@@ -234,12 +234,12 @@ const userSlice = createSlice({
     // Set user action
     setUser: (state, action: PayloadAction<object | null>) => {
       state.user = action.payload;
-      console.log("userdata in userslice ", state.user);
+      // console.log("userdata in userslice ", state.user);
 
       // Save user data to AsyncStorage
       AsyncStorage.setItem("userData", JSON.stringify(state.user))
         .then(() => {
-          console.log("User saved successfully in AsyncStorage");
+          // console.log("User saved successfully in AsyncStorage");
         })
         .catch((error) => {
           console.error(
@@ -251,12 +251,12 @@ const userSlice = createSlice({
 
     setToken: (state, action: PayloadAction<string | null>) => {
       state.token = action.payload;
-      console.log("token in userslice ", state.token);
+      // console.log("token in userslice ", state.token);
 
       // Save token to AsyncStorage
       AsyncStorage.setItem("token", JSON.stringify(state.token))
         .then(() => {
-          console.log("Token saved successfully in AsyncStorage");
+          // console.log("Token saved successfully in AsyncStorage");
         })
         .catch((error) => {
           console.error("Could not save the token into AsyncStorage", error);
@@ -265,32 +265,32 @@ const userSlice = createSlice({
 
     loadTokenData: (state, action: PayloadAction<string | null>) => {
       state.token = action.payload;
-      console.log("token is in loadtokendata ", state.token);
+      // console.log("token is in loadtokendata ", state.token);
     },
 
     // Load user data action
     loadUserdata: (state, action: PayloadAction<object | null>) => {
       state.user = action.payload; // Load the user data
-      console.log("user is  in Loadeduerdata ", state.user);
+      // console.log("user is  in Loadeduerdata ", state.user);
     },
 
     // Logout action
     logout: (state) => {
       state.user = null; // Clear user data
       state.token = null; // Clear token
-      console.log("User logged out and state cleared.");
+      // console.log("User logged out and state cleared.");
 
       // Clear user data and token from AsyncStorage
       AsyncStorage.removeItem("userData")
         .then(() => {
-          console.log("token removed succefully from AsyncStorage");
+          // console.log("token removed succefully from AsyncStorage");
         })
         .catch((error) => {
           console.error("Could not remove userData from AsyncStorage", error);
         });
       AsyncStorage.removeItem("token")
         .then(() => {
-          console.log("userdata removed succefully from AsyncStorage");
+          // console.log("userdata removed succefully from AsyncStorage");
         })
         .catch((error) => {
           console.error("Could not remove token from AsyncStorage", error);

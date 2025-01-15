@@ -4,6 +4,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert
 } from "react-native";
 import React, { useState } from "react";
 import { AuthServiceInstance } from "../../services/authServices";
@@ -21,7 +22,7 @@ export default function ForgotPassword() {
 
   const handleGenerateOtp = async () => {
     const data = { email };
-    console.log("data is ", data);
+    // console.log("data is ", data);
     try {
       setIsoptgenerating(true);
       const res = await AuthServiceInstance.sendOtp(data);
@@ -30,27 +31,27 @@ export default function ForgotPassword() {
         setstep(2);
       }
 
-      console.log("res is ", res);
+      // console.log("res is ", res);
     } catch (error) {
       setIsoptgenerating(false);
-      console.log("could not generate the otp", error);
+      // console.log("could not generate the otp", error);
     }
   };
 
   const handleResetPassword = async () => {
     const data = { email, otp, password };
-    console.log("data is ", data);
+    // console.log("data is ", data);
     try {
       setisResetPassword(true);
       const res = await AuthServiceInstance.ResetPassword(data);
-      console.log("res is ", res);
+      // console.log("res is ", res);
       if (res) {
         setisResetPassword(false);
         // alert("password changed successfully");
         navigation.navigate("Login");
       } else {
         setisResetPassword(false);
-        alert("reset password failed");
+       Alert.alert("reset password failed");
         setemail("");
         setOtp("");
         setPassword("");
@@ -60,7 +61,7 @@ export default function ForgotPassword() {
       setOtp("");
       setPassword("");
       setisResetPassword(false);
-      console.log("could not ResetPassword", error);
+      // console.log("could not ResetPassword", error);
     }
   };
   return (
@@ -78,7 +79,7 @@ export default function ForgotPassword() {
               placeholderTextColor={"#aaa"}
               value={email}
               onChangeText={(value) => {
-                // console.log("email is ", email);
+                console.log("email is ", email);
                 setemail(value);
               }}
             />
@@ -106,7 +107,7 @@ export default function ForgotPassword() {
               placeholderTextColor={"#aaa"}
               value={password}
               onChangeText={(value) => {
-                // console.log("email is ", email);
+                console.log("email is ", email);
                 setPassword(value);
               }}
             />
@@ -134,7 +135,7 @@ export default function ForgotPassword() {
               placeholderTextColor={"#aaa"}
               value={otp}
               onChangeText={(value) => {
-                // console.log("email is ", email);
+                console.log("email is ", email);
                 setOtp(value);
               }}
             />

@@ -6,74 +6,69 @@ import {
   Text,
   TouchableOpacity,
   View,
-  PanResponder,
-  Animated,
-  TextInput,
-  Modal,
-} from "react-native";
-import React, { useState, useRef } from "react";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import ImageZoom from "react-native-image-pan-zoom";
-import { captureRef } from "react-native-view-shot";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { useDispatch, useSelector } from "react-redux";
-import { StoryServiceInstance } from "../../services/storyServices";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "../../../Entryroute";
-import { Tuple } from "@reduxjs/toolkit";
-import { setUser } from "../../features/user/userSlice";
-import { ResizeMode, Video } from "expo-av";
+} from 'react-native';
+import React, {useState, useRef} from 'react';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useDispatch, useSelector} from 'react-redux';
+import {StoryServiceInstance} from '../../services/storyServices';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {RootStackParamList} from '../../../Entryroute';
+import {Tuple} from '@reduxjs/toolkit';
+import {setUser} from '../../features/user/userSlice';
+import {Alert} from 'react-native';
+import Video from 'react-native-video';
 
-
-export default function CreateStory({ route }: any) {
+export default function CreateStory({route}: any) {
   const dispatch = useDispatch();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const { user, token } = useSelector((state: any) => state.User);
-  const { mediaData } = route.params;
+  const {user, token} = useSelector((state: any) => state.User);
+  const {mediaData} = route.params;
+  // console.log("mediaData is ", mediaData);
 
-  console.log("imagdata is ", mediaData);
+  // console.log('imagdata is ', mediaData);
   const [isZoomed, setIsZoomed] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [file, setFile] = useState(mediaData);
+  // console.log("file is ", file);
   const imageRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
-  const [newText, setNewText] = useState("");
+  const [newText, setNewText] = useState('');
   const [ispostSubmiting, setIspostSubmiting] = useState(false);
   const handleShare = async () => {
     setIspostSubmiting(true);
     let uri;
-    let media;
+    let media; 
     try {
       media = {
         uri: file.uri, // URI of the image
-        type: file.mediaType === "photo" ? "image/jpeg" : "video/mp4", // Default type for photos
-        name: file.filename, // Filename
+        type: file.mediaType || 'image/jpeg',
+        name: Date.now().toString(), // Filename
       };
 
-    
-      console.log("media is ", media);
+      // console.log('media is ', media);
       const formData = new FormData();
-      formData.append("media", {
+      formData.append('media', {
         uri: media.uri,
         type: media.type,
         name: media.name,
       });
-      formData.append("token", token);
+      formData.append('token', token);
 
-      console.log("form data is ", formData);
+      // console.log('form data is ', formData);
 
       const res = await StoryServiceInstance.creatStory(formData);
-      navigation.navigate("Home");
+      navigation.navigate('Home');
       if (res) {
-        console.log("res in createstory", res);
+        // console.log('res in createstory', res);
         dispatch(setUser(res.userdata));
       } else {
         setIspostSubmiting(false);
-        alert("could not creaet the post pleases try again");
+        Alert.alert('could not creaet the post pleases try again');
       }
     } catch (error) {
       setIspostSubmiting(false);
-      console.error("Error uploading image:", error);
+      console.error('Error uploading image:', error);
     }
   };
 
@@ -94,7 +89,7 @@ export default function CreateStory({ route }: any) {
             size={24}
             color="white"
             style={{
-              backgroundColor: "#393939",
+              backgroundColor: '#393939',
               padding: 10,
               borderRadius: 50,
             }}
@@ -104,7 +99,7 @@ export default function CreateStory({ route }: any) {
             size={24}
             color="white"
             style={{
-              backgroundColor: "#393939",
+              backgroundColor: '#393939',
               padding: 10,
               borderRadius: 50,
             }}
@@ -114,7 +109,7 @@ export default function CreateStory({ route }: any) {
             size={24}
             color="white"
             style={{
-              backgroundColor: "#393939",
+              backgroundColor: '#393939',
               padding: 10,
               borderRadius: 50,
             }}
@@ -124,7 +119,7 @@ export default function CreateStory({ route }: any) {
             size={24}
             color="white"
             style={{
-              backgroundColor: "#393939",
+              backgroundColor: '#393939',
               padding: 10,
               borderRadius: 50,
             }}
@@ -132,11 +127,8 @@ export default function CreateStory({ route }: any) {
         </View>
       </View>
 
-      <Pressable
-        style={styles.imageContainer}
-        onPress={() => setIsZoomed(!isZoomed)}
-      >
-        {mediaData.mediaType === "photo" ? (
+      <Pressable style={styles.imageContainer}>
+        {mediaData?.mediaType?.startsWith('image') ? (
           <Image
             style={styles.image}
             source={{
@@ -145,15 +137,15 @@ export default function CreateStory({ route }: any) {
           />
         ) : (
           <Video
-          useNativeControls
-          shouldPlay
-          
-          isLooping={true}
-          resizeMode={ResizeMode.COVER}
+            // repeat
             style={styles.video}
             source={{
               uri: file?.uri,
             }}
+            // controls={true} // Add controls to debug playback issues
+  resizeMode="contain" // Adjust to fit video properly
+  onError={(error) => console.error('Video error:', error)} // Log errors
+  // onBuffer={(buffer) => console.log('Buffering:', buffer)} // Debug buffering
           />
         )}
       </Pressable>
@@ -163,47 +155,41 @@ export default function CreateStory({ route }: any) {
           <TouchableOpacity
             style={styles.storyButton}
             onPress={handleShare}
-            disabled={ispostSubmiting}
-          >
-            <Image
-              style={styles.storyImage}
-              source={{ uri: user?.profilePic }}
-            />
+            disabled={ispostSubmiting}>
+            <Image style={styles.storyImage} source={{uri: user?.profilePic}} />
             <Text style={styles.buttonText}>
-              {ispostSubmiting ? "Posting..." : "Post"}
+              {ispostSubmiting ? 'Posting...' : 'Post'}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={{
-              flexDirection: "row",
+              flexDirection: 'row',
               gap: 7,
-              alignItems: "center",
-              backgroundColor: "#212121",
+              alignItems: 'center',
+              backgroundColor: '#212121',
               padding: 15,
               marginLeft: 10,
               borderRadius: 20,
               width: 170,
-            }}
-          >
+            }}>
             <AntDesign name="star" size={24} color="gold" />
-            <Text style={{ color: "white", fontWeight: "bold" }}>
+            <Text style={{color: 'white', fontWeight: 'bold'}}>
               Close friends
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={{
-              backgroundColor: "white",
+              backgroundColor: 'white',
               padding: 10,
               borderRadius: 50,
               marginLeft: 5,
-            }}
-          >
+            }}>
             <AntDesign
               name="right"
               size={24}
               color="black"
-              style={{ fontWeight: "bold" }}
+              style={{fontWeight: 'bold'}}
             />
           </TouchableOpacity>
         </View>
@@ -214,75 +200,74 @@ export default function CreateStory({ route }: any) {
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
-    height: "100%",
-    position: "relative",
-    backgroundColor: "#030303",
+    width: '100%',
+    height: '100%',
+    position: 'relative',
+    backgroundColor: '#030303',
   },
   header: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
-    width: "100%",
+    width: '100%',
     paddingTop: 60,
-    flexDirection: "row",
+    flexDirection: 'row',
     zIndex: 99,
-    justifyContent: "space-between",
-    alignItems: "center",
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   iconContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 10,
   },
   icon: {
-    backgroundColor: "#393939",
+    backgroundColor: '#393939',
     padding: 10,
     borderRadius: 50,
   },
   imageContainer: {
-    width: "100%",
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   image: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "contain",
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
   video: {
     // borderWidth:2,
     // borderColor:"yellow",
-    width: "100%",
-    height: "70%",
-  
+    width: '100%',
+    height: '70%',
   },
   zoomedImageContainer: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
   zoomedImage: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     zIndex: 999,
   },
   footer: {
-    width: "100%",
-    position: "absolute",
+    width: '100%',
+    position: 'absolute',
     zIndex: 99,
     bottom: 0,
     padding: 10,
   },
   footerContainer: {
-    width: "80%",
-    flexDirection: "row",
+    width: '80%',
+    flexDirection: 'row',
     zIndex: 99,
-    alignItems: "center",
+    alignItems: 'center',
   },
   storyButton: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 10,
-    alignItems: "center",
-    backgroundColor: "#212121",
+    alignItems: 'center',
+    backgroundColor: '#212121',
     padding: 15,
     borderRadius: 20,
     width: 170,
@@ -293,7 +278,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   buttonText: {
-    color: "white",
-    fontWeight: "bold",
+    color: 'white',
+    fontWeight: 'bold',
   },
 });

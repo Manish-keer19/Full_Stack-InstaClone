@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -7,19 +7,20 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
-} from "react-native";
-import AntDesignIcons from "react-native-vector-icons/AntDesign";
-import EntypoIcons from "react-native-vector-icons/Entypo";
-import { Feather } from "@expo/vector-icons";
-import { UserServiceInstance } from "../../services/Userservice";
-import { useSelector } from "react-redux";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "../../../Entryroute";
+  Alert,
+} from 'react-native';
+import AntDesignIcons from 'react-native-vector-icons/AntDesign';
+import EntypoIcons from 'react-native-vector-icons/Entypo';
+import Feather from 'react-native-vector-icons/Feather'; // Feather
+import {UserServiceInstance} from '../../services/Userservice';
+import {useSelector} from 'react-redux';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {RootStackParamList} from '../../../Entryroute';
 
 export default function SearchComponent() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const token = useSelector((state: any) => state.User.token);
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState('');
   const [filteredResults, setFilteredResults] = useState([]);
   const [crossShow, setCrossShow] = useState<boolean>(false);
 
@@ -27,10 +28,10 @@ export default function SearchComponent() {
     setSearchText(text);
     setCrossShow(true);
 
-    if (text === "") {
+    if (text === '') {
       setCrossShow(false);
     }
-    const data = { searchTerm: text, token };
+    const data = {searchTerm: text, token};
 
     try {
       const res = await UserServiceInstance.serchUser(data);
@@ -38,26 +39,25 @@ export default function SearchComponent() {
       if (res && res.users) {
         const results = res.users;
         const filtered = results.filter((user: any) =>
-          user.username.toLowerCase().includes(text.toLowerCase())
+          user.username.toLowerCase().includes(text.toLowerCase()),
         );
-        console.log("filtered", filtered);
+        // console.log('filtered', filtered);
         setFilteredResults(filtered);
       }
     } catch (error) {
-      console.log("Could not search the user", error);
-      alert("Could not search the user");
+      // console.log('Could not search the user', error);
+      Alert.alert('Could not search the user');
     }
   };
 
-  const renderItem = ({ item }: any) => (
+  const renderItem = ({item}: any) => (
     <TouchableOpacity
       style={styles.userContainer}
       onPress={() => {
-        console.log("item in renderItem is ", item);
-        navigation.navigate("UserProfile", { user: item });
-      }}
-    >
-      <Image source={{ uri: item.profilePic }} style={styles.userImage} />
+        // console.log('item in renderItem is ', item);
+        navigation.navigate('UserProfile', {user: item});
+      }}>
+      <Image source={{uri: item.profilePic}} style={styles.userImage} />
       <View>
         <Text style={styles.username}>{item?.username}</Text>
         <Text style={styles.fullname}>{item?.profile?.name}</Text>
@@ -77,8 +77,7 @@ export default function SearchComponent() {
             // borderColor: "yellow",
             paddingVertical: 10,
           }}
-          onPress={() => navigation.goBack()}
-        >
+          onPress={() => navigation.goBack()}>
           <AntDesignIcons name="arrowleft" color="white" size={30} />
         </TouchableOpacity>
         <View style={styles.inputWrapper}>
@@ -97,13 +96,14 @@ export default function SearchComponent() {
               color="white"
               size={25}
               onPress={() => {
-                setSearchText("");
+                setSearchText('');
                 setFilteredResults([]);
               }}
             />
           )}
         </View>
       </View>
+
       <FlatList
         data={filteredResults}
         keyExtractor={(item: any) => item._id}
@@ -120,33 +120,30 @@ export default function SearchComponent() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: '#000',
     padding: 20,
-    paddingTop: 50,
   },
   searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 15,
-    paddingVertical: 10,
   },
   inputWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "85%",
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '85%',
     paddingHorizontal: 10,
-    paddingVertical: 8,
-    backgroundColor: "#333",
+    backgroundColor: '#333',
     borderRadius: 10,
   },
   searchInput: {
-    color: "white",
+    color: 'white',
     marginLeft: 10,
     flex: 1,
   },
   userContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 10,
     borderBottomWidth: 1,
     // borderBottomColor: "#444",
@@ -159,22 +156,23 @@ const styles = StyleSheet.create({
   },
   username: {
     fontSize: 18,
-    color: "#fff",
-    fontWeight: "600",
+    color: '#fff',
+    fontWeight: '600',
   },
   fullname: {
     fontSize: 16,
-    color: "white",
+    color: 'white',
   },
   followerInfo: {
-    color: "#888",
+    color: '#888',
   },
   noResultsText: {
-    textAlign: "center",
-    color: "#888",
+    textAlign: 'center',
+    color: '#888',
     marginTop: 20,
   },
   listContent: {
     flexGrow: 1,
+    marginTop: 20,
   },
 });

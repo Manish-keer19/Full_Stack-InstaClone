@@ -13,12 +13,15 @@ import {
   Button,
   TouchableHighlight,
   ScrollView,
+  Alert,
 } from "react-native";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import Ionicons from "react-native-vector-icons/Ionicons"; // Import Ionicons
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import { useDispatch, useSelector } from "react-redux";
 import { CommentServiceInstance } from "../../services/CommentServices";
 import { setUser } from "../../features/user/userSlice";
-import { AntDesign } from "@expo/vector-icons";
+
 import {
   NavigationProp,
   useNavigation,
@@ -103,7 +106,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
     // console.log("comment is ", commentText);
 
     if (commentText == "") {
-      return alert("Comment cannot be empty");
+      return Alert.alert("Comment cannot be empty");
     }
 
     const newcomment = {
@@ -151,7 +154,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
     );
     console.log("commentToDelete is ", commentToDelete);
     if (!commentToDelete) {
-      return alert("Comment not found");
+      return Alert.alert("Comment not found");
     }
 
     setComments((prevComments: any) =>
